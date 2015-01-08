@@ -19,13 +19,43 @@ protected func Initialize()
 	SetGamma(RGB(40, 35, 30), RGB(140, 135, 130), RGB(255, 250, 245));
 	
 	// Chests with weapons.
-	CreateObject(SpawnPoint, 230, 224, NO_OWNER)->SpawnItem(Firestone)->OnRoundStart();
-	CreateObject(SpawnPoint, 500,  64, NO_OWNER)->SpawnItem(Firestone)->OnRoundStart();
-	CreateObject(SpawnPoint, 124, 128, NO_OWNER)->SpawnItem(Firestone)->OnRoundStart();
-	CreateObject(SpawnPoint, 340, 440, NO_OWNER)->SpawnItem(Firestone)->OnRoundStart();
+	var template_flint = CreateSpawnPoint(0, 0)->SetRespawnTimer(36*5)->SpawnItem(Firestone);
+
+	CopySpawnPoint(template_flint, 230, 224);
+	CopySpawnPoint(template_flint, 500,  64);
+	CopySpawnPoint(template_flint, 124, 128);
+	CopySpawnPoint(template_flint, 340, 440);
+	
+	template_flint->RemoveObject();
+	
+	var template_grass = CreateSpawnPoint(0, 0)->SetRespawnTimer(SPAWNPOINT_Timer_Infinite)->SpawnDeco(Grass);
+
+	CopySpawnPoint(template_grass, 365, 346);
+	CopySpawnPoint(template_grass, 370, 346);
+	CopySpawnPoint(template_grass, 375, 346);
+	CopySpawnPoint(template_grass, 380, 346);
+	CopySpawnPoint(template_grass, 385, 346);
+	CopySpawnPoint(template_grass, 390, 346);
+	CopySpawnPoint(template_grass, 395, 346);
+	CopySpawnPoint(template_grass, 400, 346);
+
+	CopySpawnPoint(template_grass, 200, 123);
+	CopySpawnPoint(template_grass, 245, 130);
+	CopySpawnPoint(template_grass, 255, 130);
+
+	CopySpawnPoint(template_grass, 385, 103);
+	CopySpawnPoint(template_grass, 415,  81);
+	CopySpawnPoint(template_grass, 465,  65);
+	
+	template_grass->RemoveObject();
+
+	
+	for (var spawnpoint in FindObjects(Find_Func("IsSpawnPoint")))
+	{
+		spawnpoint->OnRoundStart();
+	}
 	
 	// Ropeladders to get to the upper part.
-
 	//CreateObject(Ropeladder, 380, 112, NO_OWNER)->Unroll(-1,0,19);
 	//CreateObject(Ropeladder, 135, 135, NO_OWNER)->Unroll(1,0,16);
 	

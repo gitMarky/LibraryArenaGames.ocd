@@ -21,6 +21,56 @@ local Collectible = 0;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+// global functions
+
+/**
+ Creates a spawn point at the given coordinates. The coordinates are relative to object coordinates in local context.
+ @par x The x coordinate.
+ @par y The y coordinate.
+ @return Returns the spawn point object, so that further function calls can be issued.
+ */
+global func CreateSpawnPoint(int x, int y)
+{
+	if (!this && (x == nil || y == nil))
+	{
+		FatalError("You have to specify x and y values in global context");
+	}
+	
+	var point = CreateObject(SpawnPoint, x, y, NO_OWNER);
+	return point;
+}
+
+/**
+ Uses the settings of an existing spawn point and creates a new spawn point with these settings at the given coordinates.
+ The coordinates are relative to object coordinates in local context.
+ @par spawn_point This has to be a spawn point object.
+ @par x The x coordinate.
+ @par y The y coordinate.
+ @return Returns the spawn point object, so that further function calls can be issued.
+ */
+// TODO: code example
+global func CopySpawnPoint(object spawn_point, int x, int y)
+{
+	if (!this && (x == nil || y == nil))
+	{
+		FatalError("You have to specify x and y values in global context");
+	}
+	else if (spawn_point == nil)
+	{
+		FatalError("spawn_point has to be an existing object");
+	}
+	else if (!(spawn_point->~IsSpawnPoint()))
+	{
+		FatalError("spawn_point has to be return true in IsSpawnPoint()");
+	}
+	
+	var point = CreateObject(spawn_point->GetID(), x, y, NO_OWNER);
+	point->CopyDataFromTemplate(spawn_point);
+	return point;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 // finished functions
 
 local timer_interval;		// int: the interval, in frames, until the next object is spawned after it disappeared
@@ -65,6 +115,35 @@ protected func Construction(object by_object)
 }
 
 /**
+ Copies the configuration of another spawn point of the same ID.
+ @par template This should be a preconfigured spawn point. It comes handy if you want to place many
+      spawn points of the same kind.
+ @link {@flink CopySpawnPoint} 
+ */
+public func CopyDataFromTemplate(object template)
+{
+	if (template == nil)
+	{
+		FatalError("Must specify an existing object");
+	}
+	else if (template->GetID() != GetID())
+	{
+		FatalError("Copying works only with objects of the same ID");
+	}
+	
+	timer_interval = template.timer_interval;
+	spawn_id = template.spawn_id;
+	spawn_id_parameter = template.spawn_id_parameter;
+	respawn_if_removed = template.respawn_if_removed;
+	draw_transformation = template.draw_transformation;
+	is_active = template.is_active;
+	// spawn_object = template.spawn_object;
+	// spawn_timer = template.spawn_timer;
+	spawn_globally = template.spawn_globally;
+	// spawn_category = template.spawn_category;
+}
+
+/**
  A default function that configures the spawn point for spawning deco objects.@br
  - enables the spawn point@br
  - does not react to collection@br
@@ -74,7 +153,7 @@ protected func Construction(object by_object)
  @return Returns the spawn point object, so that further function calls can be issued.
  @version 0.1.0
  */
-public func SpawnDecoration(definition, proplist transformation)
+public func SpawnDeco(definition, proplist transformation)
 {
 	ProhibitedWhileSpawning();
 	
@@ -168,6 +247,7 @@ public func SetID(definition)
 }
 
 /**
+ Configures, whether all players share the spawned object or if every player has his own object.
  @par spawn_global {@c true} The spawn point spawns one object, if one player collects it then all other players have
                    to wait for it to respawn@br
                    {@c false} The spawn point spawns one object for every player individually. This is the default option of
@@ -181,6 +261,24 @@ public func SetGlobal(bool spawn_global)
 	
 	spawn_globally = spawn_global;
 
+	return this;
+}
+
+/**
+ Sets the time until an object respawns, in frames.
+ @par timer The new timer value. Use {@c SPAWNPOINT_Timer_Infinite} if you want the object to spawn at round start
+            only, or a custom timer, or {@c SPAWNPOINT_Timer_Default}.
+ @return Returns the spawn point object, so that further function calls can be issued.
+ @version 0.1.0
+ */
+public func SetRespawnTimer(int timer)
+{
+	if (timer < SPAWNPOINT_Timer_Infinite)
+	{
+		FatalError(Format("Use values >= %d", SPAWNPOINT_Timer_Infinite));
+	}
+	
+	timer_interval = timer;
 	return this;
 }
 
@@ -287,12 +385,15 @@ private func ProhibitedWhileSpawning()
 private func DecreaseTimer(int index)
 {
 	if (spawn_object[index] == nil)
-	{
-		spawn_timer[index] -= SPAWNPOINT_Effect_Interval;
-		
+	{		
 		if (spawn_timer[index] <= 0)
 		{
 			DoSpawnObject(index);
+		}
+		
+		if (timer_interval != SPAWNPOINT_Timer_Infinite)
+		{
+			spawn_timer[index] -= SPAWNPOINT_Effect_Interval;
 		}
 	}
 }
@@ -419,12 +520,7 @@ private func EffectCollect(object item, object clonk)
 }
 
 private func DoCollectObject(object item, int index, object clonk)
-{
-	if (!respawn_if_removed)
-	{
-		spawn_object[index] = nil;
-	}
-	
+{	
 	item->SetCategory(spawn_category[index]);
 	
 	clonk->Collect(item);
@@ -436,7 +532,12 @@ private func DoCollectObject(object item, int index, object clonk)
 	else
 	{
 		this->~EffectCollect(item, clonk);
-	}	
+	}
+
+	if (!respawn_if_removed)
+	{
+		spawn_object[index] = nil;
+	}
 }
 
 protected func OnRoundStart()
