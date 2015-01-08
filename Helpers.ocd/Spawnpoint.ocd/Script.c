@@ -17,7 +17,6 @@ static const SPAWNPOINT_Effect_Interval = 10;
 // definitions
 
 local Name = "Spawnpoint";
-local Collectible = 0;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -88,7 +87,6 @@ local spawn_timer;			// array map: player index to respawn countdown
 local spawn_globally;		// bool: spawn objects for every player individually?
 							//       true - there is only one object - first come, first serve
 							//       false - every player can collect one object
-local spawn_category;		// int: this is the original category of the object;
 
 
 /**
@@ -110,8 +108,9 @@ protected func Construction(object by_object)
 	
 	spawn_object = CreateArray();
 	spawn_timer = CreateArray();
-	spawn_category = CreateArray();
 	spawn_globally = false;
+	
+	this.Collectible = false;
 }
 
 /**
@@ -141,6 +140,8 @@ public func CopyDataFromTemplate(object template)
 	// spawn_timer = template.spawn_timer;
 	spawn_globally = template.spawn_globally;
 	// spawn_category = template.spawn_category;
+	
+	this.Collectible = template.Collectible;
 }
 
 /**
@@ -365,7 +366,7 @@ private func FxIntSpawnTimer(object target, int effect_nr, int timer)
 	}
 	else
 	{
-		for(var i=0; i < GetPlayerCount(); i++)
+		for(var i = 0; i < GetPlayerCount(); i++)
 		{
 			DecreaseTimer(i);
 		}
@@ -426,14 +427,12 @@ private func DoSpawnObject(int index)
 		spawn_object[index] = CreateObject(spawn_id, 0, 0, owner);
 		spawn_object[index].Visibility = vis;
 		
-		spawn_category[index] = spawn_object[index]->GetCategory();
-		
-		spawn_object[index]->SetCategory(spawn_category[index] | C4D_StaticBack);
-		
-		if (Collectible)
+		if (this.Collectible)
 		{
 			//spawn_object[index]->SetObjectLayer(spawn_object[index]);
-			spawn_object[index].Collectible = false;
+			//spawn_object[index].Collectible = false;
+			spawn_object[index]->Enter(this);
+			SetGraphics(nil, nil, GetOverlay(index), GFXOV_MODE_Object, nil, nil, spawn_object[index]);
 		}
 		
 		if (draw_transformation != nil)
@@ -521,22 +520,24 @@ private func EffectCollect(object item, object clonk)
 
 private func DoCollectObject(object item, int index, object clonk)
 {	
-	item->SetCategory(spawn_category[index]);
-	
 	clonk->Collect(item);
 		
-	if (item->Contained() == nil)
+	if (item->Contained() == this)
 	{
-		item->RemoveObject();
+		// collecting did not work
+		// item->RemoveObject();
+		
 	}
 	else
 	{
 		this->~EffectCollect(item, clonk);
-	}
-
-	if (!respawn_if_removed)
-	{
-		spawn_object[index] = nil;
+		
+		if (!respawn_if_removed)
+		{
+			spawn_object[index] = nil;
+		}
+		
+		SetGraphics(nil, this->GetID(), GetOverlay(index), GFXOV_MODE_Base);
 	}
 }
 
@@ -565,6 +566,11 @@ protected func RemoveSpawnedObjects()
 			RemoveSpawnedObject(i);
 		}
 	}
+}
+
+protected func GetOverlay(int index)
+{
+	return GFX_Overlay + index;
 }
 
 protected func ResetTimer(int index)
