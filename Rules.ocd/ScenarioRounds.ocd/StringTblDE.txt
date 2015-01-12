@@ -1,0 +1,2 @@
+Name=Rundenbasiertes Spiel
+Description=Wenn diese Spielregel aktiviert ist, läuft ein Szenario über mehrere Runden ab.
