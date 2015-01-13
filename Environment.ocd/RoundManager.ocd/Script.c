@@ -6,17 +6,17 @@
  1.) A game call is issued: {@c GameCallEx("OnRoundReset", round_number)}.
      Objects should create a default state for a new round in this call, for example
      players should be prevented from acting by putting them in spawn points.
-     Use {@link Rule_RoundManager#RegisterRoundStartBlocker} here if you want to prevent the round from
+     Use {@link Environment_RoundManager#RegisterRoundStartBlocker} here if you want to prevent the round from
      starting immediately.@br
  2.) Configuration Phase. This is completed once all round start blockers have removed themselves
-     with {@link Rule_RoundManager#RemoveRoundStartBlocker}.@br
+     with {@link Environment_RoundManager#RemoveRoundStartBlocker}.@br
  3.) A game call is issued: {@c GameCallEx("OnRoundStart", round_number)}.
      This is the point where interactive objects should be enabled, for example spawn points
      can spawn the players at this point.@br
-     Use {@link Rule_RoundManager#RegisterRoundEndBlocker} here if you want to prevent the round from
+     Use {@link Environment_RoundManager#RegisterRoundEndBlocker} here if you want to prevent the round from
      ending immediately.@br
  4.) Game phase. This is completed once all round end blockers have removed themselves
-     with {@link Rule_RoundManager#RemoveRoundEndBlocker}.@br
+     with {@link Environment_RoundManager#RemoveRoundEndBlocker}.@br
  5.) A game call is issued: {@c GameCallEx("OnRoundEnd", round_number)}. Remove undesired objects now.@br
  6.) Repeat from 1.)@br
  @br
@@ -45,16 +45,16 @@ local Description = "$Description$";
 /**
  Use this to access the round manager object from other objects.
  @note The function throws an error if it is called when no round manager exists.
- @return object A {@link Rule_RoundManager#index round manager} object
+ @return object A {@link Environment_RoundManager#index round manager} object
  @version 0.1.0
  */
 global func RoundManager()
 {
-	var manager = FindObject(Find_ID(Rule_RoundManager));
+	var manager = FindObject(Find_ID(Environment_RoundManager));
 	
 	if (manager == nil)
 	{
-		FatalError(Format("A script relies on an existing %i object, but no such object exists", Rule_RoundManager));
+		FatalError(Format("A script relies on an existing %i object, but no such object exists", Environment_RoundManager));
 	}
 	else
 	{
@@ -118,9 +118,9 @@ public func Activate(int player_index)
  Recognizes an object, so that the round does not start until
  this object tells the round manager that it is ready.
  @note The object has to tell the round manager that it is ready
-       by calling {@link Rule_RoundManager#RemoveRoundStartBlocker}.
+       by calling {@link Environment_RoundManager#RemoveRoundStartBlocker}.
  @par blocker The object.
- @related {@link Rule_RoundManager#RegisterRoundEndBlocker}
+ @related {@link Environment_RoundManager#RegisterRoundEndBlocker}
  @version 0.1.0
  */
 public func RegisterRoundStartBlocker(object blocker)
@@ -138,7 +138,7 @@ public func RegisterRoundStartBlocker(object blocker)
  round from starting anymore. The round starts if no object blocks
  the round manager.
  @par blocker The object.
- @related {@link Rule_RoundManager#RegisterRoundStartBlocker}, {@link Rule_RoundManager#RemoveRoundEndBlocker}.
+ @related {@link Environment_RoundManager#RegisterRoundStartBlocker}, {@link Environment_RoundManager#RemoveRoundEndBlocker}.
  @version 0.1.0
  */
 public func RemoveRoundStartBlocker(object blocker)
@@ -154,9 +154,9 @@ public func RemoveRoundStartBlocker(object blocker)
  Recognizes an object, so that the round does not end until
  this object tells the round manager that it is ready.
  @note The object has to tell the round manager that it is ready
-       by calling {@link Rule_RoundManager#RemoveRoundEndBlocker}.
+       by calling {@link Environment_RoundManager#RemoveRoundEndBlocker}.
  @par blocker The object.
- @related {@link Rule_RoundManager#RegisterRoundStartBlocker}
+ @related {@link Environment_RoundManager#RegisterRoundStartBlocker}
  @version 0.1.0
  */
 public func RegisterRoundEndBlocker(object blocker)
@@ -174,7 +174,7 @@ public func RegisterRoundEndBlocker(object blocker)
  round from ending anymore. The round ends if no object blocks
  the round manager.
  @par blocker The object.
- @related {@link Rule_RoundManager#RegisterRoundEndBlocker}, {@link Rule_RoundManager#RemoveRoundStartBlocker}.
+ @related {@link Environment_RoundManager#RegisterRoundEndBlocker}, {@link Environment_RoundManager#RemoveRoundStartBlocker}.
  @version 0.1.0
  */
 public func RemoveRoundEndBlocker(object blocker)
