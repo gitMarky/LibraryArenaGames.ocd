@@ -174,8 +174,10 @@ protected func CreateMainMenu(object player)
 	CreateDefaultMenu(player, GetID(), "$MenuCaption$");
 
 	CreateMainMenuGoal(player, Goal_Random);
+	CreateMainMenuGoalConfig(player);
+	CreateMainMenuRuleConfig(player);
 
-	player->AddMenuItem("$Finished$", "ConfigurationFinished", Icon_Ok, 0, 0, "$Finished$");
+	player->AddMenuItem("$Finished$", "ConfigurationFinished", Icon_Ok, nil, nil, "$Finished$");
 }
 
 protected func CreateMainMenuGoal(object player, id menu_symbol)
@@ -195,19 +197,39 @@ protected func CreateMainMenuGoal(object player, id menu_symbol)
 	}
 	else // or configure a goal
 	{
-		player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", menu_symbol, nil, goals);
+		// passing an array as parameter is not allowed
+		//player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", menu_symbol, nil, goals);
+		player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", menu_symbol, nil, player);
 	}
+}
+
+protected func CreateMainMenuGoalConfig(object player)
+{
+	// do nothing if we have a goal already
+	if (configured_goal == nil) return;
+	
+	player->AddMenuItem(configured_goal->GetName(), "MenuConfigureGoal", configured_goal->GetID(), nil, player);
+}
+
+protected func CreateMainMenuRuleConfig(object player)
+{
 }
 
 protected func CreateGoal(id goal_id)
 {
 	var goal = CreateObject(goal_id);
+	
+	if (goal != nil)
+	{
+		configured_goal = goal;
+	}
 }
 
-protected func MenuChooseGoal(id menu_symbol, array goals)
+protected func MenuChooseGoal(id menu_symbol, object player)
 {
-	var player = GetChoosingPlayer();
-	if (!player) return ScheduleCall(this, "OpenMainMenu", 1);
+	//var player = GetChoosingPlayer();
+	var goals = this->~GetAvailableGoals();
+	if (!player || !goals) return ScheduleCall(this, "OpenMainMenu", 1);
 
 	CreateDefaultMenu(player, menu_symbol, "$TxtConfigureGoals$");
 	
@@ -219,7 +241,25 @@ protected func MenuChooseGoal(id menu_symbol, array goals)
 	this->~MenuChooseGoalCustomEntries(player);
 }
 
+protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
+{
+	CreateDefaultMenu(player, menu_symbol, menu_symbol->GetName());
+	
+	player->AddMenuItem(" ", Format("OpenGoalMenu(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol, 0);
+	player->AddMenuItem("$MoreWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), Environment_Configuration, nil, nil, "$MoreWinScore$", 2, 1);
+	player->AddMenuItem("$LessWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, -1), Environment_Configuration, nil, nil, "$LessWinScore$", 2, 2);
+	player->AddMenuItem("$Finished$", "OpenMainMenu", Icon_Ok, nil, nil, "$Finished$");
+	player->SelectMenuItem(selection);
+}
 
+protected func ChangeWinScore(id menu_symbol, object player, int selection, int change)
+{
+	// TODO: actually change something
+	
+	// TODO: sound
+	
+	MenuConfigureGoal(menu_symbol, player, selection);
+}
 
 public func GetChoosingPlayer()
 {
