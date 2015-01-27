@@ -44,22 +44,14 @@ local Description = "$Description$";
 
 /**
  Use this to access the round manager object from other objects.
- @note The function throws an error if it is called when no round manager exists.
- @return object A {@link Environment_RoundManager#index round manager} object
+ @return object A {@link Environment_RoundManager#index round manager} object, or {@c nil} if it does not exist.
  @version 0.1.0
  */
 global func RoundManager()
 {
 	var manager = FindObject(Find_ID(Environment_RoundManager));
 	
-	if (manager == nil)
-	{
-		FatalError(Format("A script relies on an existing %i object, but no such object exists", Environment_RoundManager));
-	}
-	else
-	{
-		return manager;
-	}
+	return manager;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

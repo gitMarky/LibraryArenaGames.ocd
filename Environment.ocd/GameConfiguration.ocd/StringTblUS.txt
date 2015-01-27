@@ -1,13 +1,15 @@
 Name=Rule chooser
 Description=The first player may choose the rules at the beginning and configures the goal if activated.
 
+MenuCaption=Configuration
+TxtConfigureGoals=Configure goal
+
 ChoosingPlayer=%s configures the game, please be patient...
 Choosing=%s configures the rules, please be patient...
 Goal=The goal has been chosen: %s
 Rules=Rules chosen: 
 CreateRules=Rules
 DarknessChose=Configure darkness
-GoalChose=Configure goal
 AIMenu=AI setup
 RuleInfo=Configure rules
 AIInfo=Option to configure AI players

@@ -75,7 +75,7 @@ protected func Initialize()
 		edge->PermaEdge();
 	}
 	
-	CreateObject(Rule_RoundManager, 1, 1, NO_OWNER);
+	CreateObject(Environment_RoundManager, 1, 1, NO_OWNER);
 	CreateObject(RoundTester, 100, 100, NO_OWNER);
 	
 	AddEffect("DryTime",nil,100,2);

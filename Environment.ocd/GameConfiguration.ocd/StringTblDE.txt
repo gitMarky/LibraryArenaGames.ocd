@@ -1,13 +1,16 @@
 Name=Spielregelwahl
 Description=Wenn aktiviert kann der erste Spieler zu Beginn einer Runde die zu benutzenden Spielregeln einstellen und das Spielziel konfigurieren.
 
+MenuCaption=Konfiguration
+TxtConfigureGoals=Spielziel konfigurieren
+
+
 ChoosingPlayer=%s wählt jetzt die Spielkonfiguration, bitte noch etwas Geduld
 Choosing=%s sucht gerade die Regeln aus, noch ein wenig Geduld...
 Goal=Das Spielziel wurde gewählt: %s
 Rules=Regelwahl abgeschlossen: 
 CreateRules=Spielregeln
 DarknessChose=Intensität der Dunkelheit
-GoalChose=Spielziel konfigurieren
 AIMenu=KIs einstellen
 RuleInfo=Spielregel einstellen
 AIInfo=Diverse Einstellungen für KIs
@@ -25,10 +28,3 @@ NewTeam=Neues Team
 FairTeams=Faire Teams
 FairTeamsInfo=Alle Teams auffüllen, so dass überall die gleiche Anzahl Clonks vorhanden ist
 OnlyDeleteLastTeam=Das letzte Team muss als erstes entfernt werden!
-
-#nix weiter
-Emptiness=Die Leere
-YourBrain=Dein Gehirn
-Nothing=Nichts
-Freezer=Der Kühlschrank
-Space=Die unendliche Weite
