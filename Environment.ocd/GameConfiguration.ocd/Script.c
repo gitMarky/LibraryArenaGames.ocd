@@ -346,25 +346,27 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 	var color_inactive = RGB(180, 180, 180);
 	var color_active = RGB(255, 255, 255);
 	
-	for (var i = 0, check; i < GetLength(GetProperties(is_rule_configured)); i++)
+	var keys = GetProperties(is_rule_configured);
+	
+	for (var i = 0, check; i < GetLength(keys); i++)
 	{
-		var rule_info = GetProperty(GetProperties(is_rule_configured)[i], is_rule_configured);
+		var rule_info = GetProperty(keys[i], is_rule_configured);
 
 		var rule_id = rule_info.icon;
 
 		var dummy = rule_info.symbol;
 		
-		var conflict;
+		var conflict = false;
 		
 		var color = color_inactive;
 		
 		var rules_required = rule_id->~GameConfigRequiredRules();
 
-		for (var k = 0; k < GetLength(GetProperties(is_rule_configured)); k++)
+		for (var k = 0; k < GetLength(keys); k++)
 		{
 			if (k == i) continue; // it should not conflict with itself
 			
-			var conflict_info = GetProperty(GetProperties(is_rule_configured)[i], is_rule_configured);
+			var conflict_info = GetProperty(keys[k], is_rule_configured);
 			var conflict_id = conflict_info.icon;
 			
 			var has_conflict = false, has_dependency = false;
@@ -398,16 +400,10 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 		if (rule_info.is_active)
 		{
 			color = color_active;
-
-			//dummy->SetGraphics(nil, Icon_Ok, 1, GFXOV_MODE_Picture);
-			//dummy->SetObjDrawTransform(650, 0, 5000, 0, 650, 5000, 1);
 		}
 		else
 		{
-			//dummy->SetGraphics(nil, nil, 1, nil);
 		}
-		
-		SetProperty(GetProperties(is_rule_configured)[i], rule_info, is_rule_configured);
 		
 		var command;
 		
