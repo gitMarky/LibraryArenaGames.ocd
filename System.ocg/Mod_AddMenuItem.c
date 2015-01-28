@@ -17,7 +17,7 @@ global func AddMenuItem(string caption, string command, id symbol, int count, pa
 	var extraX = extra;
 	var XPar1X = XPar1;
 	
-	if (symbol->HasMeshGraphics() && extra == C4MN_ItemExtra_None || extra == C4MN_ItemExtra_BitOverrideValue)
+	if (symbol != nil && symbol->HasMeshGraphics() && extra == C4MN_ItemExtra_None || extra == C4MN_ItemExtra_BitOverrideValue)
 	{
 		extraX = extra | C4MN_ItemExtra_Object;
 		XPar1X = GetMeshDummy(symbol);

@@ -12,15 +12,19 @@
 local Name = "$Name$";
 local Description = "$Description$";
 
+local configuration_rules;		// proplist, consists of:
+								// * def - id: the id of the rule
+								// * instances - array: all objects with the given id
+								// * is_active - bool: true, if the rule is configured
+								// * symbol - a symbol dummy for the menus
+
+local configured_goal;			// object: the goal that has been created
+local player_index;				// int: the player that configures the current round
 
 //static g_iPlayerCount;
 static g_bChooserFinished;
 local aRulesNr;
-local g_iRoundPlr;
 
-local is_rule_configured;		// array: index i == Definition i configured? true/false (TODO: has to become a proplist)
-
-local configured_goal;			// object: the goal that has been created
 
 local aGoals, Death, iDarkCount, aAI;
 local aTempGoalSave;
@@ -53,13 +57,13 @@ func MenuQueryCancel()
 protected func Initialize()
 {
 	SetPosition();
-	is_rule_configured = {};
+	configuration_rules = {};
 	aRulesNr = [];
 	aGoals = [];
 	aTempGoalSave = [];
 	aAI = [];
 	g_bChooserFinished = false;
-	g_iRoundPlr = 0;
+	player_index = 0;
 	
 	// wait for other rules, etc. to be initialized
 	ScheduleCall(this, "PostInitialize", 1);
@@ -88,7 +92,7 @@ public func OnRoundReset(int round_number)
 	// cycle the player who configures the round
 	
 	var players  = GetPlayerCount(C4PT_User);
-	g_iRoundPlr = (round_number - 1) % players;
+	player_index = (round_number - 1) % players;
 	
 	OpenMainMenu();
 }
@@ -134,7 +138,8 @@ protected func OpenMainMenu()
  2.) {@link Environment_Configuration#MainMenuAddItemGoal}@br
  3.) {@link Environment_Configuration#MainMenuAddItemWinScore}@br
  4.) {@link Environment_Configuration#MainMenuAddItemRules}@br
- 5.) {@link Environment_Configuration#MainMenuAddItemFinishConfiguration}
+ 5.) Callback {@c MainMenuAddItemCustom(object player)}@br]
+ 6.) {@link Environment_Configuration#MainMenuAddItemFinishConfiguration}
  
  @par player The menu is displayed in this object.
  @version 0.1.0
@@ -146,6 +151,8 @@ protected func CreateMainMenu(object player)
 	MainMenuAddItemGoal(player, Goal_Random);
 	MainMenuAddItemWinScore(player);
 	MainMenuAddItemRules(player);
+	
+	this->~MainMenuAddItemCustom(player);
 
 	MainMenuAddItemFinishConfiguration(player);
 }
@@ -254,8 +261,8 @@ protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
 	CreateConfigurationMenu(player, menu_symbol, menu_symbol->GetName());
 	
 	player->AddMenuItem(" ", Format("MenuConfigureGoal(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol, 0);
-	player->AddMenuItem("$MoreWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), Environment_Configuration, nil, nil, "$MoreWinScore$", 2, 1);
-	player->AddMenuItem("$LessWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1), Environment_Configuration, nil, nil, "$LessWinScore$", 2, 2);
+	player->AddMenuItem("$MoreWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), GetID(), nil, nil, "$MoreWinScore$", 2, 1);
+	player->AddMenuItem("$LessWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1), GetID(), nil, nil, "$LessWinScore$", 2, 2);
 
 	MenuAddItemReturn(player);
 
@@ -273,6 +280,8 @@ protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
 protected func ConfigurationFinished()
 {
 	this->~OnCloseMainMenu();
+	
+	CreateRules();
 	
 	GameCallEx("OnConfigurationFinished");
 	
@@ -292,7 +301,7 @@ protected func ScanRules()
 		{
 			var rule_proplist = {};
 
-			rule_proplist.icon = rule_id;
+			rule_proplist.def = rule_id;
 			rule_proplist.instances = FindObjects(Find_ID(rule_id));
 			rule_proplist.is_active = GetLength(rule_proplist.instances) > 0;
 			
@@ -301,12 +310,12 @@ protected func ScanRules()
 			
 			rule_proplist.symbol = dummy;
 
-			SetProperty(Format("%i", rule_id), rule_proplist, is_rule_configured);
+			SetProperty(Format("%i", rule_id), rule_proplist, configuration_rules);
 		}
 	}
 }
 
-func PreconficureRules()
+protected func PreconficureRules()
 {
 	var preconfigured_rules = this->~GetDefaultRules();
 	if (preconfigured_rules == nil)
@@ -328,12 +337,33 @@ func PreconficureRules()
 	//}
 }
 
+protected func CreateRules()
+{
+	var keys = GetProperties(configuration_rules);
+	
+	for (var i = 0; i < GetLength(keys); i++)
+	{
+		var rule_info = GetProperty(keys[i], configuration_rules);
+		
+		RemoveAll(Find_ID(rule_info.def));
+		
+		if (rule_info.is_active)
+		{
+			var rule = CreateObject(rule_info.def);
+			
+			rule->~Configure(rule_info.settings);
+			
+			rule_info.instances = [rule];
+		}
+	}
+}
+
 protected func MainMenuAddItemRules(object player)
 {
 	// do nothing if no rules are configurable
-	if (GetLength(GetProperties(is_rule_configured)) < 1) return;
+	if (GetLength(GetProperties(configuration_rules)) < 1) return;
 	
-	player->AddMenuItem("$TxtConfigureRules$", "MenuConfigureRules", Environment_Configuration, nil, player);
+	player->AddMenuItem("$TxtConfigureRules$", "MenuConfigureRules", GetID(), nil, player);
 }
 
 protected func MenuConfigureRules(id menu_symbol, object player, int selection)
@@ -346,13 +376,13 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 	var color_inactive = RGB(180, 180, 180);
 	var color_active = RGB(255, 255, 255);
 	
-	var keys = GetProperties(is_rule_configured);
+	var keys = GetProperties(configuration_rules);
 	
 	for (var i = 0, check; i < GetLength(keys); i++)
 	{
-		var rule_info = GetProperty(keys[i], is_rule_configured);
+		var rule_info = GetProperty(keys[i], configuration_rules);
 
-		var rule_id = rule_info.icon;
+		var rule_id = rule_info.def;
 
 		var dummy = rule_info.symbol;
 		
@@ -366,8 +396,8 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 		{
 			if (k == i) continue; // it should not conflict with itself
 			
-			var conflict_info = GetProperty(keys[k], is_rule_configured);
-			var conflict_id = conflict_info.icon;
+			var conflict_info = GetProperty(keys[k], configuration_rules);
+			var conflict_id = conflict_info.def;
 			
 			var has_conflict = false, has_dependency = false;
 			
@@ -418,7 +448,7 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 		
 		dummy->SetClrModulation(color);
 		
-		player->AddMenuItem(ColorizeString(rule_info.icon->GetName(), color), command, rule_info.icon, nil, i, nil, 4, dummy);
+		player->AddMenuItem(ColorizeString(rule_info.def->GetName(), color), command, rule_info.def, nil, i, nil, 4, dummy);
 		
 		if(i == selection && !conflict) check = true;
 		
@@ -433,7 +463,7 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 
 protected func ChangeRuleConf(id menu_symbol, object player, int i)
 {
-	var rule_info = GetProperty(GetProperties(is_rule_configured)[i], is_rule_configured);
+	var rule_info = GetProperty(GetProperties(configuration_rules)[i], configuration_rules);
 
 	rule_info.is_active = !rule_info.is_active;
   
@@ -461,7 +491,7 @@ protected func ChangeWinScore(id menu_symbol, object player, int selection, int 
 
 public func GetChoosingPlayer()
 {
-	return GetCursor(GetPlayerByIndex(g_iRoundPlr, C4PT_User));
+	return GetCursor(GetPlayerByIndex(player_index, C4PT_User));
 }
 
 private func CreateConfigurationMenu(object player, id menu_symbol, string caption)
