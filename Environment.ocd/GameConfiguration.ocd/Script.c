@@ -43,10 +43,11 @@ func MenuQueryCancel()
 }
 
 /**
- Initializes the local variables, then calls in order:@br
- 1.) {@link Environment_Configuration#PreconfigureRules}@br
- 2.) {@link Environment_Configuration#OnChooserInitialized}@br
- 3.) {@link Environment_Configuration#OpenMenu}@br
+ Initializes the local variables, then 1 frame later calls in order:@br
+ 1.) {@link Environment_Configuration#ScanRules}@br
+ 2.) {@link Environment_Configuration#PreconfigureRules}@br
+ 3.) {@c GameCall("OnConfigurationStart")}@br
+ 3.) {@link Environment_Configuration#OpenMainMenu}@br
  @version 0.1.0
  */
 protected func Initialize()
@@ -77,6 +78,9 @@ protected func PostInitialize()
 	}
 }
 
+/**
+ Callback from the round manager, calls {@link Environment_Configuration#OpenMainMenu}.
+ */
 public func OnRoundReset(int round_number)
 {
 	RoundManager()->RegisterRoundStartBlocker(this);
@@ -89,13 +93,20 @@ public func OnRoundReset(int round_number)
 	OpenMainMenu();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// non-functional and temporary stuff
+/*-----------------------------------------------------------------------------------------------------------------------------------------
 
+  Main menu
+  
+  -----------------------------------------------------------------------------------------------------------------------------------------*/
 
-
-func OpenMainMenu()
+/**
+ Opens the configuration menu in the choosing player and closes menus in other players.
+ Calls {@link Environment_Configuration#CreateMainMenu} and has a callback {@c OnOpenMainMenu()}
+ for custom effects.
+ 
+ @version 0.1.0
+ */
+protected func OpenMainMenu()
 {
 	var player = GetChoosingPlayer();
 	if (!player) return ScheduleCall(this, "OpenMainMenu", 1);
@@ -115,72 +126,43 @@ func OpenMainMenu()
 	this->~OnOpenMainMenu();
 }
 
-
-func ConfigurationFinished()
-{
-	this->~OnCloseMainMenu();
-	
-	GameCallEx("OnConfigurationFinished");
-	
-	// TODO: Release players
-	// TODO: InitializePlayer in rule objects
-	
-	RoundManager()->RemoveRoundStartBlocker(this);
-	
-	// RemoveObject();
-}
-
-protected func ScanRules()
-{
-	for (var i = 0, rule_id; rule_id = GetDefinition(i); i++)
-	{
-		if (rule_id->~GameConfigIsChooseable())
-		{
-			var rule_proplist = {};
-
-			rule_proplist.instances = FindObjects(Find_ID(rule_id));
-			rule_proplist.is_active = GetLength(rule_proplist.instances) > 0;
-
-			SetProperty(Format("%i", rule_id), rule_proplist, is_rule_configured);
-		}
-	}
-}
-
-
-func PreconficureRules()
-{
-	var preconfigured_rules = this->~GetDefaultRules();
-	if (preconfigured_rules == nil) // || !GetLength(preconfigured_rules))
-		return;
-		
-	
-	for (var rule_id in preconfigured_rules)
-	{
-		var prop = GetProperty(Format("%v", rule_id), preconfigured_rules);
-		if (prop != nil)
-		{
-			prop.is_active = true;
-			Log("Preconfiguring rule %v", rule_id);
-		}
-	}
-	
-	//for (var rule_proplist in GetProperties(is_rule_configured))
-	//{
-	//}
-}
-
+/**
+ Opens the main menu. You can/should overload this function in your own project
+ if you do not like the current choice or order of menu options.@br
+ By default the function calls, in order:@br
+ 1.) {@link Environment_Configuration#CreateConfigurationMenu}@br
+ 2.) {@link Environment_Configuration#MainMenuAddItemGoal}@br
+ 3.) {@link Environment_Configuration#MainMenuAddItemWinScore}@br
+ 4.) {@link Environment_Configuration#MainMenuAddItemRules}@br
+ 5.) {@link Environment_Configuration#MainMenuAddItemFinishConfiguration}
+ 
+ @par player The menu is displayed in this object.
+ @version 0.1.0
+ */
 protected func CreateMainMenu(object player)
 {
-	CreateDefaultMenu(player, GetID(), "$MenuCaption$");
+	CreateConfigurationMenu(player, GetID(), "$MenuCaption$");
 
-	CreateMainMenuGoal(player, Goal_Random);
-	CreateMainMenuGoalConfig(player);
-	CreateMainMenuRuleConfig(player);
+	MainMenuAddItemGoal(player, Goal_Random);
+	MainMenuAddItemWinScore(player);
+	MainMenuAddItemRules(player);
 
-	player->AddMenuItem("$Finished$", "ConfigurationFinished", Icon_Ok, nil, nil, "$Finished$");
+	MainMenuAddItemFinishConfiguration(player);
 }
 
-protected func CreateMainMenuGoal(object player, id menu_symbol)
+/**
+ Adds an option for choosing a goal for the scenario. Behaviour depens on the callback@br
+ {@c GetAvailableGoals()}, which should return an array of definitions:@br
+ - It does nothing if the function returns {@c nil}. This is ideal if you already have a goal in the scenario.
+   Should there be such a goal, then it will not be configurable with {@link Enviroment_Configuration#MainMenuAddItemWinScore}@br
+ - It creates the only available goal if the array has exactly one entry. It will be configurable with {@link Enviroment_Configuration#MainMenuAddItemWinScore}@br
+ - It creates a menu with the available goals and has the player choose one goal.
+ 
+ @par player The menu is displayed in this object.
+ @par menu_symbol The menu has this icon.
+ @version 0.1.0
+ */
+protected func MainMenuAddItemGoal(object player, id menu_symbol)
 {
 	// do nothing if we have a goal already
 	if (configured_goal != nil) return;
@@ -203,7 +185,13 @@ protected func CreateMainMenuGoal(object player, id menu_symbol)
 	}
 }
 
-protected func CreateMainMenuGoalConfig(object player)
+/**
+ Adds an option for choosing the win score of the chosen goal.
+ 
+ @par player The menu is displayed in this object.
+ @version 0.1.0
+ */
+protected func MainMenuAddItemWinScore(object player)
 {
 	// do nothing if we have a goal already
 	if (configured_goal == nil) return;
@@ -211,8 +199,249 @@ protected func CreateMainMenuGoalConfig(object player)
 	player->AddMenuItem(configured_goal->GetName(), "MenuConfigureGoal", configured_goal->GetID(), nil, player);
 }
 
-protected func CreateMainMenuRuleConfig(object player)
+
+/**
+ Adds a finish option to a menu, the option calls {@link Environment_Configuration#ConfigurationFinished}.
+ 
+ @par player The menu is displayed in this object.
+ */
+protected func MainMenuAddItemFinishConfiguration(object player)
 {
+	player->AddMenuItem("$Finished$", "ConfigurationFinished", Icon_Ok, nil, nil, "$Finished$");
+}
+
+
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------
+
+  Sub menus
+  
+  -----------------------------------------------------------------------------------------------------------------------------------------*/
+
+/**
+ Opens a menu for choosing goals. Has a callback {@c MenuChooseGoalCustomEntries(object player)} for adding further options.
+ 
+ @par player The menu is displayed in this object.
+ @par menu_symbol The menu has this icon.
+ @version 0.1.0
+ */
+protected func MenuChooseGoal(id menu_symbol, object player)
+{
+	//var player = GetChoosingPlayer();
+	var goals = this->~GetAvailableGoals();
+	if (!player || !goals) return ScheduleCall(this, "OpenMainMenu", 1);
+
+	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureGoals$");
+	
+	for (var goal in goals)
+	{
+		player->AddMenuItem(goal->GetName(), "MenuSetGoal", goal);
+	}
+
+	this->~MenuChooseGoalCustomEntries(player);
+}
+
+/**
+ Opens a menu for changing the win score of goals.
+ 
+ @par player The menu is displayed in this object.
+ @par menu_symbol The menu has this icon. This should be the id of the goal.
+ @par selection This entry will be selected. Makes choosing the same option several times a lot more easy.
+ @version 0.1.0
+ */
+protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
+{
+	CreateConfigurationMenu(player, menu_symbol, menu_symbol->GetName());
+	
+	player->AddMenuItem(" ", Format("MenuConfigureGoal(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol, 0);
+	player->AddMenuItem("$MoreWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), Environment_Configuration, nil, nil, "$MoreWinScore$", 2, 1);
+	player->AddMenuItem("$LessWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1), Environment_Configuration, nil, nil, "$LessWinScore$", 2, 2);
+
+	MenuAddItemReturn(player);
+
+	player->SelectMenuItem(selection);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// non-functional and temporary stuff
+
+
+
+
+protected func ConfigurationFinished()
+{
+	this->~OnCloseMainMenu();
+	
+	GameCallEx("OnConfigurationFinished");
+	
+	// TODO: Release players
+	// TODO: InitializePlayer in rule objects
+	
+	RoundManager()->RemoveRoundStartBlocker(this);
+	
+	// RemoveObject();
+}
+
+protected func ScanRules()
+{
+	for (var i = 0, rule_id; rule_id = GetDefinition(i); i++)
+	{
+		if ((rule_id->GetCategory() & C4D_Rule) && (rule_id->~GameConfigIsChoosable()))
+		{
+			var rule_proplist = {};
+
+			rule_proplist.icon = rule_id;
+			rule_proplist.instances = FindObjects(Find_ID(rule_id));
+			rule_proplist.is_active = GetLength(rule_proplist.instances) > 0;
+			
+			var dummy = CreateObject(Dummy);
+			dummy->SetGraphics(nil, rule_id, 0, GFXOV_MODE_Picture);
+			
+			rule_proplist.symbol = dummy;
+
+			SetProperty(Format("%i", rule_id), rule_proplist, is_rule_configured);
+		}
+	}
+}
+
+func PreconficureRules()
+{
+	var preconfigured_rules = this->~GetDefaultRules();
+	if (preconfigured_rules == nil)
+		return;
+		
+	
+	for (var rule_id in preconfigured_rules)
+	{
+		var prop = GetProperty(Format("%v", rule_id), preconfigured_rules);
+		if (prop != nil)
+		{
+			prop.is_active = true;
+			Log("Preconfiguring rule %v", rule_id);
+		}
+	}
+	
+	//for (var rule_proplist in GetProperties(is_rule_configured))
+	//{
+	//}
+}
+
+protected func MainMenuAddItemRules(object player)
+{
+	// do nothing if no rules are configurable
+	if (GetLength(GetProperties(is_rule_configured)) < 1) return;
+	
+	player->AddMenuItem("$TxtConfigureRules$", "MenuConfigureRules", Environment_Configuration, nil, player);
+}
+
+protected func MenuConfigureRules(id menu_symbol, object player, int selection)
+{
+	CreateConfigurationMenu(player, menu_symbol, "TxtConfigureRules");
+	
+	var select = 0;
+	
+	var color_conflict = RGB(150, 0, 0);
+	var color_inactive = RGB(180, 180, 180);
+	var color_active = RGB(255, 255, 255);
+	
+	for (var i = 0, check; i < GetLength(GetProperties(is_rule_configured)); i++)
+	{
+		var rule_info = GetProperty(GetProperties(is_rule_configured)[i], is_rule_configured);
+
+		var rule_id = rule_info.icon;
+
+		var dummy = rule_info.symbol;
+		
+		var conflict;
+		
+		var color = color_inactive;
+		
+		var rules_required = rule_id->~GameConfigRequiredRules();
+
+		for (var k = 0; k < GetLength(GetProperties(is_rule_configured)); k++)
+		{
+			if (k == i) continue; // it should not conflict with itself
+			
+			var conflict_info = GetProperty(GetProperties(is_rule_configured)[i], is_rule_configured);
+			var conflict_id = conflict_info.icon;
+			
+			var has_conflict = false, has_dependency = false;
+			
+			var rules_conflicts = conflict_id->~GameConfigConflictingRules();
+			
+			if (GetType(rules_conflicts) == C4V_Array
+		    &&  IsValueInArray(rules_conflicts, rule_id)
+		    &&  conflict_info.is_active)
+			{
+				has_conflict = true;
+				color = color_conflict;
+			}
+			
+			if (GetType(rules_required) == C4V_Array
+			&&  IsValueInArray(rules_required, conflict_id)
+			&& !conflict_info.is_active)
+			{
+				has_dependency = true;
+			}
+			
+			if (has_conflict || has_dependency)
+			{
+				rule_info.is_active = false;
+				conflict = true;
+				break;
+			}
+		}
+		
+		
+		if (rule_info.is_active)
+		{
+			color = color_active;
+
+			//dummy->SetGraphics(nil, Icon_Ok, 1, GFXOV_MODE_Picture);
+			//dummy->SetObjDrawTransform(650, 0, 5000, 0, 650, 5000, 1);
+		}
+		else
+		{
+			//dummy->SetGraphics(nil, nil, 1, nil);
+		}
+		
+		SetProperty(GetProperties(is_rule_configured)[i], rule_info, is_rule_configured);
+		
+		var command;
+		
+		if (conflict)
+		{
+			command = "";
+		}
+		else
+		{
+			command = Format("ChangeRuleConf(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), i);
+		}
+		
+		dummy->SetClrModulation(color);
+		
+		player->AddMenuItem(ColorizeString(rule_info.icon->GetName(), color), command, rule_info.icon, nil, i, nil, 4, dummy);
+		
+		if(i == selection && !conflict) check = true;
+		
+		if(!check) select++;
+	}
+	
+	MenuAddItemReturn(player);
+	player->SelectMenuItem(select);
+}
+
+
+
+protected func ChangeRuleConf(id menu_symbol, object player, int i)
+{
+	var rule_info = GetProperty(GetProperties(is_rule_configured)[i], is_rule_configured);
+
+	rule_info.is_active = !rule_info.is_active;
+  
+	MenuConfigureRules(menu_symbol, player, i);
 }
 
 protected func CreateGoal(id goal_id)
@@ -225,36 +454,9 @@ protected func CreateGoal(id goal_id)
 	}
 }
 
-protected func MenuChooseGoal(id menu_symbol, object player)
-{
-	//var player = GetChoosingPlayer();
-	var goals = this->~GetAvailableGoals();
-	if (!player || !goals) return ScheduleCall(this, "OpenMainMenu", 1);
-
-	CreateDefaultMenu(player, menu_symbol, "$TxtConfigureGoals$");
-	
-	for (var goal in goals)
-	{
-		player->AddMenuItem(goal->GetName(), "MenuSetGoal", goal);
-	}
-
-	this->~MenuChooseGoalCustomEntries(player);
-}
-
-protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
-{
-	CreateDefaultMenu(player, menu_symbol, menu_symbol->GetName());
-	
-	player->AddMenuItem(" ", Format("OpenGoalMenu(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol, 0);
-	player->AddMenuItem("$MoreWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), Environment_Configuration, nil, nil, "$MoreWinScore$", 2, 1);
-	player->AddMenuItem("$LessWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, -1), Environment_Configuration, nil, nil, "$LessWinScore$", 2, 2);
-	player->AddMenuItem("$Finished$", "OpenMainMenu", Icon_Ok, nil, nil, "$Finished$");
-	player->SelectMenuItem(selection);
-}
-
 protected func ChangeWinScore(id menu_symbol, object player, int selection, int change)
 {
-	// TODO: actually change something
+	// TODO: actually change something - this requires configurable goals...
 	
 	// TODO: sound
 	
@@ -266,7 +468,7 @@ public func GetChoosingPlayer()
 	return GetCursor(GetPlayerByIndex(g_iRoundPlr, C4PT_User));
 }
 
-private func CreateDefaultMenu(object player, id menu_symbol, string caption)
+private func CreateConfigurationMenu(object player, id menu_symbol, string caption)
 {
 	player->CloseMenu();
 	player->CreateMenu(menu_symbol, this, nil, caption, nil, C4MN_Style_Context);
@@ -276,4 +478,9 @@ private func MenuSetGoal(id goal)
 {
 	CreateGoal(goal);
 	OpenMainMenu();
+}
+
+private func MenuAddItemReturn(object player)
+{
+	player->AddMenuItem("$Finished$", "OpenMainMenu", Icon_Ok, nil, nil, "$Finished$");
 }

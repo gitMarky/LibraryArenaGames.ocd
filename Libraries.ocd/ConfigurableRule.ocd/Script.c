@@ -11,3 +11,8 @@ public func GameConfigConflictingRules()
 {
 	return [];
 }
+
+public func GameConfigRequiredRules()
+{
+	return [];
+}
