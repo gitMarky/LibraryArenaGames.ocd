@@ -286,6 +286,16 @@ private func DoRoundStart()
 	ScheduleCall(this, "PrepareRoundEnd", 5, 0);
 }
 
+/**
+ Gives the current round number.
+ @return int The number of the current round. It starts counting at 1 and increases before {@c GameCallEx("OnRoundReset")} is called.
+ @version 0.1.0
+ */
+public func GetRoundNumber()
+{
+	return round_counter;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // non-functional and temporary stuff

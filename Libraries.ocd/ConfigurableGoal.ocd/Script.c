@@ -79,7 +79,6 @@ public func DoWinRound(int faction)
 	}
 }
 
-
 protected func Initialize()
 {
 	score_list_points = [];
@@ -87,16 +86,36 @@ protected func Initialize()
 	
 	is_fulfilled = false;
 	
+	var round_number = 1;
+	
 	if (RoundManager() != nil)
 	{
 		RoundManager()->RegisterRoundEndBlocker(this);
+		round_number = RoundManager()->GetRoundNumber();
 	}
+
+	this->~DoSetup(round_number);
 
 	return _inherited(...);
 }
 
 public func IsFulfilled() { return is_fulfilled; }
 
+public func OnRoundStart(int round)
+{
+	this->~DoSetup(round);
+}
 
+public func Destruction()
+{
+	var round_number = 1;
+	
+	if (RoundManager() != nil)
+	{
+		round_number = RoundManager()->GetRoundNumber();
+	}
+
+	this->~DoCleanup(round_number);
+}
 
 local Name = "$Name$";
