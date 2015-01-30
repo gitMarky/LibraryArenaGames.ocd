@@ -260,7 +260,7 @@ protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
 {
 	CreateConfigurationMenu(player, menu_symbol, menu_symbol->GetName());
 	
-	player->AddMenuItem(" ", Format("MenuConfigureGoal(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol, 0);
+	player->AddMenuItem(" ", Format("MenuConfigureGoal(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol, configured_goal->~GetWinScore());
 	player->AddMenuItem("$MoreWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), GetID(), nil, nil, "$MoreWinScore$", 2, 1);
 	player->AddMenuItem("$LessWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1), GetID(), nil, nil, "$LessWinScore$", 2, 2);
 
@@ -483,6 +483,7 @@ protected func CreateGoal(id goal_id)
 protected func ChangeWinScore(id menu_symbol, object player, int selection, int change)
 {
 	// TODO: actually change something - this requires configurable goals...
+	configured_goal->~DoWinScore(change);
 	
 	// TODO: sound
 	

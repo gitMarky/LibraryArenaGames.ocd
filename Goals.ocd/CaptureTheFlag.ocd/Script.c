@@ -2,6 +2,11 @@
 
 local Name = "$Name$";
 
+public func GetDefaultWinScore()
+{
+	return 3;
+}
+
 public func GetFlagID()
 {
 	return Goal_Flag;

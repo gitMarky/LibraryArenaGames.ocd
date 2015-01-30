@@ -81,21 +81,34 @@ public func DoWinRound(int faction)
 
 protected func Initialize()
 {
+	var factions = Max(1, this->~GetFactionCount());
+	
 	score_list_points = [];
 	score_list_rounds = [];
 	
+	// fill the arrays. "<=" is correct, because the team numbers start at 1
+	// in single player and team goals one goal will be a dummy, but I do not care :)
+	for (var i = 0; i <= factions; i++)
+	{
+		PushBack(score_list_points, 0);
+		PushBack(score_list_rounds, 0);
+	}
+	
 	is_fulfilled = false;
 	
-	var round_number = 1;
+	
+	win_score = Max(1, this->~GetDefaultWinScore());
 	
 	if (RoundManager() != nil)
 	{
 		RoundManager()->RegisterRoundEndBlocker(this);
-		round_number = RoundManager()->GetRoundNumber();
 	}
-
-	this->~DoSetup(round_number);
-
+	else
+	{
+		var round_number = 1;
+		this->~DoSetup(round_number);
+	}
+	
 	return _inherited(...);
 }
 

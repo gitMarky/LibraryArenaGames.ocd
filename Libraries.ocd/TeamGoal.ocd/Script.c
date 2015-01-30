@@ -55,5 +55,10 @@ private func GetPlayerInTeamCount(int team)
 	return cnt;
 }
 
+// 2 teams per default
+public func GetFactionCount()
+{
+	return 2;
+}
 
 local Name = "$Name$";
