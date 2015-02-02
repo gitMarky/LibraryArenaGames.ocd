@@ -8,6 +8,11 @@
 
 #include Library_ConfigurableGoal
 
+public func IsTeamGoal()
+{
+	return true;
+}
+
 public func GetDescription(int plr)
 {
 	var flags = GetWinScore() - score_list_points[GetPlayerTeam(plr)];

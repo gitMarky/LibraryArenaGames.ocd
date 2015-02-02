@@ -21,13 +21,7 @@ local configuration_rules;		// proplist, consists of:
 local configured_goal;			// object: the goal that has been created
 local player_index;				// int: the player that configures the current round
 
-//static g_iPlayerCount;
-static g_bChooserFinished;
-local aRulesNr;
-
-
-local aGoals, Death, iDarkCount, aAI;
-local aTempGoalSave;
+local configuration_finished;	// bool: true once the configuration is done
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,11 +52,6 @@ protected func Initialize()
 {
 	SetPosition();
 	configuration_rules = {};
-	aRulesNr = [];
-	aGoals = [];
-	aTempGoalSave = [];
-	aAI = [];
-	g_bChooserFinished = false;
 	player_index = 0;
 	
 	// wait for other rules, etc. to be initialized
@@ -89,8 +78,12 @@ public func OnRoundReset(int round_number)
 {
 	RoundManager()->RegisterRoundStartBlocker(this);
 	
-	// cycle the player who configures the round
+	configuration_finished = false;
 	
+	// put players in spawn points
+	ContainPlayers(); 
+	
+	// cycle the player who configures the round
 	var players  = GetPlayerCount(C4PT_User);
 	player_index = (round_number - 1) % players;
 	
@@ -151,6 +144,8 @@ protected func CreateMainMenu(object player)
 	MainMenuAddItemGoal(player, Goal_Random);
 	MainMenuAddItemWinScore(player);
 	MainMenuAddItemRules(player);
+	MainMenuAddItemTeams(player);
+	MainMenuAddItemBots(player);
 	
 	this->~MainMenuAddItemCustom(player);
 
@@ -261,8 +256,8 @@ protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
 	CreateConfigurationMenu(player, menu_symbol, menu_symbol->GetName());
 	
 	player->AddMenuItem(" ", Format("MenuConfigureGoal(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol, configured_goal->~GetWinScore());
-	player->AddMenuItem("$MoreWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), GetID(), nil, nil, "$MoreWinScore$", 2, 1);
-	player->AddMenuItem("$LessWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1), GetID(), nil, nil, "$LessWinScore$", 2, 2);
+	player->AddMenuItem("$MoreWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), Icon_Plus, nil, nil, "$MoreWinScore$");
+	player->AddMenuItem("$LessWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1), Icon_Minus, nil, nil, "$LessWinScore$");
 
 	MenuAddItemReturn(player);
 
@@ -282,15 +277,11 @@ protected func ConfigurationFinished()
 	this->~OnCloseMainMenu();
 	
 	CreateRules();
+	ReleasePlayers(true);
 	
 	GameCallEx("OnConfigurationFinished");
 	
-	// TODO: Release players
-	// TODO: InitializePlayer in rule objects
-	
 	RoundManager()->RemoveRoundStartBlocker(this);
-	
-	// RemoveObject();
 }
 
 protected func ScanRules()
@@ -331,10 +322,6 @@ protected func PreconficureRules()
 			Log("Preconfiguring rule %v", rule_id);
 		}
 	}
-	
-	//for (var rule_proplist in GetProperties(is_rule_configured))
-	//{
-	//}
 }
 
 protected func CreateRules()
@@ -361,9 +348,24 @@ protected func CreateRules()
 protected func MainMenuAddItemRules(object player)
 {
 	// do nothing if no rules are configurable
-	if (GetLength(GetProperties(configuration_rules)) < 1) return;
+	if (GetLength(GetProperties(configuration_rules)) > 0)
+		player->AddMenuItem("$TxtConfigureRules$", "MenuConfigureRules", GetID(), nil, player);
+}
+
+protected func MainMenuAddItemTeams(object player)
+{
+	// do nothing if the goal is not a team goal
+	if (configured_goal != nil && !(configured_goal->IsTeamGoal())) return;
 	
-	player->AddMenuItem("$TxtConfigureRules$", "MenuConfigureRules", GetID(), nil, player);
+	player->AddMenuItem("$TxtConfigureTeams$", "MenuConfigureTeams", GetID(), nil, player);
+}
+
+protected func MainMenuAddItemBots(object player)
+{
+	if (CanConfigureBots())
+	{
+		player->AddMenuItem("$TxtConfigureBots$", "MenuConfigureBots", GetID(), nil, player);
+	}
 }
 
 protected func MenuConfigureRules(id menu_symbol, object player, int selection)
@@ -459,7 +461,35 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 	player->SelectMenuItem(select);
 }
 
+protected func MenuConfigureTeams(id menu_symbol, object player, int selection)
+{
+	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureTeams$");
+	
+	for(var i = 0; i < GetPlayerCount(); i++)
+		AddMenuItem(Format("%s (%s)", GetTaggedPlayerName(GetPlayerByIndex(i)), GetTeamName(GetPlayerTeam(i))), Format("MenuSwitchTeam(Object(%d), %d)", player->ObjectNumber(), i), Rule_TeamAccount);
 
+	MenuAddItemReturn(player);
+
+	player->SelectMenuItem(selection);
+}
+
+
+protected func MenuConfigureBots(id menu_symbol, object player, int selection)
+{
+	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureBots$");
+
+	//if(!aAI[0]) aAI[0] = GetPlayerCount(C4PT_User);
+
+	var number_bots = GetPlayerCount(C4PT_Script);
+	var number_players = GetPlayerCount();
+
+	player->AddMenuItem(Format("$TxtPlayersBots$", number_bots, number_players), Format("MenuConfigureBots(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol);
+	player->AddMenuItem("$MoreBots$", Format("ChangeBotAmount(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), Icon_Plus, nil, nil, "$MoreBots$");
+	player->AddMenuItem("$LessBots$", Format("ChangeBotAmount(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1), Icon_Minus, nil, nil, "$LessBots$");
+
+	MenuAddItemReturn(player);
+	player->SelectMenuItem(selection);
+}
 
 protected func ChangeRuleConf(id menu_symbol, object player, int i)
 {
@@ -510,4 +540,121 @@ private func MenuSetGoal(id goal)
 private func MenuAddItemReturn(object player)
 {
 	player->AddMenuItem("$Finished$", "OpenMainMenu", Icon_Ok, nil, nil, "$Finished$");
+}
+
+private func MenuSwitchTeam(object player, int index)
+{
+	var player_nr = GetPlayerByIndex(index);
+
+	var team = GetPlayerTeam(player_nr);
+	if(GetTeamName(GetTeamByIndex(team)))
+	{
+		team = GetTeamByIndex(team);
+	}
+	else
+	{
+		team = GetTeamByIndex(0);
+	}
+
+	SetPlayerTeam(player_nr, team);
+
+	MenuConfigureTeams(player, index);
+}
+
+public func InitializePlayer(int player, int x, int y, object base, int team, id extra_data)
+{
+	if (!configuration_finished)
+	{
+		ContainPlayer(player);
+	}
+}
+
+public func ContainPlayers()
+{
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		ContainPlayer(GetPlayerByIndex(i));
+	}
+}
+
+public func ContainPlayer(int player)
+{
+	for (var i = 0; i < GetCrewCount(player); i++)
+	{
+		ContainCrew(GetCrew(player, i));
+	}
+}
+
+public func ContainCrew(object crew)
+{
+	var container = CreateObject(RelaunchContainerEx, crew->GetX() - GetX(), crew->GetY() - GetY());
+	container->PrepareRelaunch(crew);
+}
+
+
+public func ReleasePlayers(bool instant)
+{
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		ReleasePlayer(GetPlayerByIndex(i), instant);
+	}
+}
+
+public func ReleasePlayer(int player, bool instant)
+{
+	for (var i = 0; i < GetCrewCount(player); i++)
+	{
+		ReleaseCrew(GetCrew(player, i), instant);
+	}
+}
+
+public func ReleaseCrew(object crew, bool instant)
+{
+	var container = crew->Contained();
+	
+	if ((container != nil) && (container->GetID() == RelaunchContainerEx))
+	{
+		if (instant)
+		{
+			container->InstantRelaunch();
+		}
+		else
+		{
+			container->StartRelaunch(crew);
+		}
+	}
+}
+
+public func CanConfigureBots()
+{
+	return true;
+}
+
+
+protected func ChangeBotAmount(id menu_symbol, object player, int selection, int change)
+{
+	var amount = Abs(change);
+	
+	if (change > 0)
+	{
+		// create a new ai player
+		while(amount > 0)
+		{
+			amount--;
+			
+			var color = HSL(Random(16) * 16, RandomX(200, 255), RandomX(100, 150));
+			CreateScriptPlayer("$BotName$", color);
+		}
+	}
+	else
+	{
+		// eliminate the latest created ai players
+		for(var count = GetPlayerCount(C4PT_Script); count > 0 && amount > 0; count = GetPlayerCount(C4PT_Script))
+		{
+			amount--;
+			EliminatePlayer(GetPlayerByIndex(count - 1, C4PT_Script));
+		}
+	}
+
+	ScheduleCall(this, "MenuConfigureBots", 1, 0, GetID(), player, selection);
 }
