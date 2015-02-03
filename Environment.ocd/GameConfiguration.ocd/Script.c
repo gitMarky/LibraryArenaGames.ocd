@@ -23,6 +23,10 @@ local player_index;				// int: the player that configures the current round
 
 local configuration_finished;	// bool: true once the configuration is done
 
+local color_conflict = -6946816; // = RGB(150, 0, 0);
+local color_inactive = -4934476; // = RGB(180, 180, 180);
+local color_active = -1; // = RGB(255, 255, 255);
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -103,7 +107,7 @@ public func OnRoundReset(int round_number)
  
  @version 0.1.0
  */
-protected func OpenMainMenu()
+protected func OpenMainMenu(id dummy)
 {
 	var player = GetChoosingPlayer();
 	if (!player) return ScheduleCall(this, "OpenMainMenu", 1);
@@ -374,10 +378,6 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 	
 	var select = 0;
 	
-	var color_conflict = RGB(150, 0, 0);
-	var color_inactive = RGB(180, 180, 180);
-	var color_active = RGB(255, 255, 255);
-	
 	var keys = GetProperties(configuration_rules);
 	
 	for (var i = 0, check; i < GetLength(keys); i++)
@@ -465,27 +465,74 @@ protected func MenuConfigureTeams(id menu_symbol, object player, int selection)
 {
 	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureTeams$");
 	
-	for(var i = 0; i < GetPlayerCount(); i++)
-		AddMenuItem(Format("%s (%s)", GetTaggedPlayerName(GetPlayerByIndex(i)), GetTeamName(GetPlayerTeam(i))), Format("MenuSwitchTeam(Object(%d), %d)", player->ObjectNumber(), i), Rule_TeamAccount);
+	var item = 0;
+	
+	for (var i = 0; i < GetTeamCount(); i++)
+	{
+		var team = GetTeamByIndex(i);
+		var team_name = GetTeamName(team);
+		
+		for (var p = 0; p < GetTeamPlayerCount(team); p++)
+		{
+			var index = GetTeamPlayer(team, p);
+			
+			if (index >= 0)
+			{
+				player->AddMenuItem(Format("%s (%s)", GetTaggedPlayerName(index), team_name), Format("MenuSwitchTeam(Object(%d), %d)", player->ObjectNumber(), index), Rule_TeamAccount);
+				
+				if (selection != nil && index == selection)
+				{
+					player->SelectMenuItem(item);
+				}
+				
+				item++;
+			}
+		}
+	}
 
 	MenuAddItemReturn(player);
-
-	player->SelectMenuItem(selection);
 }
 
 
-protected func MenuConfigureBots(id menu_symbol, object player, int selection)
+protected func MenuConfigureBots(id menu_symbol, object player, int selection, bool block_interaction)
 {
 	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureBots$");
 
 	var number_bots = GetPlayerCount(C4PT_Script);
 	var number_players = GetPlayerCount();
+	
+	var command0, command1, command2, command3;
+	var caption0 = Format("$TxtPlayersBots$", number_bots, number_players);
+	var caption1 = "$MoreBots$";
+	var caption2 = "$LessBots$";
+	var caption3 = "$Finished$";
+	
 
-	player->AddMenuItem(Format("$TxtPlayersBots$", number_bots, number_players), Format("MenuConfigureBots(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol);
-	player->AddMenuItem("$MoreBots$", Format("ChangeBotAmount(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), Icon_Plus, nil, nil, "$MoreBots$");
-	player->AddMenuItem("$LessBots$", Format("ChangeBotAmount(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1), Icon_Minus, nil, nil, "$LessBots$");
-
-	MenuAddItemReturn(player);
+	if (block_interaction)
+	{
+		command0 = Format("MenuConfigureBots(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), 0);
+		command1 = Format("MenuConfigureBots(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), 1);
+		command2 = Format("MenuConfigureBots(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), 2);
+		command3 = Format("MenuConfigureBots(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), 3);
+		
+		caption0 = ColorizeString(caption0, color_inactive);
+		caption1 = ColorizeString(caption1, color_inactive);
+		caption2 = ColorizeString(caption2, color_inactive);
+		caption3 = ColorizeString(caption3, color_inactive);
+	}
+	else
+	{
+		command0 = Format("MenuConfigureBots(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0);
+		command1 = Format("ChangeBotAmount(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1);
+		command2 = Format("ChangeBotAmount(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1);
+		command3 = "OpenMainMenu()";
+	}
+	
+	player->AddMenuItem(caption0, command0, menu_symbol);
+	player->AddMenuItem(caption1, command1, Icon_Plus, nil, nil, "$MoreBots$");
+	player->AddMenuItem(caption2, command2, Icon_Minus, nil, nil, "$LessBots$");
+	player->AddMenuItem(caption3, command3, Icon_Ok, nil, nil, "$Finished$");
+	
 	player->SelectMenuItem(selection);
 }
 
@@ -534,12 +581,12 @@ private func MenuSetGoal(id goal)
 
 private func MenuAddItemReturn(object player)
 {
-	player->AddMenuItem("$Finished$", "OpenMainMenu", Icon_Ok, nil, nil, "$Finished$");
+	player->AddMenuItem("$Finished$", "OpenMainMenu()", Icon_Ok, nil, nil, "$Finished$");
 }
 
 private func MenuSwitchTeam(object player, int index)
 {
-	var player_nr = GetPlayerByIndex(index);
+	var player_nr = index; //GetPlayerByIndex(index);
 
 	var team = GetPlayerTeam(player_nr);
 	if(GetTeamName(GetTeamByIndex(team)))
@@ -625,10 +672,16 @@ public func CanConfigureBots()
 	return true;
 }
 
+public func CanConfigureSpawnPoints()
+{
+	return true;
+}
 
-protected func ChangeBotAmount(id menu_symbol, object player, int selection, int change)
+
+private func ChangeBotAmount(id menu_symbol, object player, int selection, int change)
 {
 	var amount = Abs(change);
+	var delay;
 	
 	if (change > 0)
 	{
@@ -640,6 +693,8 @@ protected func ChangeBotAmount(id menu_symbol, object player, int selection, int
 			var color = HSL(Random(16) * 16, RandomX(200, 255), RandomX(100, 150));
 			CreateScriptPlayer("$BotName$", color);
 		}
+		
+		delay = 3;
 	}
 	else
 	{
@@ -649,7 +704,12 @@ protected func ChangeBotAmount(id menu_symbol, object player, int selection, int
 			amount--;
 			EliminatePlayer(GetPlayerByIndex(count - 1, C4PT_Script));
 		}
+		
+		delay = 80;
 	}
 
-	ScheduleCall(this, "MenuConfigureBots", 1, 0, GetID(), player, selection);
+	// opens the menu right away, but updates the number
+	// as soon as a bot joins (waiting_for_bot_to_join)
+	MenuConfigureBots(GetID(), player, selection, true);
+	ScheduleCall(this, "MenuConfigureBots", delay, 0, GetID(), player, selection);
 }
