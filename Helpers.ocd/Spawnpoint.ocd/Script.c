@@ -240,7 +240,7 @@ public func SetID(definition)
 {
 	ProhibitedWhileSpawning();
 	
-	spawn_id_parameter = definition;
+	spawn_id_parameter = Format("%i", definition);
 
 	if (GetType(definition) == C4V_Def)
 	{
@@ -330,7 +330,7 @@ private func StopSpawning()
 	var effect = GetEffect(SPAWNPOINT_Effect, this);
 	if (effect != nil)
 	{
-		RemoveEffect(effect, this);
+		RemoveEffect(nil, this, effect);
 	}
 }
 

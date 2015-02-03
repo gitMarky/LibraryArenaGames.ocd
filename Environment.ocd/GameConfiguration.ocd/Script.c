@@ -315,7 +315,7 @@ protected func PreconficureRules()
 	
 	for (var rule_id in preconfigured_rules)
 	{
-		var prop = GetProperty(Format("%v", rule_id), preconfigured_rules);
+		var prop = GetProperty(Format("%v", rule_id), configuration_rules);
 		if (prop != nil)
 		{
 			prop.is_active = true;
@@ -478,8 +478,6 @@ protected func MenuConfigureBots(id menu_symbol, object player, int selection)
 {
 	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureBots$");
 
-	//if(!aAI[0]) aAI[0] = GetPlayerCount(C4PT_User);
-
 	var number_bots = GetPlayerCount(C4PT_Script);
 	var number_players = GetPlayerCount();
 
@@ -512,10 +510,7 @@ protected func CreateGoal(id goal_id)
 
 protected func ChangeWinScore(id menu_symbol, object player, int selection, int change)
 {
-	// TODO: actually change something - this requires configurable goals...
 	configured_goal->~DoWinScore(change);
-	
-	// TODO: sound
 	
 	MenuConfigureGoal(menu_symbol, player, selection);
 }
@@ -558,7 +553,7 @@ private func MenuSwitchTeam(object player, int index)
 
 	SetPlayerTeam(player_nr, team);
 
-	MenuConfigureTeams(player, index);
+	MenuConfigureTeams(GetID(), player, index);
 }
 
 public func InitializePlayer(int player, int x, int y, object base, int team, id extra_data)

@@ -3,6 +3,16 @@ Description=The first player may choose the rules at the beginning and configure
 
 MenuCaption=Configuration
 TxtConfigureGoals=Configure goal
+TxtConfigureTeams=Configure teams
+TxtConfigureBots=Configure bots
+TxtConfigureRules=Configure rules
+TxtPlayersBots=Bots/Players total: %d/%d
+MoreWinScore=Increase score
+LessWinScore=Decrease score
+MoreBots=One bot more
+LessBots=One bot less
+
+BotName=Bot
 
 ChoosingPlayer=%s configures the game, please be patient...
 Choosing=%s configures the rules, please be patient...
@@ -15,14 +25,10 @@ RuleInfo=Configure rules
 AIInfo=Option to configure AI players
 Finished=Finished
 
-MoreWinScore=Increase score
-LessWinScore=Decrease score
 
 MoreDarkness=Darker
 LessDarkness=Brighter
 
-OneAIMore=One bot more
-OneAILess=One bot less
 NewTeam=New Team
 FairTeams=Fair Teams
 FairTeamsInfo=Fair match

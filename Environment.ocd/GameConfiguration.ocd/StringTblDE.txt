@@ -2,7 +2,17 @@ Name=Spielregelwahl
 Description=Wenn aktiviert kann der erste Spieler zu Beginn einer Runde die zu benutzenden Spielregeln einstellen und das Spielziel konfigurieren.
 
 MenuCaption=Konfiguration
-TxtConfigureGoals=Spielziel konfigurieren
+TxtConfigureGoals=Spielziel
+TxtConfigureTeams=Teams
+TxtConfigureBots=Bots
+TxtConfigureRules=Spielregeln
+TxtPlayersBots=Bots/Spieler gesamt: %d/%d
+MoreWinScore=Punktzahl erhöhen
+LessWinScore=Punktzahl senken
+MoreBots=Ein Bot mehr
+LessBots=Ein Bot weniger
+
+BotName=Bot
 
 
 ChoosingPlayer=%s wählt jetzt die Spielkonfiguration, bitte noch etwas Geduld
@@ -16,14 +26,10 @@ RuleInfo=Spielregel einstellen
 AIInfo=Diverse Einstellungen für KIs
 Finished=Fertig
 
-MoreWinScore=Punktzahl erhöhen
-LessWinScore=Punktzahl senken
 
 MoreDarkness=Dunkelheit erhöhen
 LessDarkness=Dunkelheit senken
 
-OneAIMore=Ein Bot mehr
-OneAILess=Ein Bot weniger
 NewTeam=Neues Team
 FairTeams=Faire Teams
 FairTeamsInfo=Alle Teams auffüllen, so dass überall die gleiche Anzahl Clonks vorhanden ist
