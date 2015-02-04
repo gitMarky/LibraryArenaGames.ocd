@@ -19,10 +19,10 @@ protected func Initialize()
 	// Chests with weapons.
 	var template_flint = CreateSpawnPoint(0, 0)->SetRespawnTimer(36*5)->SpawnItem(Firestone);
 
-	CopySpawnPoint(template_flint, 230, 224)->SpawnItem("a");
-	CopySpawnPoint(template_flint, 500,  64)->SpawnItem("b");
-	CopySpawnPoint(template_flint, 124, 128)->SpawnItem("c");
-	CopySpawnPoint(template_flint, 340, 440)->SpawnItem("d");
+	CopySpawnPoint(template_flint, 230, 224)->SpawnItem("a")->SetDescription("$SpawnCenter$");
+	CopySpawnPoint(template_flint, 500,  64)->SpawnItem("b")->SetDescription("$SpawnTopRight$");
+	CopySpawnPoint(template_flint, 124, 128)->SpawnItem("c")->SetDescription("$SpawnNoIdea$");
+	CopySpawnPoint(template_flint, 340, 440)->SpawnItem("d")->SetDescription("$SpawnNearPit$");
 	
 	template_flint->RemoveObject();
 	

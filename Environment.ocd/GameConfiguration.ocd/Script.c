@@ -4,6 +4,9 @@
  @version 0.1.0
  */
 
+static const GAMECONFIG_Proplist_Items = "items";
+static const GAMECONFIG_Proplist_Def = "def";
+static const GAMECONFIG_Proplist_Desc = "description";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -21,8 +24,7 @@ local configuration_rules;		// proplist, consists of:
 local configured_items;			// proplist, structure not defined yet.
                                 // * name - string: a descriptive name for the configuration
                                 // * icon - id: an icon to choose in the menu
-                                // * spawnpoints - array: spawn point configurations
-                                // * equipment - array: starting equipment configurations
+                                // * items - proplist: the item configurations
                                 
 // spawn point configurations:
 // name - string: parameter for the spawn point
@@ -34,6 +36,8 @@ local configured_goal;			// object: the goal that has been created
 local player_index;				// int: the player that configures the current round
 
 local configuration_finished;	// bool: true once the configuration is done
+
+local spawnpoint_keys; 				// array: contains spawnpoint keys.
 
 local color_conflict = -6946816; // = RGB(150, 0, 0);
 local color_inactive = -4934476; // = RGB(180, 180, 180);
@@ -68,7 +72,7 @@ protected func Initialize()
 {
 	SetPosition();
 	configuration_rules = {};
-	configured_items = { name = "default", icon = GetID(), spawnpoints = [], equipment = []};
+	configured_items = { name = "default", icon = GetID(), items = {}};
 	player_index = 0;
 	
 	// wait for other rules, etc. to be initialized
@@ -78,9 +82,11 @@ protected func Initialize()
 protected func PostInitialize()
 {
 	ScanRules();
-	PreconficureRules();
+	PreconfigureRules();
 	
-	GameCallEx("OnConfigurationStart");
+	ScanSpawnPoints();
+	
+	GameCallEx("OnConfigurationStart", this);
 	
 	if (RoundManager() == nil)
 	{
@@ -297,7 +303,7 @@ protected func ConfigurationFinished()
 	CreateRules();
 	ReleasePlayers(true);
 	
-	GameCallEx("OnConfigurationFinished");
+	GameCallEx("OnConfigurationEnd", this);
 	
 	RoundManager()->RemoveRoundStartBlocker(this);
 }
@@ -324,7 +330,41 @@ protected func ScanRules()
 	}
 }
 
-protected func PreconficureRules()
+protected func ScanSpawnPoints()
+{
+	spawnpoint_keys = [];
+	var points = FindObjects(Find_Func("IsSpawnPoint"));
+	
+	if (this->~GetDefaultItemConfigurations())
+	{
+		configured_items = this->~GetDefaultItemConfigurations()[0];
+	}
+	
+	for (var spawnpoint in points)
+	{
+		var key = spawnpoint->GetIDParameter();
+		
+		if (GetType(key) == C4V_String)
+		{
+			if (IsValueInArray(spawnpoint_keys, key)) continue;
+			
+			PushFront(spawnpoint_keys, key);
+			
+			var current_config = GetItemConfiguration(key);
+	
+			if (current_config == nil)
+			{
+				current_config = {};
+			}
+			
+			SetProperty(GAMECONFIG_Proplist_Desc, spawnpoint->~GetDescription(), current_config);
+			SetItemConfiguration(key, current_config);
+		}
+	}
+
+}
+
+protected func PreconfigureRules()
 {
 	var preconfigured_rules = this->~GetDefaultRules();
 	if (preconfigured_rules == nil)
@@ -606,28 +646,17 @@ protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selec
 	CreateConfigurationMenu(player, GetID(), "$TxtConfigureSpecificItems$");
 
 	// spawn points
-	
-	var strings = [];
-	var spawnpoints = FindObjects(Find_Func("IsSpawnPoint"));
-	
-	for (var spawnpoint in spawnpoints)
-	{
-		var par = spawnpoint->GetIDParameter();
 		
-		if (GetType(par) == C4V_String)
-		{
-			if (IsValueInArray(strings, par)) continue;
-			
-			PushFront(strings, par);
-		}
-	}
-	
 	var selection_counter = 0;
 	
-	for (var type in strings)
+	for (var type in spawnpoint_keys)
 	{
+		var current_config = GetItemConfiguration(type);
+		var current_item = GetProperty(GAMECONFIG_Proplist_Def, current_config);
+		var description = GetProperty(GAMECONFIG_Proplist_Desc, current_config);
+	
 		var command = Format("MenuConfigureItemSlot(%i, Object(%d), \"%s\", %d, true, 0)", menu_symbol, player->ObjectNumber(), type, selection_counter++);
-		player->AddMenuItem(type, command, GetID());
+		player->AddMenuItem(description, command, current_item);
 	}
 	
 	// equipment
@@ -640,6 +669,8 @@ protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selec
 	{
 		MenuAddItemReturn(player);
 	}
+	
+	player->SelectMenuItem(selection);
 }
 
 protected func ChangeRuleConf(id menu_symbol, object player, int i)
@@ -824,9 +855,21 @@ public func IsGameConfiguration()
 	return true;
 }
 
-public func GetItemConfiguration()
+public func GetItemConfiguration(string key, proplist configuration)
 {
-	return configured_items;
+	if (configuration == nil) configuration = configured_items;
+	
+	return GetProperty(key, GetProperty(GAMECONFIG_Proplist_Items, configuration));
+}
+
+public func GetSpawnPointItem(string key)
+{
+	return GetProperty(GAMECONFIG_Proplist_Def, GetProperty(key, GetProperty(GAMECONFIG_Proplist_Items, configured_items)));
+}
+
+public func SetItemConfiguration(string key, proplist value)
+{
+	return SetProperty(key, value, GetProperty(GAMECONFIG_Proplist_Items, configured_items));
 }
 
 private func ConfigureItemSet(id menu_symbol, object player, int selection)
@@ -843,14 +886,17 @@ private func ConfigureItemSet(id menu_symbol, object player, int selection)
 
 protected func MenuConfigureItemSlot(id menu_symbol, object player, string type, int selection, bool configure_spawnpoint, int sel)
 {
-	CreateConfigurationMenu(player, menu_symbol, Format("$TxtConfigureSlot$", type));
+	var current_config = GetItemConfiguration(type);
+	var current_item = GetProperty(GAMECONFIG_Proplist_Def, current_config);
+	var description = GetProperty(GAMECONFIG_Proplist_Desc, current_config);
+	CreateConfigurationMenu(player, menu_symbol, Format("$TxtConfigureSlot$", description));
 	
 	var items = this->~GetConfigurableItems();
 	
 	for (var i = 0; i < GetLength(items); i++)
 	{
 		var item = items[i];
-		var selected = false;
+		var selected = item == current_item;
 		
 		var name = item->GetName();
 		
@@ -861,7 +907,7 @@ protected func MenuConfigureItemSlot(id menu_symbol, object player, string type,
 		else
 		{
 			name = ColorizeString(name, color_inactive);
-		}
+		}		
 		
 		var command = Format("ConfigureItemSlot(%i, Object(%d), \"%s\", %d, %v, %i, %d)", menu_symbol, player->ObjectNumber(), type, selection, configure_spawnpoint, item, i);
 		
@@ -869,9 +915,21 @@ protected func MenuConfigureItemSlot(id menu_symbol, object player, string type,
 	}
 	
 	player->AddMenuItem("$Finished$", Format("MenuConfigureItemsCustom(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), selection), Icon_Ok, nil, nil, "$Finished$");
+
+	player->SelectMenuItem(sel);
 }
 
 protected func ConfigureItemSlot(id menu_symbol, object player, string type, int selection, bool configure_spawnpoint, id item, int index)
 {
+	var current_config = GetItemConfiguration(type);
+	
+	if (current_config == nil)
+	{
+		current_config = {};
+	}
+	
+	SetProperty(GAMECONFIG_Proplist_Def, item, current_config);
+	SetItemConfiguration(type, current_config);
+
 	MenuConfigureItemSlot(menu_symbol, player, type, selection, configure_spawnpoint, index);
 }

@@ -94,6 +94,7 @@ local spawn_id_parameter;	// id / string: the parameter that was used for config
                             // spawn this id, or if it is a string, try accessing the id from a game manager object (does not exist yet)
 local respawn_if_removed;	// bool: per default the respawn countdown begins if the item is collected
 							//       if this is set to true, then it begins if the item does not exist anymore
+local spawn_description;	// string: describes the spawnpoint type for the configuration menu.
                             
 local draw_transformation;  // proplist: deco objects have this transformation
 local is_active;			// bool: is it active? yes or no
@@ -103,7 +104,6 @@ local spawn_timer;			// array map: player index to respawn countdown
 local spawn_globally;		// bool: spawn objects for every player individually?
 							//       true - there is only one object - first come, first serve
 							//       false - every player can collect one object
-
 
 /**
  Marks the object as a spawn point.
@@ -255,7 +255,7 @@ public func SetID(definition)
 	else if (GetType(definition) == C4V_String)
 	{
 		Log("This is not supported yet, but it will be in the future.");
-		// TODO: add functionality, update docu :)
+		// TODO: update docu :)
 	}
 	else
 	{
@@ -306,6 +306,7 @@ public func SetRespawnTimer(int timer)
  @par transformation Passing {@c nil} disables custom transformations for the spawned object.
                      Otherwise, pass a proplist that contains data according to the format
                      specified here
+ @return object Returns the spawn point object, so that further function calls can be issued.
  @version 0.1.0
  */
 // TODO: specify data format, update docu
@@ -313,6 +314,42 @@ public func SetTransformation(proplist transformation)
 {
 	draw_transformation = transformation;
 	return this;
+}
+
+/**
+ Sets a description string for the spawn point. This will be displayed in the game configuration
+ menu when you reconfigure the spawnpoint.
+ @par description This is the description. It is best to use a localized string.
+ @return object Returns the spawn point object, so that further function calls can be issued.
+ @related {@link Environment_Configuration#index}.
+ @version 0.1.0
+ */
+public func SetDescription(string description)
+{
+	ProhibitedWhileSpawning();
+
+	if (description == nil)
+	{
+		FatalError("You have to specify a parameter that is not nil");
+	}
+	if (GetType(spawn_id_parameter) != C4V_String)
+	{
+		FatalError("This function should only be used if SetID() was configured with a string");
+	}
+
+	spawn_description = description;
+	return this;
+}
+
+/**
+ Gets a description of the spawn point type, if it is configurable in the game configuration.
+ @related {@link SpawnPoint#SetDescription}
+ @return string The description.
+ @version 0.1.0
+ */
+public func GetDescription()
+{
+	return spawn_description;
 }
 
 /**
@@ -555,6 +592,15 @@ private func DoCollectObject(object item, int index, object clonk)
 		}
 		
 		SetGraphics(nil, this->GetID(), GetOverlay(index), GFXOV_MODE_Base);
+	}
+}
+
+protected func OnConfigurationEnd(object configuration)
+{
+	if (GetType(spawn_id_parameter) == C4V_String && configuration != nil)
+	{
+		spawn_id = configuration->GetSpawnPointItem(spawn_id_parameter);
+		Log("Fetched configuration %v", spawn_id); // TODO: remove
 	}
 }
 
