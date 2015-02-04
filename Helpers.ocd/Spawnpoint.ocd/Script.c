@@ -54,11 +54,12 @@ global func CreateSpawnPoint(int x, int y)
  @par spawn_point This has to be a spawn point object.
  @par x The x coordinate.
  @par y The y coordinate.
+ @par mirrored If {@c true} the object will be created at {@c LandscapeWidth() - x} instead of {@c x}.]
  @return object Returns the spawn point object, so that further function calls can be issued.
  @version 0.1.0
  */
 // TODO: code example
-global func CopySpawnPoint(object spawn_point, int x, int y)
+global func CopySpawnPoint(object spawn_point, int x, int y, bool mirrored)
 {
 	if (!this && (x == nil || y == nil))
 	{
@@ -71,6 +72,11 @@ global func CopySpawnPoint(object spawn_point, int x, int y)
 	else if (!(spawn_point->~IsSpawnPoint()))
 	{
 		FatalError("spawn_point has to be return true in IsSpawnPoint()");
+	}
+	
+	if (mirrored)
+	{
+		x = LandscapeWidth() - x;
 	}
 	
 	var point = CreateObject(spawn_point->GetID(), x, y, NO_OWNER);
@@ -240,7 +246,7 @@ public func SetID(definition)
 {
 	ProhibitedWhileSpawning();
 	
-	spawn_id_parameter = Format("%i", definition);
+	spawn_id_parameter = definition;
 
 	if (GetType(definition) == C4V_Def)
 	{
@@ -248,7 +254,7 @@ public func SetID(definition)
 	}
 	else if (GetType(definition) == C4V_String)
 	{
-		FatalError("This is not supported yet, but it will be in the future.");
+		Log("This is not supported yet, but it will be in the future.");
 		// TODO: add functionality, update docu :)
 	}
 	else
@@ -587,4 +593,14 @@ protected func GetOverlay(int index)
 protected func ResetTimer(int index)
 {
 	spawn_timer[index] = timer_interval;
+}
+
+/**
+ Gets the type of object that is spawned by the spawn point.
+ @return The parameter that was used in {@link SpawnPoint#SetID} to configure the spawned object.
+ @version 0.1.0
+ */
+protected func GetIDParameter()
+{
+	return spawn_id_parameter;
 }

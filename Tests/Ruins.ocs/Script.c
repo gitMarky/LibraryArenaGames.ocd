@@ -9,8 +9,6 @@ static const RUINS_RAIN_PERIOD_TIME=3200;
 
 protected func Initialize()
 {
-	// Goal.
-	CreateObject(Goal_LastManStanding, 0, 0, NO_OWNER);
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
 	
@@ -21,10 +19,10 @@ protected func Initialize()
 	// Chests with weapons.
 	var template_flint = CreateSpawnPoint(0, 0)->SetRespawnTimer(36*5)->SpawnItem(Firestone);
 
-	CopySpawnPoint(template_flint, 230, 224);
-	CopySpawnPoint(template_flint, 500,  64);
-	CopySpawnPoint(template_flint, 124, 128);
-	CopySpawnPoint(template_flint, 340, 440);
+	CopySpawnPoint(template_flint, 230, 224)->SpawnItem("a");
+	CopySpawnPoint(template_flint, 500,  64)->SpawnItem("b");
+	CopySpawnPoint(template_flint, 124, 128)->SpawnItem("c");
+	CopySpawnPoint(template_flint, 340, 440)->SpawnItem("d");
 	
 	template_flint->RemoveObject();
 	
@@ -50,10 +48,10 @@ protected func Initialize()
 	template_grass->RemoveObject();
 
 	
-	for (var spawnpoint in FindObjects(Find_Func("IsSpawnPoint")))
-	{
-		spawnpoint->OnRoundStart();
-	}
+	//for (var spawnpoint in FindObjects(Find_Func("IsSpawnPoint")))
+	//{
+	//	spawnpoint->OnRoundStart();
+	//}
 	
 	// Ropeladders to get to the upper part.
 	//CreateObject(Ropeladder, 380, 112, NO_OWNER)->Unroll(-1,0,19);
@@ -75,7 +73,8 @@ protected func Initialize()
 		edge->PermaEdge();
 	}
 	
-	CreateObject(Environment_RoundManager, 1, 1, NO_OWNER);
+	CreateObject(Environment_RoundManager);
+	CreateObject(Environment_Configuration);
 	CreateObject(RoundTester, 100, 100, NO_OWNER);
 	
 	AddEffect("DryTime",nil,100,2);

@@ -18,6 +18,18 @@ local configuration_rules;		// proplist, consists of:
 								// * is_active - bool: true, if the rule is configured
 								// * symbol - a symbol dummy for the menus
 
+local configured_items;			// proplist, structure not defined yet.
+                                // * name - string: a descriptive name for the configuration
+                                // * icon - id: an icon to choose in the menu
+                                // * spawnpoints - array: spawn point configurations
+                                // * equipment - array: starting equipment configurations
+                                
+// spawn point configurations:
+// name - string: parameter for the spawn point
+// description - string: spawn point description, will be displayed in the menu
+// ??? - reference which slot to take from a default configuration set?
+// item - id: this item will be spawned
+
 local configured_goal;			// object: the goal that has been created
 local player_index;				// int: the player that configures the current round
 
@@ -56,6 +68,7 @@ protected func Initialize()
 {
 	SetPosition();
 	configuration_rules = {};
+	configured_items = { name = "default", icon = GetID(), spawnpoints = [], equipment = []};
 	player_index = 0;
 	
 	// wait for other rules, etc. to be initialized
@@ -150,6 +163,7 @@ protected func CreateMainMenu(object player)
 	MainMenuAddItemRules(player);
 	MainMenuAddItemTeams(player);
 	MainMenuAddItemBots(player);
+	MainMenuAddItemItems(player);
 	
 	this->~MainMenuAddItemCustom(player);
 
@@ -359,7 +373,7 @@ protected func MainMenuAddItemRules(object player)
 protected func MainMenuAddItemTeams(object player)
 {
 	// do nothing if the goal is not a team goal
-	if (configured_goal != nil && !(configured_goal->IsTeamGoal())) return;
+	if (configured_goal != nil && !(configured_goal->~IsTeamGoal())) return;
 	
 	player->AddMenuItem("$TxtConfigureTeams$", "MenuConfigureTeams", GetID(), nil, player);
 }
@@ -369,6 +383,14 @@ protected func MainMenuAddItemBots(object player)
 	if (CanConfigureBots())
 	{
 		player->AddMenuItem("$TxtConfigureBots$", "MenuConfigureBots", GetID(), nil, player);
+	}
+}
+
+protected func MainMenuAddItemItems(object player)
+{
+	if (CanConfigureSpawnPoints())
+	{
+		player->AddMenuItem("$TxtConfigureItems$", "MenuConfigureItems", GetID(), nil, player);
 	}
 }
 
@@ -536,6 +558,90 @@ protected func MenuConfigureBots(id menu_symbol, object player, int selection, b
 	player->SelectMenuItem(selection);
 }
 
+protected func MenuConfigureItems(id menu_symbol, object player, int selection)
+{	
+	var configurations = this->~GetDefaultItemConfigurations();
+	if (configurations != nil)
+	{
+		CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureItems$");
+
+		for (var i = 0; i < GetLength(configurations); i++)
+		{
+			var config = configurations[i];
+			if (config == nil)
+			{
+				Log("this is seriously wrong: %d", i);
+				continue;
+			}
+			
+			var caption = config.name;
+			
+			if (config == configured_items)
+			{
+				caption = ColorizeString(caption, color_active);
+			}
+			else
+			{
+				caption = ColorizeString(caption, color_inactive);
+			}
+
+			player->AddMenuItem(caption, Format("ConfigureItemSet(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), i), config.icon);
+		}
+		
+		player->AddMenuItem("$TxtConfigureSpecificItems$", Format("MenuConfigureItemsCustom(%i, Object(%d), 0, true)", menu_symbol, player->ObjectNumber()), menu_symbol);	
+
+		MenuAddItemReturn(player);
+		
+		player->SelectMenuItem(selection);
+	}
+	else
+	{
+		// open the custom menu right away
+		MenuConfigureItemsCustom(menu_symbol, player);
+	}
+}
+
+protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selection, bool has_default_configurations)
+{
+	CreateConfigurationMenu(player, GetID(), "$TxtConfigureSpecificItems$");
+
+	// spawn points
+	
+	var strings = [];
+	var spawnpoints = FindObjects(Find_Func("IsSpawnPoint"));
+	
+	for (var spawnpoint in spawnpoints)
+	{
+		var par = spawnpoint->GetIDParameter();
+		
+		if (GetType(par) == C4V_String)
+		{
+			if (IsValueInArray(strings, par)) continue;
+			
+			PushFront(strings, par);
+		}
+	}
+	
+	var selection_counter = 0;
+	
+	for (var type in strings)
+	{
+		var command = Format("MenuConfigureItemSlot(%i, Object(%d), \"%s\", %d, true, 0)", menu_symbol, player->ObjectNumber(), type, selection_counter++);
+		player->AddMenuItem(type, command, GetID());
+	}
+	
+	// equipment
+
+	if (has_default_configurations)
+	{
+		player->AddMenuItem("$Finished$", "MenuConfigureItems", Icon_Ok, nil, player, "$Finished$");
+	}
+	else
+	{
+		MenuAddItemReturn(player);
+	}
+}
+
 protected func ChangeRuleConf(id menu_symbol, object player, int i)
 {
 	var rule_info = GetProperty(GetProperties(configuration_rules)[i], configuration_rules);
@@ -633,7 +739,6 @@ public func ContainCrew(object crew)
 	container->PrepareRelaunch(crew);
 }
 
-
 public func ReleasePlayers(bool instant)
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
@@ -712,4 +817,61 @@ private func ChangeBotAmount(id menu_symbol, object player, int selection, int c
 	// as soon as a bot joins (waiting_for_bot_to_join)
 	MenuConfigureBots(GetID(), player, selection, true);
 	ScheduleCall(this, "MenuConfigureBots", delay, 0, GetID(), player, selection);
+}
+
+public func IsGameConfiguration()
+{
+	return true;
+}
+
+public func GetItemConfiguration()
+{
+	return configured_items;
+}
+
+private func ConfigureItemSet(id menu_symbol, object player, int selection)
+{
+	var configurations = this->~GetDefaultItemConfigurations();
+	if (configurations != nil)
+	{
+		configured_items = configurations[selection];
+		Log("Set configuration to %s", configured_items.name);
+	}
+	
+	MenuConfigureItems(GetID(), player, selection);
+}
+
+protected func MenuConfigureItemSlot(id menu_symbol, object player, string type, int selection, bool configure_spawnpoint, int sel)
+{
+	CreateConfigurationMenu(player, menu_symbol, Format("$TxtConfigureSlot$", type));
+	
+	var items = this->~GetConfigurableItems();
+	
+	for (var i = 0; i < GetLength(items); i++)
+	{
+		var item = items[i];
+		var selected = false;
+		
+		var name = item->GetName();
+		
+		if (selected)
+		{
+			name = ColorizeString(name, color_active);
+		}
+		else
+		{
+			name = ColorizeString(name, color_inactive);
+		}
+		
+		var command = Format("ConfigureItemSlot(%i, Object(%d), \"%s\", %d, %v, %i, %d)", menu_symbol, player->ObjectNumber(), type, selection, configure_spawnpoint, item, i);
+		
+		player->AddMenuItem(name, command, item);
+	}
+	
+	player->AddMenuItem("$Finished$", Format("MenuConfigureItemsCustom(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), selection), Icon_Ok, nil, nil, "$Finished$");
+}
+
+protected func ConfigureItemSlot(id menu_symbol, object player, string type, int selection, bool configure_spawnpoint, id item, int index)
+{
+	MenuConfigureItemSlot(menu_symbol, player, type, selection, configure_spawnpoint, index);
 }
