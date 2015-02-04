@@ -19,11 +19,11 @@ protected func GetAvailableGoals()
 protected func GetDefaultItemConfigurations()
 {
 	return [
-	{ name = "Default", icon = Environment_Configuration, items = { a = { def=Firestone },
-																	b = { def=Firestone },
-																	c = { def=Firestone },
-																	d = { def=Firestone }
-																	}},
+	{ keys = "default", name = "Default", icon = Environment_Configuration, items = { a = { def=Firestone },
+																	                  b = { def=Firestone },
+																					  c = { def=Firestone },
+																					  d = { def=Firestone }
+																					}},
 	];
 }
 

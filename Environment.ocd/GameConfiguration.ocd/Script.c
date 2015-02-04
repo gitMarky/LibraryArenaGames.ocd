@@ -22,6 +22,7 @@ local configuration_rules;		// proplist, consists of:
 								// * symbol - a symbol dummy for the menus
 
 local configured_items;			// proplist, structure not defined yet.
+								// * key - string: this identifies the 
                                 // * name - string: a descriptive name for the configuration
                                 // * icon - id: an icon to choose in the menu
                                 // * items - proplist: the item configurations
@@ -616,7 +617,7 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 			
 			var caption = config.name;
 			
-			if (config == configured_items)
+			if (config.key == configured_items.key)
 			{
 				caption = ColorizeString(caption, color_active);
 			}
@@ -877,8 +878,25 @@ private func ConfigureItemSet(id menu_symbol, object player, int selection)
 	var configurations = this->~GetDefaultItemConfigurations();
 	if (configurations != nil)
 	{
-		configured_items = configurations[selection];
+		var configuration = configurations[selection];
 		Log("Set configuration to %s", configured_items.name);
+		
+		configured_items.key = configuration.key;
+		configured_items.name = configuration.name;
+		configured_items.icon = configuration.items;
+		
+		for (var key in spawnpoint_keys)
+		{
+			var update = GetItemConfiguration(key);
+			var source = GetItemConfiguration(key, configuration);
+		
+			for (var prop in GetProperties(source))
+			{
+				SetProperty(prop, GetProperty(prop, source), update);
+			}
+		
+			SetItemConfiguration(key, update);
+		}
 	}
 	
 	MenuConfigureItems(GetID(), player, selection);
