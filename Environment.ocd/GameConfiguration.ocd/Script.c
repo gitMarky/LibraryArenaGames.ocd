@@ -14,6 +14,7 @@ static const GAMECONFIG_Icon_Rules = Icon_Rules;
 static const GAMECONFIG_Icon_Teams = Icon_Teams;
 static const GAMECONFIG_Icon_Bots = Icon_Bots;
 static const GAMECONFIG_Icon_Items = Icon_Items;
+static const GAMECONFIG_Icon_ItemsCustom = Icon_Items;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -457,7 +458,7 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 	var configurations = this->~GetDefaultItemConfigurations();
 	if (configurations != nil)
 	{
-		CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureItems$");
+		CreateConfigurationMenu(player, GAMECONFIG_Icon_Items, "$TxtConfigureItems$");
 
 		for (var i = 0; i < GetLength(configurations); i++)
 		{
@@ -493,10 +494,10 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 				caption = ColorizeString(caption, color_inactive);
 			}
 
-			player->AddMenuItem(caption, Format("ConfigureItemSet(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), i), config.icon);
+			player->AddMenuItem(caption, Format("ConfigureItemSet(%i, Object(%d), %d)", config.icon, player->ObjectNumber(), i), config.icon);
 		}
 		
-		player->AddMenuItem("$TxtConfigureSpecificItems$", Format("MenuConfigureItemsCustom(%i, Object(%d), 0, true)", menu_symbol, player->ObjectNumber()), menu_symbol);	
+		player->AddMenuItem("$TxtConfigureSpecificItems$", Format("MenuConfigureItemsCustom(%i, Object(%d), 0, true)", GAMECONFIG_Icon_ItemsCustom, player->ObjectNumber()), GAMECONFIG_Icon_ItemsCustom);	
 
 		MenuAddItemReturn(player);
 		
