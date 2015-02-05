@@ -172,9 +172,9 @@ public func InitializePlayer(int player, int x, int y, object base, int team, id
 
 /**
  Opens the configuration menu in the choosing player and closes menus in other players.
- Calls {@link Environment_Configuration#CreateMainMenu} and has a callback {@c OnOpenMainMenu()}
+ Calls {@link Environment_Configuration#CreateMainMenu}.
  for custom effects.
- 
+ @note Has a callback {@c OnOpenMainMenu()}.
  @version 0.1.0
  */
 protected func OpenMainMenu(id dummy)
@@ -350,12 +350,15 @@ protected func MainMenuAddItemFinishConfiguration(object player)
 /**
  Opens a menu for choosing goals. Has a callback {@c MenuChooseGoalCustomEntries(object player)} for adding further options.
  
+ @note Has a callback {@c OnMenuChooseGoal()}.
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @version 0.1.0
  */
 protected func MenuChooseGoal(id menu_symbol, object player)
 {
+	this->~OnMenuChooseGoal();
+
 	//var player = GetChoosingPlayer();
 	var goals = this->~GetAvailableGoals();
 	if (!player || !goals) return ScheduleCall(this, "OpenMainMenu", 1);
@@ -372,7 +375,7 @@ protected func MenuChooseGoal(id menu_symbol, object player)
 
 /**
  Opens a menu for adding and removing bots.
-
+ @note Has a callback {@c OnMenuConfigureBots()}.
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par selection This option will be selected when the menu is open. First option is 0.
@@ -382,6 +385,8 @@ protected func MenuChooseGoal(id menu_symbol, object player)
  */
 protected func MenuConfigureBots(id menu_symbol, object player, int selection, bool block_interaction)
 {
+	this->~OnMenuConfigureBots();
+
 	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureBots$");
 
 	var number_bots = GetPlayerCount(C4PT_Script);
@@ -425,6 +430,7 @@ protected func MenuConfigureBots(id menu_symbol, object player, int selection, b
 /**
  Opens a menu for changing the win score of goals.
  
+ @note Has a callback {@c OnMenuConfigureGoal()}.
  @par player The menu is displayed in this object.
  @par menu_symbol The menu has this icon. This should be the id of the goal.
  @par selection This entry will be selected. Makes choosing the same option several times a lot more easy.
@@ -432,6 +438,8 @@ protected func MenuConfigureBots(id menu_symbol, object player, int selection, b
  */
 protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
 {
+	this->~OnMenuConfigureGoal();
+
 	CreateConfigurationMenu(player, menu_symbol, menu_symbol->GetName());
 	
 	player->AddMenuItem(" ", Format("MenuConfigureGoal(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol, configured_goal->~GetWinScore());
@@ -448,6 +456,7 @@ protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
  available as defined by the callback {@c GetDefaultItemConfigurations()}. This should
  return an array of configurations.
 
+ @note Has a callback {@c OnMenuConfigureItems()}.
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par selection This option will be selected when the menu is open. First option is 0.
@@ -455,6 +464,8 @@ protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
  */
 protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 {	
+	this->~OnMenuConfigureItems();
+
 	var configurations = this->~GetDefaultItemConfigurations();
 	if (configurations != nil)
 	{
@@ -514,6 +525,7 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
  Displays all configurable spawn points in the map so that their spawned item can be modified.
  @note A spawnpoint has to be configured with a string in {@link SpawnPoint#SetID} for it to be recognized
        as configurable. You should provide a localized description string with {@link SpawnPoint#SetDescription}.
+       Has a callback {@c OnMenuConfigureItemsCustom()}.
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par selection This option will be selected when the menu is open. First option is 0.
@@ -522,6 +534,8 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
  */
 protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selection, bool has_default_configurations)
 {
+	this->~OnMenuConfigureItemsCustom();
+
 	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureSpecificItems$");
 
 	// spawn points
@@ -556,6 +570,7 @@ protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selec
  Configures a spawn point or equipment from a list of available items. These are specified by the callback
  {@c GetConfigurableItems()} which should return an array of IDs.
  
+ @note Has a callback {@c OnMenuConfigureItemSlot()}.
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par key This is the value configured in {@link SpawnPoint#SetID} of the spawn point you want to configure.
@@ -566,6 +581,8 @@ protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selec
  */
 protected func MenuConfigureItemSlot(id menu_symbol, object player, string key, int index, bool configure_spawnpoint, int selection)
 {
+	this->~OnMenuConfigureItemSlot();
+
 	var current_config = GetItemConfiguration(key);
 	var current_item = GetProperty(GAMECONFIG_Proplist_Def, current_config);
 	var description = GetProperty(GAMECONFIG_Proplist_Desc, current_config);
@@ -604,6 +621,7 @@ protected func MenuConfigureItemSlot(id menu_symbol, object player, string key, 
  active rules in {@c color_active}. Some rules exclude each other or require rules to be active. In case of such a
  conflict a rule that cannot be chosen is colored in {@c color_conflict}.
  @note An object is displayed in this list if it has the category {@c C4D_Rule} and includes {@c Library_ConfigurableRule}.
+       Has a callback {@c OnMenuConfigureBots()}.
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par selection This option will be selected when the menu is open. First option is 0.
@@ -611,6 +629,8 @@ protected func MenuConfigureItemSlot(id menu_symbol, object player, string key, 
  */
 protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 {
+	this->~OnMenuConfigureRules();
+
 	CreateConfigurationMenu(player, menu_symbol, "TxtConfigureRules");
 	
 	var select = 0;
@@ -701,6 +721,7 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 /**
  Lists all players and switches the teams of a player if he is selected. The menu is sorted
  by teams. After a player changes sides, his entry will be selected again. 
+ @note Has a callback {@c OnMenuConfigureTeams()}.
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par selection This option will be selected when the menu is open. First option is 0.
@@ -708,6 +729,8 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
  */
 protected func MenuConfigureTeams(id menu_symbol, object player, int selection)
 {
+	this->~OnMenuConfigureTeams();
+
 	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureTeams$");
 	
 	var item = 0;
