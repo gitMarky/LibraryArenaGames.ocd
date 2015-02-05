@@ -8,6 +8,13 @@ static const GAMECONFIG_Proplist_Items = "items";
 static const GAMECONFIG_Proplist_Def = "def";
 static const GAMECONFIG_Proplist_Desc = "description";
 
+static const GAMECONFIG_Icon_DefaultItemConfiguration = Environment_Configuration;
+static const GAMECONFIG_Icon_Goals = Icon_Goals;
+static const GAMECONFIG_Icon_Rules = Icon_Rules;
+static const GAMECONFIG_Icon_Teams = Icon_Teams;
+static const GAMECONFIG_Icon_Bots = Icon_Bots;
+static const GAMECONFIG_Icon_Items = Icon_Items;
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // definitions
@@ -73,7 +80,7 @@ protected func Initialize()
 {
 	SetPosition();
 	configuration_rules = {};
-	configured_items = { name = "default", icon = GetID(), items = {}};
+	configured_items = { key="default", name="default", icon = GAMECONFIG_Icon_DefaultItemConfiguration, items = {}};
 	player_index = 0;
 	
 	// wait for other rules, etc. to be initialized
@@ -165,7 +172,7 @@ protected func CreateMainMenu(object player)
 {
 	CreateConfigurationMenu(player, GetID(), "$MenuCaption$");
 
-	MainMenuAddItemGoal(player, Goal_Random);
+	MainMenuAddItemGoal(player);
 	MainMenuAddItemWinScore(player);
 	MainMenuAddItemRules(player);
 	MainMenuAddItemTeams(player);
@@ -189,7 +196,7 @@ protected func CreateMainMenu(object player)
  @par menu_symbol The menu has this icon.
  @version 0.1.0
  */
-protected func MainMenuAddItemGoal(object player, id menu_symbol)
+protected func MainMenuAddItemGoal(object player)
 {
 	// do nothing if we have a goal already
 	if (configured_goal != nil) return;
@@ -208,7 +215,7 @@ protected func MainMenuAddItemGoal(object player, id menu_symbol)
 	{
 		// passing an array as parameter is not allowed
 		//player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", menu_symbol, nil, goals);
-		player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", menu_symbol, nil, player);
+		player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", GAMECONFIG_Icon_Goals, nil, player);
 	}
 }
 
@@ -408,22 +415,23 @@ protected func MainMenuAddItemRules(object player)
 {
 	// do nothing if no rules are configurable
 	if (GetLength(GetProperties(configuration_rules)) > 0)
-		player->AddMenuItem("$TxtConfigureRules$", "MenuConfigureRules", GetID(), nil, player);
+		player->AddMenuItem("$TxtConfigureRules$", "MenuConfigureRules", GAMECONFIG_Icon_Rules, nil, player);
 }
 
 protected func MainMenuAddItemTeams(object player)
 {
 	// do nothing if the goal is not a team goal
-	if (configured_goal != nil && !(configured_goal->~IsTeamGoal())) return;
+	//if (configured_goal != nil && !(configured_goal->~IsTeamGoal())) return;
+	if (!GetTeamCount()) return;
 	
-	player->AddMenuItem("$TxtConfigureTeams$", "MenuConfigureTeams", GetID(), nil, player);
+	player->AddMenuItem("$TxtConfigureTeams$", "MenuConfigureTeams", GAMECONFIG_Icon_Teams, nil, player);
 }
 
 protected func MainMenuAddItemBots(object player)
 {
 	if (CanConfigureBots())
 	{
-		player->AddMenuItem("$TxtConfigureBots$", "MenuConfigureBots", GetID(), nil, player);
+		player->AddMenuItem("$TxtConfigureBots$", "MenuConfigureBots", GAMECONFIG_Icon_Bots, nil, player);
 	}
 }
 
@@ -431,7 +439,7 @@ protected func MainMenuAddItemItems(object player)
 {
 	if (CanConfigureSpawnPoints())
 	{
-		player->AddMenuItem("$TxtConfigureItems$", "MenuConfigureItems", GetID(), nil, player);
+		player->AddMenuItem("$TxtConfigureItems$", "MenuConfigureItems", GAMECONFIG_Icon_Items, nil, player);
 	}
 }
 
@@ -658,7 +666,7 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 
 protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selection, bool has_default_configurations)
 {
-	CreateConfigurationMenu(player, GetID(), "$TxtConfigureSpecificItems$");
+	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureSpecificItems$");
 
 	// spawn points
 		
@@ -752,7 +760,7 @@ private func MenuSwitchTeam(object player, int index)
 
 	SetPlayerTeam(player_nr, team);
 
-	MenuConfigureTeams(GetID(), player, index);
+	MenuConfigureTeams(GAMECONFIG_Icon_Teams, player, index);
 }
 
 public func InitializePlayer(int player, int x, int y, object base, int team, id extra_data)
@@ -861,8 +869,8 @@ private func ChangeBotAmount(id menu_symbol, object player, int selection, int c
 
 	// opens the menu right away, but updates the number
 	// as soon as a bot joins (waiting_for_bot_to_join)
-	MenuConfigureBots(GetID(), player, selection, true);
-	ScheduleCall(this, "MenuConfigureBots", delay, 0, GetID(), player, selection);
+	MenuConfigureBots(GAMECONFIG_Icon_Bots, player, selection, true);
+	ScheduleCall(this, "MenuConfigureBots", delay, 0, GAMECONFIG_Icon_Bots, player, selection);
 }
 
 public func IsGameConfiguration()
@@ -913,7 +921,7 @@ private func ConfigureItemSet(id menu_symbol, object player, int selection)
 		}
 	}
 	
-	MenuConfigureItems(GetID(), player, selection);
+	MenuConfigureItems(GAMECONFIG_Icon_Items, player, selection);
 }
 
 protected func MenuConfigureItemSlot(id menu_symbol, object player, string type, int selection, bool configure_spawnpoint, int sel)
