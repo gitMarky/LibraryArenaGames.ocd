@@ -8,6 +8,7 @@ TxtConfigureBots=Configure bots
 TxtConfigureRules=Configure rules
 TxtConfigureItems=Configure items
 TxtConfigureSpecificItems=Custom
+TxtConfigureSlot=Select item for %s
 TxtPlayersBots=Bots/Players total: %d/%d
 MoreWinScore=Increase score
 LessWinScore=Decrease score

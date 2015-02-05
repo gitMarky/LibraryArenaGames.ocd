@@ -617,7 +617,21 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 			
 			var caption = config.name;
 			
-			if (config.key == configured_items.key)
+			var selected = config.key == configured_items.key;
+			
+			for (var key in spawnpoint_keys)
+			{
+				var current = GetItemConfiguration(key);
+				var source = GetItemConfiguration(key, config);
+				
+				if (GetProperty(GAMECONFIG_Proplist_Def, current) != GetProperty(GAMECONFIG_Proplist_Def, source))
+				{
+					selected = false;
+					break;
+				}
+			}
+			
+			if (selected)
 			{
 				caption = ColorizeString(caption, color_active);
 			}

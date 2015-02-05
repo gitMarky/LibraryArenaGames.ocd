@@ -8,6 +8,7 @@ TxtConfigureBots=Bots
 TxtConfigureRules=Spielregeln
 TxtConfigureItems=Items
 TxtConfigureSpecificItems=Eigene Konfiguration
+TxtConfigureSlot=Wähle Item für %s
 TxtPlayersBots=Bots/Spieler gesamt: %d/%d
 MoreWinScore=Punktzahl erhöhen
 LessWinScore=Punktzahl senken
