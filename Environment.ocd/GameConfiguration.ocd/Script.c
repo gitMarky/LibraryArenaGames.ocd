@@ -527,13 +527,13 @@ protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selec
 		
 	var selection_counter = 0;
 	
-	for (var type in spawnpoint_keys)
+	for (var key in spawnpoint_keys)
 	{
-		var current_config = GetItemConfiguration(type);
+		var current_config = GetItemConfiguration(key);
 		var current_item = GetProperty(GAMECONFIG_Proplist_Def, current_config);
 		var description = GetProperty(GAMECONFIG_Proplist_Desc, current_config);
 	
-		var command = Format("MenuConfigureItemSlot(%i, Object(%d), \"%s\", %d, true, 0)", menu_symbol, player->ObjectNumber(), type, selection_counter++);
+		var command = Format("MenuConfigureItemSlot(%i, Object(%d), \"%s\", %d, true, 0)", menu_symbol, player->ObjectNumber(), key, selection_counter++);
 		player->AddMenuItem(description, command, current_item);
 	}
 	
@@ -558,14 +558,14 @@ protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selec
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par key This is the value configured in {@link SpawnPoint#SetID} of the spawn point you want to configure.
- @par selection This option was selected in the parent menu. Is necessary for smooth navigation through the menus.
+ @par index This option was selected in the parent menu. Is necessary for smooth navigation through the menus.
  @par configure_spawnpoint Should be {@true} if you want to configure a spawnpoint, or {@c false} if you want to configure equipment.
- @par sel This option will be selected when the menu is open. First option is 0.
+ @par selection This option will be selected when the menu is open. First option is 0.
  @version 0.1.0
  */
-protected func MenuConfigureItemSlot(id menu_symbol, object player, string type, int selection, bool configure_spawnpoint, int sel)
+protected func MenuConfigureItemSlot(id menu_symbol, object player, string key, int index, bool configure_spawnpoint, int selection)
 {
-	var current_config = GetItemConfiguration(type);
+	var current_config = GetItemConfiguration(key);
 	var current_item = GetProperty(GAMECONFIG_Proplist_Def, current_config);
 	var description = GetProperty(GAMECONFIG_Proplist_Desc, current_config);
 	CreateConfigurationMenu(player, menu_symbol, Format("$TxtConfigureSlot$", description));
@@ -588,14 +588,14 @@ protected func MenuConfigureItemSlot(id menu_symbol, object player, string type,
 			name = ColorizeString(name, color_inactive);
 		}		
 		
-		var command = Format("ConfigureItemSlot(%i, Object(%d), \"%s\", %d, %v, %i, %d)", menu_symbol, player->ObjectNumber(), type, selection, configure_spawnpoint, item, i);
+		var command = Format("ConfigureItemSlot(%i, Object(%d), \"%s\", %d, %v, %i, %d)", menu_symbol, player->ObjectNumber(), key, index, configure_spawnpoint, item, i);
 		
 		player->AddMenuItem(name, command, item);
 	}
 	
-	player->AddMenuItem("$Finished$", Format("MenuConfigureItemsCustom(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), selection), Icon_Ok, nil, nil, "$Finished$");
+	player->AddMenuItem("$Finished$", Format("MenuConfigureItemsCustom(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), index), Icon_Ok, nil, nil, "$Finished$");
 
-	player->SelectMenuItem(sel);
+	player->SelectMenuItem(selection);
 }
 
 /**
@@ -771,9 +771,9 @@ protected func ConfigurationFinished()
 	RoundManager()->RemoveRoundStartBlocker(this);
 }
 
-protected func ConfigureItemSlot(id menu_symbol, object player, string type, int selection, bool configure_spawnpoint, id item, int index)
+protected func ConfigureItemSlot(id menu_symbol, object player, string key, int selection, bool configure_spawnpoint, id item, int index)
 {
-	var current_config = GetItemConfiguration(type);
+	var current_config = GetItemConfiguration(key);
 	
 	if (current_config == nil)
 	{
@@ -781,9 +781,9 @@ protected func ConfigureItemSlot(id menu_symbol, object player, string type, int
 	}
 	
 	SetProperty(GAMECONFIG_Proplist_Def, item, current_config);
-	SetItemConfiguration(type, current_config);
+	SetItemConfiguration(key, current_config);
 
-	MenuConfigureItemSlot(menu_symbol, player, type, selection, configure_spawnpoint, index);
+	MenuConfigureItemSlot(menu_symbol, player, key, selection, configure_spawnpoint, index);
 }
 
 protected func CreateGoal(id goal_id)
