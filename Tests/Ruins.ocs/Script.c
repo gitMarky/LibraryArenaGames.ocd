@@ -75,18 +75,21 @@ protected func Initialize()
 	
 	CreateObject(Environment_RoundManager);
 	CreateObject(Environment_Configuration);
-	CreateObject(RoundTester, 100, 100, NO_OWNER);
+	//CreateObject(RoundTester, 100, 100, NO_OWNER);
 	
 	AddEffect("DryTime",nil,100,2);
 	return;
 }
 
 // Gamecall from LastManStanding goal, on respawning.
-protected func OnPlayerRelaunch(int plr)
+protected func RelaunchPlayer(int plr, int killer)
 {
-	var clonk = GetCrew(plr);
-	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
-	relaunch->StartRelaunch(clonk);
+	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
+	clonk->MakeCrewMember(plr);
+	SetCursor(plr, clonk);
+	OnClonkLeftRelaunch(clonk);
+	//var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
+	//relaunch->StartRelaunch(clonk);
 	return;
 }
 

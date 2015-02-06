@@ -185,7 +185,8 @@ protected func OpenMainMenu(id dummy)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var cursor = GetCursor(GetPlayerByIndex(i));
-		if (cursor->GetMenu())
+		if (cursor != nil
+		&&  cursor->GetMenu())
 			cursor->CloseMenu();
 	}
 	

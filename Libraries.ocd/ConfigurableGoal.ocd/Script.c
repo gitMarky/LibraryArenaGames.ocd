@@ -15,12 +15,20 @@ local win_score;
 
 local is_fulfilled;
 
+local is_inverted;
 
-public func DoScore(int faction, int change)
+public func DoScore(int faction, int change, bool force_negative)
 {
 	AssertArrayBounds(score_list_points, faction);
 
-	score_list_points[faction] += Max(0, change);
+	if (!force_negative)
+	{
+		score_list_points[faction] += Max(0, change);
+	}
+	else
+	{
+		score_list_points[faction] += change;
+	}
 	
 	if (score_list_points[faction] >= win_score)
 	{
@@ -43,6 +51,11 @@ public func GetScore(int faction)
 	AssertArrayBounds(score_list_points, faction);
 
 	return score_list_points[faction];
+}
+
+public func SetScore(int faction, int value)
+{
+	DoScore(faction, value - GetScore(faction), true);
 }
 
 public func GetRoundScore(int faction)
@@ -95,6 +108,7 @@ protected func Initialize()
 	}
 	
 	is_fulfilled = false;
+	is_inverted = false;
 	
 	
 	win_score = Max(1, this->~GetDefaultWinScore());
