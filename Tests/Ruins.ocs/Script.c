@@ -47,18 +47,6 @@ protected func Initialize()
 	
 	template_grass->RemoveObject();
 
-	
-	//for (var spawnpoint in FindObjects(Find_Func("IsSpawnPoint")))
-	//{
-	//	spawnpoint->OnRoundStart();
-	//}
-	
-	// Ropeladders to get to the upper part.
-	//CreateObject(Ropeladder, 380, 112, NO_OWNER)->Unroll(-1,0,19);
-	//CreateObject(Ropeladder, 135, 135, NO_OWNER)->Unroll(1,0,16);
-	
-	// Objects fade after 5 seconds.
-	//CreateObject(Rule_ObjectFade)->DoFadeTime(5 * 36);
 
 	// Smooth brick edges.
 	var x=[188, 205, 261, 244, 308, 325];
@@ -75,7 +63,6 @@ protected func Initialize()
 	
 	CreateObject(Environment_RoundManager);
 	CreateObject(Environment_Configuration);
-	//CreateObject(RoundTester, 100, 100, NO_OWNER);
 	
 	AddEffect("DryTime",nil,100,2);
 	return;
@@ -88,8 +75,6 @@ protected func RelaunchPlayer(int plr, int killer)
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	OnClonkLeftRelaunch(clonk);
-	//var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2, clonk->GetOwner());
-	//relaunch->StartRelaunch(clonk);
 	return;
 }
 
@@ -123,7 +108,6 @@ global func FxDryTimeTimer(object pTarget, effect, int timer)
 	
 	if(!GBackLiquid(335,430))
 	{
-		//AddEffect("Rain",nil,100,2);
 		return -1;
 	}	
 }

@@ -254,7 +254,6 @@ public func SetID(definition)
 	}
 	else if (GetType(definition) == C4V_String)
 	{
-		Log("This is not supported yet, but it will be in the future.");
 		// TODO: update docu :)
 	}
 	else
@@ -399,7 +398,7 @@ private func FxIntSpawnTimer(object target, int effect_nr, int timer)
 	}
 	else if (spawn_id == nil)
 	{
-		error_message = Format("Spawn point is used without an id that should be spawned. It was configured with '%s' and should spawn '%i'", spawn_id_parameter, spawn_id);
+		error_message = Format("Spawn point is used without an id that should be spawned. It was configured with '%v' and should spawn '%i'", spawn_id_parameter, spawn_id);
 	}
 	
 	if (error_message != nil)
@@ -600,7 +599,6 @@ protected func OnConfigurationEnd(object configuration)
 	if (GetType(spawn_id_parameter) == C4V_String && configuration != nil)
 	{
 		spawn_id = configuration->GetSpawnPointItem(spawn_id_parameter);
-		Log("Fetched configuration %v", spawn_id); // TODO: remove
 	}
 }
 
