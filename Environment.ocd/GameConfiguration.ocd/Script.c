@@ -41,6 +41,7 @@ local configured_items;			// proplist, structure not defined yet.
 // ??? - reference which slot to take from a default configuration set?
 // item - id: this item will be spawned
 
+local selected_goals;			// array, bool: The goals, in order of GetAvailableGoals(). True means, that the goal is selected
 local configured_goal;			// object: the goal that has been created
 local player_index;				// int: the player that configures the current round
 
@@ -113,6 +114,7 @@ protected func Initialize()
 	configuration_rules = {};
 	configured_items = { key="default", name="default", icon = GAMECONFIG_Icon_DefaultItemConfiguration, items = {}};
 	player_index = 0;
+	selected_goals = [];
 	
 	// wait for other rules, etc. to be initialized
 	ScheduleCall(this, "PostInitialize", 1);
@@ -356,22 +358,42 @@ protected func MainMenuAddItemFinishConfiguration(object player)
  @par player The menu is displayed in this object.
  @version 0.1.0
  */
-protected func MenuChooseGoal(id menu_symbol, object player)
+protected func MenuChooseGoal(id menu_symbol, object player, int selection)
 {
 	this->~OnMenuChooseGoal();
 
-	//var player = GetChoosingPlayer();
 	var goals = this->~GetAvailableGoals();
 	if (!player || !goals) return ScheduleCall(this, "OpenMainMenu", 1);
 
 	CreateConfigurationMenu(player, menu_symbol, "$TxtConfigureGoals$");
 	
-	for (var goal in goals)
+	var has_selection = false;
+	
+	for (var i = 0; i < GetLength(goals); i++)
 	{
-		player->AddMenuItem(goal->GetName(), "MenuSetGoal", goal);
+		var goal = goals[i];
+		var selected = selected_goals[i];
+		
+		var caption = goal->GetName();
+		
+		if (selected)
+		{
+			has_selection = true;
+			caption = ColorizeString(caption, color_active);
+		}
+		else
+		{
+			caption = ColorizeString(caption, color_inactive);
+		}
+	
+		player->AddMenuItem(caption, Format("ChooseGoal(%i, %i, Object(%d), %d)", menu_symbol, goal, player->ObjectNumber(), i), goal);
 	}
 
 	this->~MenuChooseGoalCustomEntries(player);
+	
+	if (has_selection) player->AddMenuItem("$Finished$", "SetupGoal()", Icon_Ok, nil, nil, "$Finished$");
+	
+	player->SelectMenuItem(selection);
 }
 
 /**
@@ -407,10 +429,10 @@ protected func MenuConfigureBots(id menu_symbol, object player, int selection, b
 		command2 = Format("MenuConfigureBots(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), 2);
 		command3 = Format("MenuConfigureBots(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), 3);
 		
-		caption0 = ColorizeString(caption0, color_inactive);
-		caption1 = ColorizeString(caption1, color_inactive);
-		caption2 = ColorizeString(caption2, color_inactive);
-		caption3 = ColorizeString(caption3, color_inactive);
+		caption0 = ColorizeString(caption0, color_conflict);
+		caption1 = ColorizeString(caption1, color_conflict);
+		caption2 = ColorizeString(caption2, color_conflict);
+		caption3 = ColorizeString(caption3, color_conflict);
 	}
 	else
 	{
@@ -784,10 +806,13 @@ protected func ChangeWinScore(id menu_symbol, object player, int selection, int 
 	MenuConfigureGoal(menu_symbol, player, selection);
 }
 
-protected func ConfigurationFinished()
+protected func ConfigurationFinished(id menu_symbol, parameter)
 {
 	this->~OnCloseMainMenu();
 	
+	configuration_finished = true;
+	
+	SetupGoal();
 	CreateRules();
 	ReleasePlayers(true);
 	
@@ -992,10 +1017,45 @@ private func MenuAddItemReturn(object player)
 	player->AddMenuItem("$Finished$", "OpenMainMenu()", Icon_Ok, nil, nil, "$Finished$");
 }
 
-private func MenuSetGoal(id goal)
+private func ChooseGoal(id menu_symbol, id goal, object player, int selection)
 {
-	CreateGoal(goal);
-	OpenMainMenu();
+	selected_goals[selection] = !selected_goals[selection];
+
+	MenuChooseGoal(menu_symbol, player, selection);
+}
+
+private func SetupGoal()
+{
+	var goals = this->~GetAvailableGoals();
+
+	if (!configured_goal && goals)
+	{
+		var multiple = [];
+		
+		for(var i = 0; i < GetLength(goals); i++)
+		{
+			if (selected_goals[i])
+			{
+					PushBack(multiple, goals[i]);
+			}
+		}
+		
+		var selected;
+		// create one of the chosen goals randomly	
+		if (GetLength(multiple))
+		{
+			selected = multiple[Random(GetLength(multiple))];
+		}
+		// or one of the available goals, if no goal was chosen
+		else
+		{
+			selected = goals[Random(GetLength(goals))];
+		}
+			
+		CreateGoal(selected);
+	}
+
+	if (!configuration_finished) OpenMainMenu();
 }
 
 private func MenuSwitchTeam(object player, int index)
