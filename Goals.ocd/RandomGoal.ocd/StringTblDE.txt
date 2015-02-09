@@ -1,2 +1,0 @@
-Name=Scriptziel
-Description=Script goal description: please change me
