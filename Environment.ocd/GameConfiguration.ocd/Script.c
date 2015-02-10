@@ -16,6 +16,11 @@ static const GAMECONFIG_Icon_Bots = Icon_Bots;
 static const GAMECONFIG_Icon_Items = Icon_Items;
 static const GAMECONFIG_Icon_ItemsCustom = Icon_Items;
 
+static const GAMECONFIG_Property_Keys = "keys";
+static const GAMECONFIG_Property_Name = "name";
+static const GAMECONFIG_Property_Icon = "icon";
+static const GAMECONFIG_Property_Items = "items";
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // definitions
@@ -48,6 +53,7 @@ local player_index;				// int: the player that configures the current round
 local configuration_finished;	// bool: true once the configuration is done
 
 local spawnpoint_keys; 				// array: contains spawnpoint keys.
+local spawnpoint_configurations;				// array: default configurations.
 
 local color_conflict = -6946816; // = RGB(150, 0, 0);
 local color_inactive = -4934476; // = RGB(180, 180, 180);
@@ -113,6 +119,7 @@ protected func Initialize()
 	SetPosition();
 	configuration_rules = {};
 	configured_items = { key="default", name="default", icon = GAMECONFIG_Icon_DefaultItemConfiguration, items = {}};
+	
 	player_index = 0;
 	selected_goals = [];
 	
@@ -489,14 +496,13 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 {	
 	this->~OnMenuConfigureItems();
 
-	var configurations = this->~GetDefaultItemConfigurations();
-	if (configurations != nil)
+	if (spawnpoint_configurations != nil)
 	{
 		CreateConfigurationMenu(player, GAMECONFIG_Icon_Items, "$TxtConfigureItems$");
 
-		for (var i = 0; i < GetLength(configurations); i++)
+		for (var i = 0; i < GetLength(spawnpoint_configurations); i++)
 		{
-			var config = configurations[i];
+			var config = spawnpoint_configurations[i];
 			if (config == nil)
 			{
 				Log("this is seriously wrong: %d", i);
@@ -912,9 +918,11 @@ protected func ScanSpawnPoints()
 	spawnpoint_keys = [];
 	var points = FindObjects(Find_Func("IsSpawnPoint"));
 	
-	if (this->~GetDefaultItemConfigurations())
+	spawnpoint_configurations = this->~GetDefaultItemConfigurations();
+
+	if (spawnpoint_configurations != nil)
 	{
-		configured_items = this->~GetDefaultItemConfigurations()[0];
+		configured_items = spawnpoint_configurations[0];
 	}
 	
 	for (var spawnpoint in points)
@@ -979,10 +987,9 @@ private func ChangeBotAmount(id menu_symbol, object player, int selection, int c
 
 private func ConfigureItemSet(id menu_symbol, object player, int selection)
 {
-	var configurations = this->~GetDefaultItemConfigurations();
-	if (configurations != nil)
+	if (spawnpoint_configurations != nil)
 	{
-		var configuration = configurations[selection];
+		var configuration = spawnpoint_configurations[selection];
 		Log("Set configuration to %s", configured_items.name);
 		
 		configured_items.key = configuration.key;
