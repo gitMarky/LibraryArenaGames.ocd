@@ -149,6 +149,8 @@ public func OnRoundReset(int round_number)
 {
 	RoundManager()->RegisterRoundStartBlocker(this);
 	
+	// reset old configuration stuff
+	if (configured_goal) configured_goal->RemoveObject();
 	configuration_finished = false;
 	
 	// put players in spawn points
@@ -358,9 +360,11 @@ protected func MainMenuAddItemFinishConfiguration(object player)
   -----------------------------------------------------------------------------------------------------------------------------------------*/
 
 /**
- Opens a menu for choosing goals. Has a callback {@c MenuChooseGoalCustomEntries(object player)} for adding further options.
+ Opens a menu for choosing goals. The option for finishing the configuration is hidden until the player
+ chooses one or more goals. The chosen goals are highlighted. In case the player selects more than one goal,
  
- @note Has a callback {@c OnMenuChooseGoal()}.
+ 
+ @note Has a callback {@c OnMenuChooseGoal()}. Has a callback {@c MenuChooseGoalCustomEntries(object player)} for adding further options.
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @version 0.1.0
@@ -942,7 +946,13 @@ protected func ScanSpawnPoints()
 				current_config = {};
 			}
 			
-			SetProperty(GAMECONFIG_Proplist_Desc, spawnpoint->~GetDescription(), current_config);
+			var desc = spawnpoint->~GetDescription();
+			
+			if (desc == nil || desc == "") desc = "Unknown";
+			
+			Log("Checking spawnpoint type %s; config: %v", key, current_config);
+			
+			SetProperty(GAMECONFIG_Proplist_Desc, desc, current_config);
 			SetItemConfiguration(key, current_config);
 		}
 	}

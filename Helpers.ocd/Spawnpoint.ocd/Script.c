@@ -157,6 +157,7 @@ public func CopyDataFromTemplate(object template)
 	// spawn_timer = template.spawn_timer;
 	spawn_globally = template.spawn_globally;
 	// spawn_category = template.spawn_category;
+	spawn_description = template.spawn_description;
 	
 	this.Collectible = template.Collectible;
 }
