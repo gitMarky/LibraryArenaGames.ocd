@@ -71,7 +71,7 @@ protected func Initialize()
 // Gamecall from LastManStanding goal, on respawning.
 protected func RelaunchPlayer(int plr, int killer)
 {
-	var clonk = CreateObjectAbove(Clonk, 0, 0, plr);
+	var clonk = CreateObject(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	OnClonkLeftRelaunch(clonk);
