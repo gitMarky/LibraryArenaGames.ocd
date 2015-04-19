@@ -1,5 +1,19 @@
 /**
  Allows the player to configure the game.
+ 
+ @note The object offers new constants for the menu icons. This serves as a reference for overloading the
+       icon objects or for overloading the constants.
+ <table>
+ 	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
+ 	<tr><td>GAMECONFIG_Icon_DefaultItemConfiguration</td> <td>Environment_Configuration</td> <td>Icon for the default item configuration.</td></tr>
+ 	<tr><td>GAMECONFIG_Icon_Goals</td>       <td>Icon_Goals</td>  <td>Icon for the goal menu.</td></tr>
+ 	<tr><td>GAMECONFIG_Icon_Rules</td>       <td>Icon_Rules</td>  <td>Icon for the rules menu.</td></tr>
+ 	<tr><td>GAMECONFIG_Icon_Teams</td>       <td>Icon_Teams</td>  <td>Icon for the teams menu.</td></tr>
+ 	<tr><td>GAMECONFIG_Icon_Bots</td>        <td>Icon_Bots</td>   <td>Icon for the bots menu.</td></tr>
+ 	<tr><td>GAMECONFIG_Icon_Items</td>       <td>Icon_Items</td>  <td>Icon for the items menu.</td></tr>
+ 	<tr><td>GAMECONFIG_Icon_ItemsCustom</td> <td>Icon_Items</td>  <td>Icon for the custom items menu.</td></tr>
+ </table>
+ 
  @author Marky
  @version 0.1.0
  */

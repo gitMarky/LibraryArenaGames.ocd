@@ -1,5 +1,13 @@
 /**
  Relaunch container.
+ 
+  @note The object offers new constants:
+ <table>
+ 	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
+ 	<tr><td>RELAUNCH_Default_Time</td>  <td>360</td> <td>Time in frames, until the relaunch container ejects the player.</td></tr>
+ 	<tr><td>RELAUNCH_Default_Hold</td>  <td>true</td>  <td>If true, then the player cannot exit the container himself.</td></tr>
+ </table>
+ 
  @author Marky
  @credits Maikel
  @version 0.1.0

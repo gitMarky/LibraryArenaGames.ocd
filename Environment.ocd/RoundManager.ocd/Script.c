@@ -22,6 +22,13 @@
  @br
  Note that a single {@link global#RoundManager RoundManager()} object will do one thing: Rush through the rounds quickly.
  It actually needs rules or goals that register as blockers for the phases.
+ {@section Constants}
+  @note The object offers new constants:
+ <table>
+ 	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
+ 	<tr><td>ROUND_Number_Default</td> <td>-1</td> <td>Number of rounds that the game will run. The default value is an infinite number of rounds. Overload for a finite number of rounds.</td></tr>
+ </table>
+ 
  
  @title Rounds
  @id index

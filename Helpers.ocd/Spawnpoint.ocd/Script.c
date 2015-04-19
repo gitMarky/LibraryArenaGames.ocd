@@ -6,6 +6,7 @@
  	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
  	<tr><td>SPAWNPOINT_Timer_Default</td> <td>1000</td>  <td>The default timer until an object respawns is this many frames.</td></tr>
  	<tr><td>SPAWNPOINT_Timer_Infinite</td> <td>-1</td>   <td>Use this value if you want the object to spawn only once, when the game starts.</td></tr>
+    <tr><td>SPAWNPOINT_Effect_Interval</td> <td>10</td>  <td>Defines how often the spawn point checks if the object should respawn, in frames.</td></tr>
  </table>
 @title Spawnpoint
 @id index
