@@ -1,10 +1,9 @@
-/*--
-	Capture The Flag
-	Author: Maikel
-	
-	Capture the flag of the opposing team and bring it to your base to gain points.
---*/
-
+/**
+ Library for a goal that is winnable by individual players.
+ A faction in {@link Library_ConfigurableRule} corresponds to a player.
+ @author Marky
+ @version 0.1.0
+ */
 
 #include Library_ConfigurableGoal
 

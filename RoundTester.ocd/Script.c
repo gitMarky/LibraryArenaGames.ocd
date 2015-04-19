@@ -1,7 +1,7 @@
 /**
-	Debris
-	Scrap.
-*/
+ Dummy object. You can create this if you want to test the round system
+ without having proper conditions for round end and start yet.
+ */
 
 local Name = "$Name$";
 local Description = "$Description$";

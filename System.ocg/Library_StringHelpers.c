@@ -1,6 +1,3 @@
-/* Helper functions */
-
-
 /**
  Colors the string with the given color.
  @par text The string

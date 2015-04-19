@@ -1,10 +1,9 @@
-/*--
-	Capture The Flag
-	Author: Maikel
-	
-	Capture the flag of the opposing team and bring it to your base to gain points.
---*/
-
+/**
+ Library for a goal that is winnable by teams.
+ A faction in {@link Library_ConfigurableRule} corresponds to a team.
+ @author Marky
+ @version 0.1.0
+ */
 
 #include Library_ConfigurableGoal
 
@@ -36,7 +35,7 @@ public func Activate(int byplr)
 	return;
 }
 
-/**
+/*
 private func EliminateOthers(int win_team)
 {
 	for (var i = 0; i < GetPlayerCount(); i++)

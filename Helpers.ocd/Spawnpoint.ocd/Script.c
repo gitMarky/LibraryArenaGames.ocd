@@ -355,6 +355,7 @@ public func GetDescription()
 /**
  Spawn point starts spawning, if it is enabled.
  @note This is an internal function, if you want to switch a spawn point on or off, use {@link SpawnPoint#SetActive}.
+ @version 0.1.0
  */
 private func StartSpawning()
 {
@@ -367,6 +368,7 @@ private func StartSpawning()
 /**
  Spawn point stops spawning, for round end and so forth. 
  @note This is an internal function, if you want to switch a spawn point on or off, use {@link SpawnPoint#SetActive}.
+ @version 0.1.0
  */
 private func StopSpawning()
 {
@@ -388,6 +390,7 @@ private func IsSpawning()
  This function is called every {@c SPAWNPOINT_Effect_Interval} frames. It calls
  {@c EffectTimer(int timer)} in the spawn point. The original implementation has no effect,
  but you can implement this function for custom effects.
+ @version 0.1.0
  */
 private func FxIntSpawnTimer(object target, int effect_nr, int timer)
 {
@@ -458,6 +461,7 @@ private func DecreaseTimer(int index)
  @note This calls {@c EffectSpawn(int index)} in the spawn point. The original implementation has no effect,
        but you can implement this function for custom effects.
  @par index The objects are saved in an array, this parameter indicates the position in the array. 
+ @version 0.1.0
  */
 private func DoSpawnObject(int index)
 {
@@ -514,6 +518,7 @@ private func DoSpawnObject(int index)
 /**
  Deletes a spawned object.
  @par index The objects are saved in an array, this parameter indicates the position in the array. 
+ @version 0.1.0
  */
 private func RemoveSpawnedObject(int index)
 {

@@ -1,15 +1,10 @@
 /**
- The default AddMenuItem cannot render icons for 3d graphics.
- 
- This script uses a workaround to enable that - it renders an object instead!
- 
- The interesting thing is: Objects with mesh graphics, that are not listed in HasMeshGraphics()
- Get rendered if one object is rendered with extra = 4 and XPar1... this seems to be an engine bug
- 
+ The default AddMenuItem cannot render icons for 3d graphics.@br
+ @br
+ This script uses a workaround to enable that - it renders an object instead!@br
  @author Marky
  @version 0.1.0
  */
-
 global func AddMenuItem(string caption, string command, id symbol, int count, parameter, string info_caption, int extra, XPar1, XPar2)
 {
 	
@@ -27,6 +22,10 @@ global func AddMenuItem(string caption, string command, id symbol, int count, pa
 	return _inherited(caption, command, symbol, count, parameter, info_caption, extraX, XPar1X, XPar2);
 }
 
+/**
+ @author Marky
+ @version 0.1.0
+ */
 global func HasMeshGraphics()
 {
 	if(!this) return false;

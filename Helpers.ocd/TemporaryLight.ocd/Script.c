@@ -1,3 +1,8 @@
+/**
+ A temporary light source.
+ @author Marky
+ @version 0.1.0
+ */
 
 static const TEMPLIGHT_Effect = "IntLight";
 
