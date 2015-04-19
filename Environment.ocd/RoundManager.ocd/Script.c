@@ -97,6 +97,7 @@ protected func Initialize()
  Displays a message window with the description of the object.
  @par player_index The player who selected the object in the rules menu.
  @return bool {@c true}.
+ @version 0.1.0
  */
 public func Activate(int player_index)
 {
@@ -216,6 +217,7 @@ protected func OnRoundReset(int round_number)
  Checks if the object actually exists and throws an error if not.
  @par blocker The blocker object.
  @ignore
+ @version 0.1.0
  */
 private func CheckBlocker(object blocker)
 {

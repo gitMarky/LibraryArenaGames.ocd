@@ -72,6 +72,7 @@ public func CanConfigureBots()
 /**
  Makes configurable spawn points configurable if it returns {@c true}.
  @return bool The default value is {@c true}.
+ @version 0.1.0
  */
 public func CanConfigureSpawnPoints()
 {
@@ -83,6 +84,7 @@ public func CanConfigureSpawnPoints()
  Tells objects, that this is a game configuration. This becomes important if you include the
  configuration object.
  @return bool {@c true}
+ @version 0.1.0
  */
 public func IsGameConfiguration()
 {
@@ -144,6 +146,7 @@ protected func PostInitialize()
 
 /**
  Callback from the round manager, calls {@link Environment_Configuration#OpenMainMenu}.
+ @version 0.1.0
  */
 public func OnRoundReset(int round_number)
 {
@@ -165,6 +168,7 @@ public func OnRoundReset(int round_number)
 
 /**
  Engine callback. Puts the player into a relaunch container if the configuration process is not finished.
+ @version 0.1.0
  */
 public func InitializePlayer(int player, int x, int y, object base, int team, id extra_data)
 {
@@ -345,6 +349,7 @@ protected func MainMenuAddItemWinScore(object player)
  Adds a finish option to a menu, the option calls {@link Environment_Configuration#ConfigurationFinished}.
  
  @par player The menu is displayed in this object.
+ @version 0.1.0
  */
 protected func MainMenuAddItemFinishConfiguration(object player)
 {
@@ -1149,7 +1154,8 @@ public func ContainCrew(object crew)
 
 /**
  Releases all players from their relaunch containers.
- @instant If {@c true}, then the relaunch container exits the player immediately.
+ @par instant If {@c true}, then the relaunch container exits the player immediately.
+ @version 0.1.0
  */
 public func ReleasePlayers(bool instant)
 {
@@ -1161,7 +1167,8 @@ public func ReleasePlayers(bool instant)
 
 /**
  Releases a single players from their relaunch containers.
- @instant If {@c true}, then the relaunch container exits the player immediately.
+ @par instant If {@c true}, then the relaunch container exits the player immediately.
+ @version 0.1.0
  */
 public func ReleasePlayer(int player, bool instant)
 {
@@ -1173,7 +1180,8 @@ public func ReleasePlayer(int player, bool instant)
 
 /**
  Releases a clonk from his owner's service, relaunches the Clonk
- @instant If {@c true}, then the relaunch container exits the player immediately.
+ @par instant If {@c true}, then the relaunch container exits the player immediately.
+ @version 0.1.0
  */
 public func ReleaseCrew(object crew, bool instant)
 {
@@ -1195,6 +1203,7 @@ public func ReleaseCrew(object crew, bool instant)
 /**
  Interface for the spawn points, so that the configuration can be looked up.
  @return id The definition that is configured for the spawn point.
+ @version 0.1.0
  */
 public func GetSpawnPointItem(string key)
 {
