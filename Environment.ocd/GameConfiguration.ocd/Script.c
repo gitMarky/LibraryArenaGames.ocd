@@ -272,11 +272,11 @@ protected func MainMenuAddItemBots(object player)
 }
 
 /**
- Adds an option for choosing a goal for the scenario. Behaviour depens on the callback@br
+ Adds an option for choosing a goal for the scenario. Behaviour depends on the callback@br
  {@c GetAvailableGoals()}, which should return an array of definitions:@br
  - It does nothing if the function returns {@c nil}. This is ideal if you already have a goal in the scenario.
-   Should there be such a goal, then it will not be configurable with {@link Enviroment_Configuration#MainMenuAddItemWinScore}@br
- - It creates the only available goal if the array has exactly one entry. It will be configurable with {@link Enviroment_Configuration#MainMenuAddItemWinScore}@br
+   Should there be such a goal, then it will not be configurable with {@link Environment_Configuration#MainMenuAddItemWinScore}@br
+ - It creates the only available goal if the array has exactly one entry. It will be configurable with {@link Environment_Configuration#MainMenuAddItemWinScore}@br
  - It creates a menu with the available goals and has the player choose one goal.
  
  @par player The menu is displayed in this object.
@@ -835,6 +835,12 @@ protected func ChangeWinScore(id menu_symbol, object player, int selection, int 
 	MenuConfigureGoal(menu_symbol, player, selection);
 }
 
+/**
+ Tells the {@link Environment_RoundManager} that the configuration is finished and the round can start.
+ @par menu_symbol Dummy parameter from the menu selection call.
+ @par parameter Dummy parameter from the menu selection call.
+ @version 0.1.0
+ */
 protected func ConfigurationFinished(id menu_symbol, parameter)
 {
 	this->~OnCloseMainMenu();
