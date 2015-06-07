@@ -1,6 +1,6 @@
 /**
  Library for a goal that is winnable by teams.
- A faction in {@link Library_ConfigurableRule} corresponds to a team.
+ A faction in {@link Library_ConfigurableRule#index} corresponds to a team.
  @author Marky
  @version 0.1.0
  */

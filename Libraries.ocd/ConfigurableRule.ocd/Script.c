@@ -8,7 +8,7 @@
 #include Library_BasicRule
 
 /**
- Marks the rule as configurable for {@link Environment_Configuration}.
+ Marks the rule as configurable for {@link Environment_Configuration#index}.
  @return {@c true}
  */
 public func GameConfigIsChoosable()

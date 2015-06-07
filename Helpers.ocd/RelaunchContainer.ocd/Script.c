@@ -1,7 +1,7 @@
 /**
  Relaunch container.
  
-  @note The object offers new constants:
+ {@section Constants} The object offers new constants:
  <table>
  	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
  	<tr><td>RELAUNCH_Default_Time</td>  <td>360</td> <td>Time in frames, until the relaunch container ejects the player.</td></tr>

@@ -134,7 +134,7 @@ protected func Construction(object by_object)
  Copies the configuration of another spawn point of the same ID.
  @par template This should be a preconfigured spawn point. It comes handy if you want to place many
       spawn points of the same kind.
- @related {@link CopySpawnPoint} 
+ @related {@link SpawnPoint#CopySpawnPoint} 
  @version 0.1.0
  */
 public func CopyDataFromTemplate(object template)
