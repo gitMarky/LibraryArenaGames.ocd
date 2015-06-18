@@ -1,8 +1,9 @@
 /**
  Allows the player to configure the game.
  
- @note The object offers new constants for the menu icons. This serves as a reference for overloading the
-       icon objects or for overloading the constants.
+ {@section Constants}
+ The object offers new constants for the menu icons. This serves as a reference for overloading the
+ icon objects or for overloading the constants.
  <table>
  	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
  	<tr><td>GAMECONFIG_Icon_DefaultItemConfiguration</td> <td>Environment_Configuration</td> <td>Icon for the default item configuration.</td></tr>
@@ -15,6 +16,8 @@
  </table>
  
  @author Marky
+ @id index
+ @title Game Configuration
  @version 0.1.0
  */
 
@@ -836,7 +839,7 @@ protected func ChangeWinScore(id menu_symbol, object player, int selection, int 
 }
 
 /**
- Tells the {@link Environment_RoundManager} that the configuration is finished and the round can start.
+ Tells the {@link Environment_RoundManager#index} that the configuration is finished and the round can start.
  @par menu_symbol Dummy parameter from the menu selection call.
  @par parameter Dummy parameter from the menu selection call.
  @version 0.1.0
