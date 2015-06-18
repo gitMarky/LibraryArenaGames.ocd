@@ -84,6 +84,15 @@ public func SetLifetime(int frames)
 	return this;
 }
 
+public func Color(int color)
+{
+	ProhibitedWhileActive();
+	
+	SetLightColor(color);
+	
+	return this;
+}
+
 public func Activate()
 {
 	if (!IsActive())
