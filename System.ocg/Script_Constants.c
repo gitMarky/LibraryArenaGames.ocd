@@ -45,3 +45,4 @@ static const PROP_Touchable_None = 0;
 static const PROP_Touchable_Grab = 1;
 static const PROP_Touchable_GrabAndPush = 2;
 
+static const RGBA_MAX = 255;
