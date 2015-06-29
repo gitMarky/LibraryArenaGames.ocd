@@ -1,8 +1,19 @@
-/* Disintegration */
 
 static const EFFECT_Disintegration_Name = "ArenaDisint";
 static const EFFECT_Disintegration_BaseAlpha = 60;
 
+/**
+ Fades out and removes an object over a short amount of time.
+ @par lifetime The object will fade to the color {@link global#FxArenaDisintColorObject}
+               over this amount of frames. Afterwards it fades out.
+ @par dt After {@c lifetime} frames have passed the object will fade out over this amount
+         of frames.
+ @par dy The target changes its y position by {@c dy} over the course of {@c lifetime + dt} frames.
+ @par additive If true, then the object will be drawn additive when the function is called.
+ @related {@link global#IsDisintegrating}, {@link global#FxArenaDisintColorObject}, {@link global#FxArenaDisintColorParticle}
+ @author Marky
+ @version 0.2.0
+ */
 global func Disintegrate(int lifetime, int dt, int dy, bool additive)
 {
 	if(!this)
@@ -33,7 +44,7 @@ global func FxArenaDisintStart (object target, proplist effect, int temp, int li
 {
 	if (!lifetime) lifetime = 50;
 	if (!dt) dt = RGBA_MAX;
-	//if (!dy) dy = -5;
+
 	effect.lifetime = lifetime;
 	effect.dt = dt;
 	effect.dy = dy;
@@ -46,8 +57,8 @@ global func FxArenaDisintStart (object target, proplist effect, int temp, int li
 
 global func FxArenaDisintTimer(object target, proplist effect, int time)
 {
-	// aufgesammelte Objekte brechen ab
-	// allerdings kann der Clonk keine disintegrierenden Objekte aufsammeln, also passt alles
+	// collecting a disintegrating object cancels the effect
+	// no undoing the color values for now.
 	if(target->Contained())
 	{
 		return FX_Execute_Kill;
@@ -60,18 +71,24 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 
 	if(time <= lifetime)
 	{
-		var white = (lifetime - time) * RGBA_MAX;
+		var white =   (lifetime - time) * RGBA_MAX;
+		var owner_r = (lifetime - time) * effect.r;
+		var owner_g = (lifetime - time) * effect.g;
+		var owner_b = (lifetime - time) * effect.b;
+		
 		var r = time * GetRGBaValue(FxArenaDisintColorObject(), RGBA_RED);
 		var g = time * GetRGBaValue(FxArenaDisintColorObject(), RGBA_GREEN);
 		var b = time * GetRGBaValue(FxArenaDisintColorObject(), RGBA_BLUE);
 
 		clr_mod = RGBa((white + r) / lifetime, (white + g) / lifetime, (white + b) / lifetime, RGBA_MAX - BoundBy(EFFECT_Disintegration_BaseAlpha * time / lifetime, 0, EFFECT_Disintegration_BaseAlpha));
+		clr_dw = RGBa((owner_r + r) / lifetime, (owner_g + g) / lifetime, (owner_b + b) / lifetime, RGBA_MAX);
 	}
 	else
 	{	
 		var diff = RGBA_MAX * (time - lifetime) / dt;
 
 		clr_mod = SetRGBaValue(FxArenaDisintColorObject(), RGBA_MAX - diff, RGBA_ALPHA);
+		clr_dw = FxArenaDisintColorObject();
 
 		if(diff >= RGBA_MAX)
 		{
@@ -88,6 +105,7 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 	}
 
 	target->SetClrModulation(clr_mod);
+	target->SetColor(clr_dw);
 
 	var ran = BoundBy(20 - 2 * Distance(target->GetDefWidth(), target->GetDefHeight()) / 3, 2, 20);
 
@@ -114,9 +132,33 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 	target->SetYDir();
 }
 
-global func FxArenaDisintColorObject(){ return RGB(64, 128, 255);}
-global func FxArenaDisintColorParticle(){ return RGB(64, 128, 255);}
+/**
+ When you {@link global#Disintegrate} an object it will fade to this color.
+ @return int A color value.
+ @version 0.2.0
+ */
+global func FxArenaDisintColorObject()
+{
+	return RGB(64, 128, 255);
+}
 
+/**
+ When you {@link global#Disintegrate} an object it create particles of this color.
+ @return int A color value.
+ @version 0.2.0
+ */
+global func FxArenaDisintColorParticle()
+{
+	return RGB(64, 128, 255);
+}
+
+/**
+ Defines what particles are used when you {@link global#Disintegrate} an object.
+ @par alpha The current alpha value of the fading out object. Particles should have a similar
+            alpha value.
+ @return proplist A particle proplist.
+ @version 0.2.0
+ */
 global func Particles_Disintegrate(int alpha)
 {
 	return {
