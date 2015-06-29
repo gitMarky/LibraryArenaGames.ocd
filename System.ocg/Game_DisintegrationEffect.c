@@ -2,10 +2,8 @@
 
 static const EFFECT_Disintegration_Name = "ArenaDisint";
 static const EFFECT_Disintegration_BaseAlpha = 60;
-static const EFFECT_Disintegration_Color = -16711936; // RGB(0, 255, 0)
-static const EFFECT_Disintegration_ParticleColor = -16723456; // RGB(0, 210, 0)
 
-global func Disintegrate(int lifetime, int dt, int dy)
+global func Disintegrate(int lifetime, int dt, int dy, bool additive)
 {
 	if(!this)
 	{
@@ -17,8 +15,7 @@ global func Disintegrate(int lifetime, int dt, int dy)
 	
 	if(!GetRDir()) SetRDir(RandomX(-7, 7));
 
-	AddEffect(EFFECT_Disintegration_Name, this, 1, 1, nil, 0, lifetime, dt, dy);
-
+	AddEffect(EFFECT_Disintegration_Name, this, 1, 1, nil, 0, lifetime, dt, dy, additive);
 }
 
 global func IsDisintegrating()
@@ -32,7 +29,7 @@ global func IsDisintegrating()
 	return false;
 }
 
-global func FxArenaDisintStart (object target, proplist effect, int temp, int lifetime, int dt, int dy)
+global func FxArenaDisintStart (object target, proplist effect, int temp, int lifetime, int dt, int dy, bool additive)
 {
 	if (!lifetime) lifetime = 50;
 	if (!dt) dt = RGBA_MAX;
@@ -44,6 +41,7 @@ global func FxArenaDisintStart (object target, proplist effect, int temp, int li
 	effect.r = GetRGBaValue(target->GetColor(), RGBA_RED);
 	effect.g = GetRGBaValue(target->GetColor(), RGBA_GREEN);
 	effect.b = GetRGBaValue(target->GetColor(), RGBA_BLUE);
+	if (additive) target->SetObjectBlitMode(GFX_BLIT_Additive);
 }
 
 global func FxArenaDisintTimer(object target, proplist effect, int time)
@@ -62,41 +60,20 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 
 	if(time <= lifetime)
 	{
-		// fade owner color
-
-		var r, g, b;
-
-		r = BoundBy(((lifetime - time) * effect.r + time * RGBA_MAX) / lifetime, 0, RGBA_MAX);
-		g = BoundBy(((lifetime - time) * effect.g + time * RGBA_MAX) / lifetime, 0, RGBA_MAX);
-		b = BoundBy(((lifetime - time) * effect.b + time * RGBA_MAX) / lifetime, 0, RGBA_MAX);
-
-		clr_dw = RGB(r, g, b);
-
-		// fade overall color, from white to specific
-
 		var white = (lifetime - time) * RGBA_MAX;
-		r = time * GetRGBaValue(EFFECT_Disintegration_Color, RGBA_RED);
-		g = time * GetRGBaValue(EFFECT_Disintegration_Color, RGBA_GREEN);
-		b = time * GetRGBaValue(EFFECT_Disintegration_Color, RGBA_BLUE);
+		var r = time * GetRGBaValue(FxArenaDisintColorObject(), RGBA_RED);
+		var g = time * GetRGBaValue(FxArenaDisintColorObject(), RGBA_GREEN);
+		var b = time * GetRGBaValue(FxArenaDisintColorObject(), RGBA_BLUE);
 
 		clr_mod = RGBa((white + r) / lifetime, (white + g) / lifetime, (white + b) / lifetime, RGBA_MAX - BoundBy(EFFECT_Disintegration_BaseAlpha * time / lifetime, 0, EFFECT_Disintegration_BaseAlpha));
 	}
 	else
-	{
-		// fade owner color
-	
-		clr_dw = RGB(RGBA_MAX, RGBA_MAX, RGBA_MAX);
-		
-		// fade out overall color
-	
+	{	
 		var diff = RGBA_MAX * (time - lifetime) / dt;
-		var alpha_max = RGBA_MAX - EFFECT_Disintegration_BaseAlpha;
 
-		target->SetObjectBlitMode(GFX_BLIT_Additive);
+		clr_mod = SetRGBaValue(FxArenaDisintColorObject(), RGBA_MAX - diff, RGBA_ALPHA);
 
-		clr_mod = SetRGBaValue(EFFECT_Disintegration_Color, alpha_max - diff, RGBA_ALPHA);
-
-		if(diff >= alpha_max)
+		if(diff >= RGBA_MAX)
 		{
 			if (target) target->RemoveObject();
 			return FX_Execute_Kill;
@@ -107,12 +84,10 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 	{
 		if (target->GetUnusedOverlayID(i) == i) continue;
 
-		target->SetClrModulation(clr_mod, i);
 		target->SetObjectBlitMode(GFX_BLIT_Additive, i);
 	}
 
 	target->SetClrModulation(clr_mod);
-	target->SetColor(clr_dw);
 
 	var ran = BoundBy(20 - 2 * Distance(target->GetDefWidth(), target->GetDefHeight()) / 3, 2, 20);
 
@@ -139,14 +114,17 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 	target->SetYDir();
 }
 
+global func FxArenaDisintColorObject(){ return RGB(64, 128, 255);}
+global func FxArenaDisintColorParticle(){ return RGB(64, 128, 255);}
+
 global func Particles_Disintegrate(int alpha)
 {
 	return {
 			Prototype = Particles_Magic(),
 			Size = PV_Random(1, 3),
-			R = GetRGBaValue(EFFECT_Disintegration_ParticleColor, RGBA_RED),
-			G = GetRGBaValue(EFFECT_Disintegration_ParticleColor, RGBA_GREEN),
-			B = GetRGBaValue(EFFECT_Disintegration_ParticleColor, RGBA_BLUE),
+			R = GetRGBaValue(FxArenaDisintColorParticle(), RGBA_RED),
+			G = GetRGBaValue(FxArenaDisintColorParticle(), RGBA_GREEN),
+			B = GetRGBaValue(FxArenaDisintColorParticle(), RGBA_BLUE),
 			Alpha = PV_Linear(alpha, 0),
 			};
 }
