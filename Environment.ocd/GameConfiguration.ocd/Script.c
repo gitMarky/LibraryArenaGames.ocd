@@ -359,7 +359,7 @@ protected func MainMenuAddItemWinScore(object player)
 	// do nothing if we have a goal already
 	if (configured_goal == nil) return;
 	
-	player->AddMenuItem(configured_goal->GetName(), "MenuConfigureGoal", configured_goal->GetID(), nil, player);
+	player->AddMenuItem(configured_goal->GetName(), "MenuConfigureGoal", GetIcon(configured_goal->GetID()), nil, player);
 }
 
 /**
@@ -419,7 +419,7 @@ protected func MenuChooseGoal(id menu_symbol, object player, int selection)
 			caption = ColorizeString(caption, color_inactive);
 		}
 	
-		player->AddMenuItem(caption, Format("ChooseGoal(%i, %i, Object(%d), %d)", menu_symbol, goal, player->ObjectNumber(), i), goal);
+		player->AddMenuItem(caption, Format("ChooseGoal(%i, %i, Object(%d), %d)", menu_symbol, goal, player->ObjectNumber(), i), GetIcon(goal));
 	}
 
 	this->~MenuChooseGoalCustomEntries(player);
@@ -475,7 +475,7 @@ protected func MenuConfigureBots(id menu_symbol, object player, int selection, b
 		command3 = "OpenMainMenu()";
 	}
 	
-	player->AddMenuItem(caption0, command0, menu_symbol);
+	player->AddMenuItem(caption0, command0, GetIcon(menu_symbol));
 	player->AddMenuItem(caption1, command1, Icon_Plus, nil, nil, "$MoreBots$");
 	player->AddMenuItem(caption2, command2, Icon_Minus, nil, nil, "$LessBots$");
 	player->AddMenuItem(caption3, command3, Icon_Ok, nil, nil, "$Finished$");
@@ -498,7 +498,7 @@ protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
 
 	CreateConfigurationMenu(player, menu_symbol, menu_symbol->GetName());
 	
-	player->AddMenuItem(" ", Format("MenuConfigureGoal(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), menu_symbol, configured_goal->~GetWinScore());
+	player->AddMenuItem(" ", Format("MenuConfigureGoal(%i, Object(%d), %d)", menu_symbol, player->ObjectNumber(), 0), GetIcon(menu_symbol), configured_goal->~GetWinScore());
 	player->AddMenuItem("$MoreWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 1, +1), Icon_Plus, nil, nil, "$MoreWinScore$");
 	player->AddMenuItem("$LessWinScore$", Format("ChangeWinScore(%i, Object(%d), %d, %d)", menu_symbol, player->ObjectNumber(), 2, -1), Icon_Minus, nil, nil, "$LessWinScore$");
 
@@ -560,7 +560,7 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 				caption = ColorizeString(caption, color_inactive);
 			}
 
-			player->AddMenuItem(caption, Format("ConfigureItemSet(%i, Object(%d), %d)", config.icon, player->ObjectNumber(), i), config.icon);
+			player->AddMenuItem(caption, Format("ConfigureItemSet(%i, Object(%d), %d)", config.icon, player->ObjectNumber(), i), GetIcon(config.icon));
 		}
 		
 		player->AddMenuItem("$TxtConfigureSpecificItems$", Format("MenuConfigureItemsCustom(%i, Object(%d), 0, true)", GAMECONFIG_Icon_ItemsCustom, player->ObjectNumber()), GAMECONFIG_Icon_ItemsCustom);	
@@ -604,7 +604,7 @@ protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selec
 		var description = GetProperty(GAMECONFIG_Proplist_Desc, current_config);
 	
 		var command = Format("MenuConfigureItemSlot(%i, Object(%d), \"%s\", %d, true, 0)", menu_symbol, player->ObjectNumber(), key, selection_counter++);
-		player->AddMenuItem(description, command, current_item);
+		player->AddMenuItem(description, command, GetIcon(current_item));
 	}
 	
 	// equipment
@@ -663,7 +663,7 @@ protected func MenuConfigureItemSlot(id menu_symbol, object player, string key, 
 		
 		var command = Format("ConfigureItemSlot(%i, Object(%d), \"%s\", %d, %v, %i, %d)", menu_symbol, player->ObjectNumber(), key, index, configure_spawnpoint, item, i);
 		
-		player->AddMenuItem(name, command, item);
+		player->AddMenuItem(name, command, GetIcon(item));
 	}
 	
 	player->AddMenuItem("$Finished$", Format("MenuConfigureItemsCustom(%i, Object(%d), %d, true)", menu_symbol, player->ObjectNumber(), index), Icon_Ok, nil, nil, "$Finished$");
@@ -762,7 +762,7 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 		
 		dummy->SetClrModulation(color);
 		
-		player->AddMenuItem(ColorizeString(rule_info.def->GetName(), color), command, rule_info.def, nil, i, nil, 4, dummy);
+		player->AddMenuItem(ColorizeString(rule_info.def->GetName(), color), command, GetIcon(rule_info.def), nil, i, nil, 4, dummy);
 		
 		if(i == selection && !conflict) check = true;
 		
@@ -801,7 +801,7 @@ protected func MenuConfigureTeams(id menu_symbol, object player, int selection)
 			
 			if (index >= 0)
 			{
-				player->AddMenuItem(Format("%s (%s)", GetTaggedPlayerName(index), team_name), Format("MenuSwitchTeam(Object(%d), %d)", player->ObjectNumber(), index), Rule_TeamAccount);
+				player->AddMenuItem(Format("%s (%s)", GetTaggedPlayerName(index), team_name), Format("MenuSwitchTeam(Object(%d), %d)", player->ObjectNumber(), index), GetIcon(Rule_TeamAccount));
 				
 				if (selection != nil && index == selection)
 				{
@@ -1243,4 +1243,31 @@ private func GetItemConfiguration(string key, proplist configuration)
 private func SetItemConfiguration(string key, proplist value)
 {
 	return SetProperty(key, value, GetProperty(GAMECONFIG_Proplist_Items, configured_items));
+}
+
+/**
+ Allows overriding the icons for objects that appear in the game configuration.
+ This function gets called by some of the AddMenuItem()-calls in this object.
+ @par definition The icon that would be displayed. Uses the value of the 
+                 callback {@c GetGameConfigurationIcon()} instead of
+                 {@c definition} if that function returns a value other
+                 than {@c nil}.  
+ @version 0.2.0
+ */
+public func GetIcon(id definition)
+{
+	if (definition == nil)
+	{
+		FatalError("GetIcon: expected a parameter that is not nil");
+	}
+
+	var override = definition->~GetGameConfigurationIcon();
+	if (override)
+	{
+		return override;
+	}
+	else
+	{
+		return definition;
+	}
 }
