@@ -20,14 +20,14 @@ protected func DoSetup(int round_number)
 protected func RelaunchPlayer(int victim, int killer)
 {
 	_inherited(victim, killer, ...);
-	
+
 	DoScore(victim, -1, true);
-	
+
 	if (IsPlayerEliminated(victim))
 	{
 		// TODO: stop relaunching, or whatever
 	}
-	
+
 	DoWinCheck();
 
 	return;
@@ -41,14 +41,14 @@ protected func DoWinCheck()
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var player = GetPlayerByIndex(i);
-		
+
 		if (!IsPlayerEliminated(player))
 		{
 			candidates++;
 			winner = player;
 		}
 	}
-	
+
 	if (candidates == 1)
 	{
 		SetScore(winner, GetWinScore());
