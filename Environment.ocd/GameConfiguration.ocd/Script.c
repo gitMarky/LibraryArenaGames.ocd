@@ -531,7 +531,7 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 			var config = spawnpoint_configurations[i];
 			if (config == nil)
 			{
-				Log("this is seriously wrong: %d", i);
+				DebugLog("this is seriously wrong: %d", i);
 				continue;
 			}
 			
@@ -918,7 +918,7 @@ protected func PreconfigureRules()
 		if (prop != nil)
 		{
 			prop.is_active = true;
-			Log("Preconfiguring rule %v", rule_id);
+			DebugLog("Preconfiguring rule %v", rule_id);
 		}
 	}
 }
@@ -978,7 +978,7 @@ protected func ScanSpawnPoints()
 			
 			if (desc == nil || desc == "") desc = "Unknown";
 			
-			Log("Checking spawnpoint type %s; config: %v", key, current_config);
+			DebugLog("Checking spawnpoint type %s; config: %v", key, current_config);
 			
 			SetProperty(GAMECONFIG_Proplist_Desc, desc, current_config);
 			SetItemConfiguration(key, current_config);
@@ -1028,7 +1028,7 @@ private func ConfigureItemSet(id menu_symbol, object player, int selection)
 	if (spawnpoint_configurations != nil)
 	{
 		var configuration = spawnpoint_configurations[selection];
-		Log("Set configuration to %s", configured_items.name);
+		DebugLog("Set configuration to %s", configured_items.name);
 		
 		configured_items.key = configuration.key;
 		configured_items.name = configuration.name;

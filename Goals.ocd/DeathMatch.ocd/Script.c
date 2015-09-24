@@ -9,7 +9,7 @@ public func GetDefaultWinScore()
 
 protected func RelaunchPlayer(int victim, int killer)
 {
-	Log("DM: Relaunching");
+	//DebugLog("DM: Relaunching");
 	_inherited(victim, killer, ...);
 
 	if (victim != killer)
