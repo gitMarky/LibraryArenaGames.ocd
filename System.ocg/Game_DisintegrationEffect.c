@@ -1,6 +1,7 @@
 
 static const EFFECT_Disintegration_Name = "ArenaDisint";
 static const EFFECT_Disintegration_BaseAlpha = 60;
+static const EFFECT_Disintegration_Precision = 100;
 
 /**
  Fades out and removes an object over a short amount of time.
@@ -47,8 +48,8 @@ global func FxArenaDisintStart (object target, proplist effect, int temp, int li
 
 	effect.lifetime = lifetime;
 	effect.dt = dt;
-	effect.dy = dy;
-	effect.y = target->GetY();
+	effect.dy = dy * EFFECT_Disintegration_Precision;
+	effect.y = target->GetY(EFFECT_Disintegration_Precision);
 	effect.r = GetRGBaValue(target->GetColor(), RGBA_RED);
 	effect.g = GetRGBaValue(target->GetColor(), RGBA_GREEN);
 	effect.b = GetRGBaValue(target->GetColor(), RGBA_BLUE);
@@ -125,10 +126,10 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 
 		ry = Cos(r, target->GetDefHeight() / 2) + Sin(r, target->GetDefWidth() / 2);
 
-		target->CreateParticle("Magic", PV_Random(rx1, rx2), PV_Random(ry / 2, ry), 0, -2 + effect.dy / 2, PV_Random(25, 40), Particles_Disintegrate(diff));
+		target->CreateParticle("Magic", PV_Random(rx1, rx2), PV_Random(ry / 2, ry), 0, -2 + effect.dy / (2 * EFFECT_Disintegration_Precision), PV_Random(25, 40), Particles_Disintegrate(diff));
 	}
 
-	target->SetPosition(target->GetX(), effect.y + dy);
+	target->SetPosition(target->GetX(EFFECT_Disintegration_Precision), effect.y + dy, false, EFFECT_Disintegration_Precision);
 	target->SetYDir();
 }
 
