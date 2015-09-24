@@ -62,5 +62,5 @@ public func InstantRelaunch()
 		FatalError("There was no object that can be relaunched. The function PrepareRelaunch() or StartRelaunch() should be called first.");
 	}
 	
-	RelaunchClonk();
+	RelaunchCrew();
 }
