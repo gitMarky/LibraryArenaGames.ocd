@@ -103,7 +103,7 @@ protected func Initialize()
 	round_end_blocker = CreateArray();
 	round_start_blocker = CreateArray();
 	
-	ScheduleCall(this, "NextRound", 5, 0);
+	ScheduleCall(this, this.NextRound, 5, 0);
 }
 
 /**
@@ -114,7 +114,7 @@ protected func Initialize()
  */
 public func Activate(int player_index)
 {
-	MessageWindow(GetProperty("Description"), player_index);
+	MessageWindow(this.Description, player_index);
 	return true;
 }
 
@@ -220,7 +220,7 @@ protected func OnRoundReset(int round_number)
 		}
 	}
 	
-	ScheduleCall(this, "PrepareRoundStart", 5, 0);
+	ScheduleCall(this, this.PrepareRoundStart, 5, 0);
 }
 
 
@@ -298,7 +298,7 @@ private func DoRoundStart()
 	round_has_started = true;
 	GameCallEx(ROUND_Callback_OnRoundStart, round_counter);
 	
-	ScheduleCall(this, "PrepareRoundEnd", 5, 0);
+	ScheduleCall(this, this.PrepareRoundEnd, 5, 0);
 }
 
 /**
