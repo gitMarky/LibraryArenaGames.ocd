@@ -1,0 +1,2 @@
+Name=Turns
+Description=When this rule is activated, a scenario is played in multiple turns.

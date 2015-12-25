@@ -1,0 +1,2 @@
+Name=Zugbasiertes Spiel
+Description=Wenn diese Spielregel aktiviert ist, läuft ein Szenario über mehrere Züge ab.
