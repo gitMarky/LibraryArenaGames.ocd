@@ -68,6 +68,11 @@ global func RoundManager()
 
 static const ROUND_Number_Default = -1;
 
+static const ROUND_Callback_OnRoundReset = "OnRoundReset";
+static const ROUND_Callback_OnRoundStart = "OnRoundStart";
+static const ROUND_Callback_OnRoundEnd = "OnRoundEnd";
+
+
 // locals: internal information
 
 local round_counter;	 // int: the number of the current round. Starts at 1.
@@ -245,7 +250,7 @@ private func NextRound()
 	// increase round number
 	round_counter++;
 	
-	GameCallEx("OnRoundReset", round_counter);
+	GameCallEx(ROUND_Callback_OnRoundReset, round_counter);
 }
 
 /**
@@ -281,7 +286,7 @@ private func DoRoundEnd()
 {
 	// reset the activity status
 	round_has_started = false;
-	GameCallEx("OnRoundEnd", round_counter);
+	GameCallEx(ROUND_Callback_OnRoundEnd, round_counter);
 }
 
 /**
@@ -291,7 +296,7 @@ private func DoRoundEnd()
 private func DoRoundStart()
 {
 	round_has_started = true;
-	GameCallEx("OnRoundStart", round_counter);
+	GameCallEx(ROUND_Callback_OnRoundStart, round_counter);
 	
 	ScheduleCall(this, "PrepareRoundEnd", 5, 0);
 }
