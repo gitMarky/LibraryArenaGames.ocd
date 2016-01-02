@@ -1002,7 +1002,7 @@ private func ChangeBotAmount(id menu_symbol, object player, int selection, int c
 			var color = HSL(Random(16) * 16, RandomX(200, 255), RandomX(100, 150));
 			CreateScriptPlayer("$BotName$", color);
 		}
-		
+
 		delay = 3;
 	}
 	else
@@ -1011,10 +1011,10 @@ private func ChangeBotAmount(id menu_symbol, object player, int selection, int c
 		for(var count = GetPlayerCount(C4PT_Script); count > 0 && amount > 0; count = GetPlayerCount(C4PT_Script))
 		{
 			amount--;
-			EliminatePlayer(GetPlayerByIndex(count - 1, C4PT_Script));
+			EliminatePlayer(GetPlayerByIndex(count - 1, C4PT_Script), true);
 		}
-		
-		delay = 80;
+
+		delay = 3;
 	}
 
 	// opens the menu right away, but updates the number
