@@ -119,7 +119,7 @@ private func ProhibitedWhileActive()
 	}
 }
 
-private func FxIntLightTimer(object target, int effect_nr, int timer)
+private func FxIntLightTimer(object target, proplist fx, int timer)
 {
 	if (target != this)
 	{

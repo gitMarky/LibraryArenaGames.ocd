@@ -393,7 +393,7 @@ private func IsSpawning()
  but you can implement this function for custom effects.
  @version 0.1.0
  */
-private func FxIntSpawnTimer(object target, int effect_nr, int timer)
+private func FxIntSpawnTimer(object target, proplist effect_nr, int timer)
 {
 	// error handling
 	var error_message = nil;

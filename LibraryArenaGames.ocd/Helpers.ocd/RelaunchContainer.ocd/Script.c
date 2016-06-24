@@ -89,7 +89,7 @@ private func OpenWeaponMenu(object clonk)
 	}
 }
 
-func FxIntTimeLimitTimer(object target, effect, int fxtime)
+func FxIntTimeLimitTimer(object target, proplist effect, int fxtime)
 {
 	if (!crew)
 	{

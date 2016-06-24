@@ -86,7 +86,7 @@ private func ProhibitedWhileActive()
 	}
 }
 
-private func FxIntTemporaryTimer(object target, int effect_nr, int timer)
+private func FxIntTemporaryTimer(object target, proplist effect_nr, int timer)
 {
 	if (target != this)
 	{

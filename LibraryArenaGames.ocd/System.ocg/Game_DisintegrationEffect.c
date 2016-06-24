@@ -27,7 +27,7 @@ global func Disintegrate(int lifetime, int dt, int dy, bool additive)
 	
 	if(!GetRDir()) SetRDir(RandomX(-7, 7));
 
-	AddEffect(EFFECT_Disintegration_Name, this, 1, 1, nil, 0, lifetime, dt, dy, additive);
+	AddEffect(EFFECT_Disintegration_Name, this, 1, 1, nil, nil, lifetime, dt, dy, additive);
 }
 
 global func IsDisintegrating()
