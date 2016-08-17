@@ -47,19 +47,6 @@ protected func Initialize()
 	
 	template_grass->RemoveObject();
 
-
-	// Smooth brick edges.
-	var x=[188, 205, 261, 244, 308, 325];
-	var y=[124, 124, 132, 132, 108, 108];
-	var d=[3, 2, 2, 3, 3, 2];
-	for (var i = 0; i < GetLength(x); i++)
-	{
-		var edge=CreateObject(BrickEdge, x[i], y[i], NO_OWNER);
-		edge->Initialize();
-		edge->SetP(d[i]);
-		edge->SetPosition(x[i],y[i]);
-		edge->PermaEdge();
-	}
 	
 	CreateObject(Environment_RoundManager);
 	CreateObject(Environment_Configuration);
