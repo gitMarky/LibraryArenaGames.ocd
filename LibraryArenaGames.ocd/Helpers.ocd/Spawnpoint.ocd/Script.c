@@ -126,7 +126,7 @@ protected func Construction(object by_object)
 	spawn_object = CreateArray();
 	spawn_timer = CreateArray();
 	spawn_globally = false;
-	
+
 	this.Collectible = false;
 }
 

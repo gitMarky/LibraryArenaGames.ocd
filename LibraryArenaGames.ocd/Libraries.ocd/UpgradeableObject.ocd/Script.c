@@ -25,8 +25,7 @@ public func Initialize()
  */
 public func HasUpgrade(id upgrade)
 {
-	var index = IsValueInArray(GetUpgrades(), upgrade);
-	return (index > -1);
+	return IsValueInArray(GetUpgrades(), upgrade);
 }
 
 
@@ -53,6 +52,7 @@ public func Upgrade(id upgrade)
 	{
 		PushBack(GetUpgrades(), upgrade);
 		this->~OnUpgrade(upgrade);
+		return true;
 	}
 }
 
