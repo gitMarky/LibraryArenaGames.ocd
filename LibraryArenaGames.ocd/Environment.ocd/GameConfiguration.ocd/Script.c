@@ -801,7 +801,7 @@ protected func MenuConfigureTeams(id menu_symbol, object player, int selection)
 			
 			if (index >= 0)
 			{
-				player->AddMenuItem(Format("%s (%s)", GetTaggedPlayerName(index), team_name), Format("MenuSwitchTeam(Object(%d), %d)", player->ObjectNumber(), index), GetIcon(Rule_TeamAccount));
+				player->AddMenuItem(Format("%s (%s)", GetTaggedPlayerName(index), team_name), Format("MenuSwitchTeam(Object(%d), %d)", player->ObjectNumber(), index), GetIcon(Rule_TeamAccount, team));
 				
 				if (selection != nil && index == selection)
 				{
@@ -1251,17 +1251,19 @@ private func SetItemConfiguration(string key, proplist value)
  @par definition The icon that would be displayed. Uses the value of the 
                  callback {@c GetGameConfigurationIcon()} instead of
                  {@c definition} if that function returns a value other
-                 than {@c nil}.  
+                 than {@c nil}.
+ @par number The icon number to be displayed. This is usually not needed, but in some cases,
+             such as team selection, this may be useful.
  @version 0.2.0
  */
-public func GetIcon(id definition)
+public func GetIcon(id definition, int number)
 {
 	if (definition == nil)
 	{
 		FatalError("GetIcon: expected a parameter that is not nil");
 	}
 
-	var override = definition->~GetGameConfigurationIcon();
+	var override = definition->~GetGameConfigurationIcon(number);
 	if (override)
 	{
 		return override;
