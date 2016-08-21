@@ -246,7 +246,7 @@ protected func OpenMainMenu(id dummy)
  */
 protected func CreateMainMenu(object player)
 {
-	CreateConfigurationMenu(player, GetID(), "$MenuCaption$");
+	CreateConfigurationMenu(player, GetIcon(GetID()), "$MenuCaption$");
 
 	MainMenuAddItemGoal(player);
 	MainMenuAddItemWinScore(player);
