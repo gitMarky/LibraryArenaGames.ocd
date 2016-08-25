@@ -6,7 +6,7 @@
  	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
  	<tr><td>SPAWNPOINT_Timer_Default</td> <td>1000</td>  <td>The default timer until an object respawns is this many frames.</td></tr>
  	<tr><td>SPAWNPOINT_Timer_Infinite</td> <td>-1</td>   <td>Use this value if you want the object to spawn only once, when the game starts.</td></tr>
-    <tr><td>SPAWNPOINT_Effect_Interval</td> <td>10</td>  <td>Defines how often the spawn point checks if the object should respawn, in frames.</td></tr>
+    <tr><td>SpawnPointEffectInterval()</td> <td>10</td>  <td>Defines how often the spawn point checks if the object should respawn, in frames.</td></tr>
  </table>
 @title Spawnpoint
 @id index
@@ -19,7 +19,7 @@ static const SPAWNPOINT_Timer_Default = 1000;
 static const SPAWNPOINT_Timer_Infinite = -1;
 
 static const SPAWNPOINT_Effect = "IntSpawn";
-static const SPAWNPOINT_Effect_Interval = 10;
+public func  SpawnPointEffectInterval(){return 10;}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -362,7 +362,7 @@ private func StartSpawning()
 {
 	if (!IsSpawning())
 	{
-		AddEffect(SPAWNPOINT_Effect, this, 1, SPAWNPOINT_Effect_Interval, this);
+		AddEffect(SPAWNPOINT_Effect, this, 1, SpawnPointEffectInterval(), this);
 	}
 }
 
@@ -388,7 +388,7 @@ private func IsSpawning()
 
 /**
  The internal timer function of the spawn effect.
- This function is called every {@c SPAWNPOINT_Effect_Interval} frames. It calls
+ This function is called every {@c SpawnPointEffectInterval()} frames. It calls
  {@c EffectTimer(int timer)} in the spawn point. The original implementation has no effect,
  but you can implement this function for custom effects.
  @version 0.1.0
@@ -452,7 +452,7 @@ private func DecreaseTimer(int index)
 		
 		if (timer_interval != SPAWNPOINT_Timer_Infinite)
 		{
-			spawn_timer[index] -= SPAWNPOINT_Effect_Interval;
+			spawn_timer[index] -= SpawnPointEffectInterval();
 		}
 	}
 }
@@ -575,18 +575,17 @@ protected func RejectEntrance(object clonk)
 
 private func EffectCollect(object item, object clonk)
 {
-	clonk->Sound("Grab", 0, 0, clonk->GetOwner());
+	clonk->Sound("Clonk::Action::Grab", 0, 0, clonk->GetOwner());
 }
 
 private func DoCollectObject(object item, int index, object clonk)
 {	
 	clonk->Collect(item);
 		
-	if (item->Contained() == this)
+	if (item && item->Contained() == this)
 	{
 		// collecting did not work
 		// item->RemoveObject();
-		
 	}
 	else
 	{
