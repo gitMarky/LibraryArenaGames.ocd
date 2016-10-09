@@ -27,6 +27,27 @@ public func GetDescription(int plr)
 	}
 }
 
+
+public func GetShortDescription(int plr)
+{
+	var team = GetPlayerTeam(plr);
+	var score_message = "";
+
+	// start with own team
+	if (team && team > 0)
+		score_message = GetScoreMessage(team);
+
+	var other_team;
+	for (var i = 0; i < GetTeamCount(); ++i)
+	{
+		other_team = GetTeamByIndex(i);
+		if (other_team > 0 && other_team != team)
+			score_message = Format("%s : %s", score_message, GetScoreMessage(other_team));
+	}
+	
+	return score_message;
+}
+
 public func Activate(int byplr)
 {
 	var msg = GetDescription(byplr);
@@ -63,6 +84,11 @@ private func GetPlayerInTeamCount(int team)
 public func GetFactionCount()
 {
 	return 2;
+}
+
+private func GetFactionColor(int team)
+{
+	return GetTeamColor(team);
 }
 
 local Name = "$Name$";

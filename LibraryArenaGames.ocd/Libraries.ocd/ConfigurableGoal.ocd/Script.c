@@ -209,4 +209,18 @@ public func Destruction()
 	this->~DoCleanup(round_number);
 }
 
+private func GetScoreMessage(int faction)
+{
+	var color = this->GetFactionColor(faction);
+	var score = GetScore(faction);
+	if (color)
+		return Format("<c %x>%d</c>", color, score);
+	else
+		return Format("%d", score);
+}
+
+private func GetFactionColor(int faction)
+{
+}
+
 local Name = "$Name$";

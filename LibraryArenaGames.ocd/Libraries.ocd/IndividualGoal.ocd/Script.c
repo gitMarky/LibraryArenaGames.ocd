@@ -11,34 +11,39 @@ local Name = "$Name$";
 
 protected func Initialize()
 {
-	_inherited();
+	_inherited(...);
 	
-	var plr = 0;
+	var player = 0;
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var current = GetPlayerByIndex(i);
 		
-		if (current > plr)
+		if (current > player)
 		{
-			plr = current;
+			player = current;
 		}
 	}
 	
-	EnsureArraySize(plr);
+	EnsureArraySize(player);
 }
 
-protected func InitializePlayer(int plr)
+protected func InitializePlayer(int player)
 {
 	_inherited(...);
 	
-	EnsureArraySize(plr);
+	EnsureArraySize(player);
 }
 
-private func EnsureArraySize(int plr)
+private func EnsureArraySize(int player)
 {
-	for (var i = 0; i <= plr && GetLength(score_list_points) <= plr; i++)
+	for (var i = 0; i <= player && GetLength(score_list_points) <= player; i++)
 	{
 		PushBack(score_list_points, 0);
 		PushBack(score_list_rounds, 0);
 	}
+}
+
+private func GetFactionColor(int player)
+{
+	return GetPlayerColor(player);
 }
