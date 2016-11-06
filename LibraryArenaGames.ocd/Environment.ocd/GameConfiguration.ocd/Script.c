@@ -150,6 +150,7 @@ protected func PostInitialize()
 {
 	ScanRules();
 	PreconfigureRules();
+	PreconfigureBots();
 	
 	ScanSpawnPoints();
 	
@@ -923,6 +924,11 @@ protected func PreconfigureRules()
 	}
 }
 
+protected func PreconfigureBots()
+{
+	// do nothing by default
+}
+
 protected func ScanRules()
 {
 	for (var i = 0, rule_id; rule_id = GetDefinition(i); i++)
@@ -994,26 +1000,12 @@ private func ChangeBotAmount(id menu_symbol, object player, int selection, int c
 	
 	if (change > 0)
 	{
-		// create a new ai player
-		while(amount > 0)
-		{
-			amount--;
-			
-			var color = HSL(Random(16) * 16, RandomX(200, 255), RandomX(100, 150));
-			CreateScriptPlayer("$BotName$", color);
-		}
-
+		AddBots(amount);
 		delay = 3;
 	}
 	else
 	{
-		// eliminate the latest created ai players
-		for(var count = GetPlayerCount(C4PT_Script); count > 0 && amount > 0; count = GetPlayerCount(C4PT_Script))
-		{
-			amount--;
-			EliminatePlayer(GetPlayerByIndex(count - 1, C4PT_Script), true);
-		}
-
+		RemoveBots(amount);
 		delay = 3;
 	}
 
@@ -1021,6 +1013,31 @@ private func ChangeBotAmount(id menu_symbol, object player, int selection, int c
 	// as soon as a bot joins (waiting_for_bot_to_join)
 	MenuConfigureBots(GAMECONFIG_Icon_Bots, player, selection, true);
 	ScheduleCall(this, "MenuConfigureBots", delay, 0, GAMECONFIG_Icon_Bots, player, selection);
+}
+
+private func AddBots(int amount)
+{
+	// create a new ai player
+	while(amount > 0)
+	{
+		amount--;
+		AddBot();
+	}
+}
+
+private func AddBot(string name, int color)
+{
+	CreateScriptPlayer(name ?? "$BotName$", color ?? HSL(Random(16) * 16, RandomX(200, 255), RandomX(100, 150)));
+}
+
+private func RemoveBots(int amount)
+{
+	// eliminate the latest created ai players
+	for(var count = GetPlayerCount(C4PT_Script); count > 0 && amount > 0; count = GetPlayerCount(C4PT_Script))
+	{
+		amount--;
+		EliminatePlayer(GetPlayerByIndex(count - 1, C4PT_Script), true);
+	}
 }
 
 private func ConfigureItemSet(id menu_symbol, object player, int selection)
@@ -1168,11 +1185,13 @@ public func ContainPlayer(int player)
  Puts a single clonk in a relaunch container.
  @par crew The player's clonk.
  @version 0.1.0
+ @return returns the relaunch container since version 0.2.0
  */
 public func ContainCrew(object crew)
 {
 	var container = CreateObject(RelaunchContainerEx, crew->GetX() - GetX(), crew->GetY() - GetY());
 	container->PrepareRelaunch(crew);
+	return container;
 }
 
 /**
