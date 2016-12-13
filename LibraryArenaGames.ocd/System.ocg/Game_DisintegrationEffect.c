@@ -45,6 +45,8 @@ global func FxArenaDisintStart (object target, proplist effect, int temp, int li
 {
 	if (!lifetime) lifetime = 50;
 	if (!dt) dt = RGBA_MAX;
+	
+	target.Collectible = false;
 
 	effect.lifetime = lifetime;
 	effect.dt = dt;
