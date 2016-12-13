@@ -580,6 +580,7 @@ private func EffectCollect(object item, object clonk)
 
 private func DoCollectObject(object item, int index, object clonk)
 {	
+	item.Visibility = VIS_All; // Make item visible!
 	clonk->Collect(item);
 		
 	if (item && item->Contained() == this)
