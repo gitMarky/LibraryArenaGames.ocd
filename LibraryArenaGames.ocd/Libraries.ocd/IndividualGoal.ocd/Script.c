@@ -29,7 +29,7 @@ protected func Initialize()
 
 protected func InitializePlayer(int player)
 {
-	_inherited(...);
+	_inherited(player, ...);
 	
 	EnsureArraySize(player);
 }
