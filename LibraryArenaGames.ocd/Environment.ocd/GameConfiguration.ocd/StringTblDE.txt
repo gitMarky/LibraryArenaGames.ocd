@@ -1,4 +1,4 @@
-Name=Spielregelwahl
+ï»¿Name=Spielregelwahl
 Description=Wenn aktiviert kann der erste Spieler zu Beginn einer Runde die zu benutzenden Spielregeln einstellen und das Spielziel konfigurieren.
 
 MenuCaption=Konfiguration
@@ -8,9 +8,9 @@ TxtConfigureBots=Bots
 TxtConfigureRules=Spielregeln
 TxtConfigureItems=Items
 TxtConfigureSpecificItems=Eigene Konfiguration
-TxtConfigureSlot=Wähle Item für %s
+TxtConfigureSlot=WÃ¤hle Item fÃ¼r %s
 TxtPlayersBots=Bots/Spieler gesamt: %d/%d
-MoreWinScore=Punktzahl erhöhen
+MoreWinScore=Punktzahl erhÃ¶hen
 LessWinScore=Punktzahl senken
 MoreBots=Ein Bot mehr
 LessBots=Ein Bot weniger
@@ -18,22 +18,22 @@ LessBots=Ein Bot weniger
 BotName=Bot
 
 
-ChoosingPlayer=%s wählt jetzt die Spielkonfiguration, bitte noch etwas Geduld
+ChoosingPlayer=%s wÃ¤hlt jetzt die Spielkonfiguration, bitte noch etwas Geduld
 Choosing=%s sucht gerade die Regeln aus, noch ein wenig Geduld...
-Goal=Das Spielziel wurde gewählt: %s
+Goal=Das Spielziel wurde gewÃ¤hlt: %s
 Rules=Regelwahl abgeschlossen: 
 CreateRules=Spielregeln
-DarknessChose=Intensität der Dunkelheit
+DarknessChose=IntensitÃ¤t der Dunkelheit
 AIMenu=KIs einstellen
 RuleInfo=Spielregel einstellen
-AIInfo=Diverse Einstellungen für KIs
+AIInfo=Diverse Einstellungen fÃ¼r KIs
 Finished=Fertig
 
 
-MoreDarkness=Dunkelheit erhöhen
+MoreDarkness=Dunkelheit erhÃ¶hen
 LessDarkness=Dunkelheit senken
 
 NewTeam=Neues Team
 FairTeams=Faire Teams
-FairTeamsInfo=Alle Teams auffüllen, so dass überall die gleiche Anzahl Clonks vorhanden ist
+FairTeamsInfo=Alle Teams auffÃ¼llen, so dass Ã¼berall die gleiche Anzahl Clonks vorhanden ist
 OnlyDeleteLastTeam=Das letzte Team muss als erstes entfernt werden!
