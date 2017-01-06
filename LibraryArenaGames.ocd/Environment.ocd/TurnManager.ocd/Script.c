@@ -267,8 +267,11 @@ private func PrepareTurnEnd()
 private func DoTurnEnd()
 {
 	// reset the activity status
-	turn_has_started = false;
-	GameCallEx(TURN_Callback_OnTurnEnd, turn_counter);
+	if (turn_has_started)
+	{
+		turn_has_started = false;
+		GameCallEx(TURN_Callback_OnTurnEnd, turn_counter);
+	}
 }
 
 /**
@@ -277,10 +280,13 @@ private func DoTurnEnd()
  */
 private func DoTurnStart()
 {
-	turn_has_started = true;
-	GameCallEx(TURN_Callback_OnTurnStart, turn_counter);
-	
-	ScheduleCall(this, this.PrepareTurnEnd, 5, 0);
+	if (!turn_has_started)
+	{
+		turn_has_started = true;
+		GameCallEx(TURN_Callback_OnTurnStart, turn_counter);
+		
+		ScheduleCall(this, this.PrepareTurnEnd, 5, 0);
+	}
 }
 
 /**

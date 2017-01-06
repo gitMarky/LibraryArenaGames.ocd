@@ -284,9 +284,12 @@ private func PrepareRoundEnd()
  */
 private func DoRoundEnd()
 {
-	// reset the activity status
-	round_has_started = false;
-	GameCallEx(ROUND_Callback_OnRoundEnd, round_counter);
+	if (round_has_started)
+	{
+		// reset the activity status
+		round_has_started = false;
+		GameCallEx(ROUND_Callback_OnRoundEnd, round_counter);
+	}
 }
 
 /**
@@ -295,10 +298,13 @@ private func DoRoundEnd()
  */
 private func DoRoundStart()
 {
-	round_has_started = true;
-	GameCallEx(ROUND_Callback_OnRoundStart, round_counter);
-	
-	ScheduleCall(this, this.PrepareRoundEnd, 5, 0);
+	if (!round_has_started)
+	{
+		round_has_started = true;
+		GameCallEx(ROUND_Callback_OnRoundStart, round_counter);
+		
+		ScheduleCall(this, this.PrepareRoundEnd, 5, 0);
+	}
 }
 
 /**
