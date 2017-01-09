@@ -611,6 +611,12 @@ protected func OnConfigurationEnd(object configuration)
 	{
 		spawn_id = configuration->GetSpawnPointItem(spawn_id_parameter);
 	}
+
+	// Update name, so that the collected item is not "spawn point"
+	if (spawn_id && this.Collectible)
+	{
+		SetName(spawn_id->~GetName() ?? GetName());
+	}
 }
 
 protected func OnRoundStart()
