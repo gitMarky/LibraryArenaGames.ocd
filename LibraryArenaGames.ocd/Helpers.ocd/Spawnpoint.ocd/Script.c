@@ -106,7 +106,7 @@ local spawn_globally;		// bool: spawn objects for every player individually?
 							//       true - there is only one object - first come, first serve
 							//       false - every player can collect one object
 local spawn_team;			// int: item can be collected by a team only
-
+local spawn_visibility;		// array map: player index to spawned object, original visibility
 
 /**
  Marks the object as a spawn point.
@@ -127,6 +127,7 @@ protected func Construction(object by_object)
 	
 	spawn_object = CreateArray();
 	spawn_timer = CreateArray();
+	spawn_visibility = CreateArray();
 	spawn_globally = false;
 	
 	spawn_team = nil;
@@ -508,6 +509,7 @@ private func DoSpawnObject(int index)
 	if (is_active && spawn_id != nil)
 	{
 		spawn_object[index] = CreateObject(spawn_id, 0, 0, owner);
+		spawn_visibility[index] = spawn_object[index].Visibility;
 		spawn_object[index].Visibility = vis;
 		
 		if (this.Collectible)
@@ -604,7 +606,7 @@ private func EffectCollect(object item, object clonk)
 
 private func DoCollectObject(object item, int index, object clonk)
 {	
-	item.Visibility = VIS_All; // Make item visible!
+	item.Visibility = spawn_visibility[index] ?? VIS_All; // Make item visible!
 	
 	if (!item->~RejectCollectionFromSpawnPoint(this, clonk))
 	{
