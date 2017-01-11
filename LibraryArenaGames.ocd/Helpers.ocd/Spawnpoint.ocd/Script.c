@@ -105,6 +105,8 @@ local spawn_timer;			// array map: player index to respawn countdown
 local spawn_globally;		// bool: spawn objects for every player individually?
 							//       true - there is only one object - first come, first serve
 							//       false - every player can collect one object
+local spawn_team;			// int: item can be collected by a team only
+
 
 /**
  Marks the object as a spawn point.
@@ -126,6 +128,8 @@ protected func Construction(object by_object)
 	spawn_object = CreateArray();
 	spawn_timer = CreateArray();
 	spawn_globally = false;
+	
+	spawn_team = nil;
 
 	this.Collectible = false;
 }
@@ -157,9 +161,10 @@ public func CopyDataFromTemplate(object template)
 	// spawn_object = template.spawn_object;
 	// spawn_timer = template.spawn_timer;
 	spawn_globally = template.spawn_globally;
-	// spawn_category = template.spawn_category;
 	spawn_description = template.spawn_description;
-	
+
+	spawn_team = template.spawn_team;
+
 	this.Collectible = template.Collectible;
 }
 
@@ -342,6 +347,24 @@ public func SetDescription(string description)
 	return this;
 }
 
+
+/**
+ Sets a team, so that items are collectible by team members only.
+
+ @par team The team number that can collect this item.
+
+ @return object Returns the spawn point object, so that further function calls can be issued.
+ @version 0.3.0
+ */
+public func SetTeam(int team)
+{
+	ProhibitedWhileSpawning();
+
+	spawn_team = team;
+	return this;
+}
+
+
 /**
  Gets a description of the spawn point type, if it is configurable in the game configuration.
  @related {@link SpawnPoint#SetDescription}
@@ -424,7 +447,7 @@ private func FxIntSpawnTimer(object target, proplist effect_nr, int timer)
 	}
 	else
 	{
-		for(var i = 0; i < GetPlayerCount(); i++)
+		for (var i = 0; i < GetPlayerCount(); i++)
 		{
 			DecreaseTimer(i);
 		}
@@ -454,6 +477,7 @@ private func DecreaseTimer(int index)
 		{
 			spawn_timer[index] -= SpawnPointEffectInterval();
 		}
+		return true;
 	}
 }
 
