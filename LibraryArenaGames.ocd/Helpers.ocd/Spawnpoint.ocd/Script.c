@@ -602,13 +602,29 @@ public func RejectEntrance(object clonk)
 
 private func TryCollectObject(object clonk)
 {
- 	if (!is_active
-	 || !(clonk->GetOCF() & OCF_CrewMember)
-	 || (clonk->~CannotCollectFromSpawnpoints()))
+	if (!clonk)
+	{
+		FatalError("Trying to give the object to nil.");
+	}
+
+	// Prevent collection if inactive
+ 	if (!is_active)
+ 	{
+ 		return;
+ 	}
+
+	// Prevent collection for invalid teams
+	if (spawn_team && (spawn_team != GetPlayerTeam(clonk->GetOwner())))
 	{
 		return;
 	}
 
+ 	// Prevent collection if the clonk is not suited
+ 	if (!(clonk->GetOCF() & OCF_CrewMember) || (clonk->~CannotCollectFromSpawnpoints()))
+	{
+		return;
+	}
+	
 	var item_index = -1;
 	
 	if (spawn_globally)
