@@ -562,6 +562,11 @@ private func RemoveSpawnedObject(int index)
 
 protected func RejectEntrance(object clonk)
 {
+	return TryCollectObject(clonk);
+}
+
+private func TryCollectObject(object clonk)
+{
  	if (!is_active
 	 || !(clonk->GetOCF() & OCF_CrewMember)
 	 || (clonk->~CannotCollectFromSpawnpoints()))
