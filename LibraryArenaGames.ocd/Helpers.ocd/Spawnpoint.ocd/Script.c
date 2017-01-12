@@ -136,7 +136,6 @@ public func Construction(object by_object)
 	
 	spawn_team = nil;
 
-	this.Collectible = false;
 	spawn_collectible = false;
 }
 
@@ -171,8 +170,6 @@ public func CopyDataFromTemplate(object template)
 	spawn_description = template.spawn_description;
 
 	spawn_team = template.spawn_team;
-
-	this.Collectible = template.Collectible;
 }
 
 
@@ -249,7 +246,6 @@ public func SetCollectible(bool collectible)
 {
 	ProhibitedWhileSpawning();
 
-	this.Collectible = collectible;
 	spawn_collectible = collectible;
 	return this;
 }
@@ -619,12 +615,6 @@ private func FxIntSpawnCollectTimer(object target, proplist effect_nr, int timer
 	}
 }
 
-public func RejectEntrance(object clonk)
-{
-	TryCollectObject(clonk);
-	return true;
-}
-
 
 private func TryCollectObject(object clonk)
 {
@@ -725,7 +715,8 @@ public func OnConfigurationEnd(object configuration)
 	}
 
 	// Update name, so that the collected item is not "spawn point"
-	if (spawn_id && this.Collectible)
+	// TODO: check if this is still necessary
+	if (spawn_id && spawn_collectible)
 	{
 		SetName(spawn_id->~GetName() ?? GetName());
 	}
