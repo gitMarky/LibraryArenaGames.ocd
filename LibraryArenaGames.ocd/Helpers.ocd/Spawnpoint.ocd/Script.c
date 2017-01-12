@@ -562,7 +562,8 @@ private func RemoveSpawnedObject(int index)
 
 protected func RejectEntrance(object clonk)
 {
-	return TryCollectObject(clonk);
+	TryCollectObject(clonk);
+	return true;
 }
 
 private func TryCollectObject(object clonk)
@@ -571,14 +572,14 @@ private func TryCollectObject(object clonk)
 	 || !(clonk->GetOCF() & OCF_CrewMember)
 	 || (clonk->~CannotCollectFromSpawnpoints()))
 	{
-		return true;
+		return;
 	}
-	
-	var index = -1;
+
+	var item_index = -1;
 	
 	if (spawn_globally)
 	{
-		index = 0;
+		item_index = 0;
 	}
 	else
 	{
@@ -586,22 +587,21 @@ private func TryCollectObject(object clonk)
 		{
 			if (GetPlayerByIndex(i) == clonk->GetOwner())
 			{
-				index = i;
+				item_index = i;
 				break;
 			}
 		}
 	}
 	
-	if (index > -1)
+	if (item_index > -1)
 	{
-		var item = spawn_object[index];
-		
+		var item = spawn_object[item_index];
+
 		if (item != nil)
 		{
-			DoCollectObject(item, index, clonk);
+			DoCollectObject(item, item_index, clonk);
 		}
 	}
-	return true;
 }
 
 private func EffectCollect(object item, object clonk)
