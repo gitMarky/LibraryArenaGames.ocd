@@ -170,6 +170,7 @@ public func CopyDataFromTemplate(object template)
 	spawn_description = template.spawn_description;
 
 	spawn_team = template.spawn_team;
+	spawn_collectible = template.spawn_collectible;
 }
 
 
