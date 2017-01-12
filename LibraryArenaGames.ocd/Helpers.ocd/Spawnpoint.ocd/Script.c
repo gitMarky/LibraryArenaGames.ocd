@@ -635,16 +635,9 @@ private func TryCollectObject(object clonk)
 	}
 	else
 	{
-		for (var i = 0; i < GetLength(spawn_object); i++)
-		{
-			if (GetPlayerByIndex(i) == clonk->GetOwner())
-			{
-				item_index = i;
-				break;
-			}
-		}
+		item_index = GetPlayerIndex(clonk->GetOwner());
 	}
-	
+
 	if (item_index > -1)
 	{
 		DoCollectObject(item_index, clonk);
