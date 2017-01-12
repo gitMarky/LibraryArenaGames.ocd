@@ -22,6 +22,7 @@ static const SPAWNPOINT_Effect = "IntSpawn";
 public func  SpawnPointEffectInterval(){return 10;}
 
 static const SPAWNPOINT_Effect_Collection = "IntSpawnCollect";
+public func  SpawnPointCollectionRadius(){return 10;}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -607,7 +608,7 @@ private func RemoveSpawnedObject(int index)
 
 private func FxIntSpawnCollectTimer(object target, proplist effect_nr, int timer)
 {
-	for (var crew in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20)))
+	for (var crew in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(SpawnPointCollectionRadius())))
 	{
 		if (TryCollectObject(crew))
 		{
