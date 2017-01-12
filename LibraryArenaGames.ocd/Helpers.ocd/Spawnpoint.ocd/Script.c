@@ -107,6 +107,8 @@ local spawn_globally;		// bool: spawn objects for every player individually?
 							//       false - every player can collect one object
 local spawn_team;			// int: item can be collected by a team only
 local spawn_visibility;		// array map: player index to spawned object, original visibility
+local spawn_collectible;    // bool: object can be collected
+
 
 /**
  Marks the object as a spawn point.
@@ -133,6 +135,7 @@ public func Construction(object by_object)
 	spawn_team = nil;
 
 	this.Collectible = false;
+	spawn_collectible = false;
 }
 
 
@@ -245,6 +248,7 @@ public func SetCollectible(bool collectible)
 	ProhibitedWhileSpawning();
 
 	this.Collectible = collectible;
+	spawn_collectible = collectible;
 	return this;
 }
 
@@ -544,10 +548,8 @@ private func DoSpawnObject(int index)
 		spawn_visibility[index] = spawn_object[index].Visibility;
 		spawn_object[index].Visibility = vis;
 		
-		if (this.Collectible)
+		if (spawn_collectible)
 		{
-			//spawn_object[index]->SetObjectLayer(spawn_object[index]);
-			//spawn_object[index].Collectible = false;
 			spawn_object[index]->Enter(this);
 			SetGraphics(nil, nil, GetOverlay(index), GFXOV_MODE_Object, nil, nil, spawn_object[index]);
 		}
