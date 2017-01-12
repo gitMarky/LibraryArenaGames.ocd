@@ -115,7 +115,7 @@ local spawn_visibility;		// array map: player index to spawned object, original 
 public func IsSpawnPoint(){ return true; }
 
 
-protected func Construction(object by_object)
+public func Construction(object by_object)
 {
 	timer_interval = SPAWNPOINT_Timer_Default;
 	spawn_id = nil;
@@ -393,10 +393,11 @@ public func GetDescription()
  @return The parameter that was used in {@link SpawnPoint#SetID} to configure the spawned object.
  @version 0.1.0
  */
-protected func GetIDParameter()
+public func GetIDParameter()
 {
 	return spawn_id_parameter;
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -485,6 +486,7 @@ private func FxIntSpawnTimer(object target, proplist effect_nr, int timer)
 	return FX_OK;
 }
 
+
 private func ProhibitedWhileSpawning()
 {
 	if (IsSpawning())
@@ -492,6 +494,7 @@ private func ProhibitedWhileSpawning()
 		FatalError("This function should be used for configuring the spawn point - it is not to be called while the spawn point is spawning");
 	}
 }
+
 
 private func DecreaseTimer(int index)
 {
@@ -509,6 +512,7 @@ private func DecreaseTimer(int index)
 		return true;
 	}
 }
+
 
 /**
  Spawns the configured object.
@@ -570,6 +574,7 @@ private func DoSpawnObject(int index)
 	}
 }
 
+
 /**
  Deletes a spawned object.
  @par index The objects are saved in an array, this parameter indicates the position in the array. 
@@ -588,11 +593,12 @@ private func RemoveSpawnedObject(int index)
 // handle collection
 
 
-protected func RejectEntrance(object clonk)
+public func RejectEntrance(object clonk)
 {
 	TryCollectObject(clonk);
 	return true;
 }
+
 
 private func TryCollectObject(object clonk)
 {
@@ -626,6 +632,7 @@ private func TryCollectObject(object clonk)
 		DoCollectObject(item_index, clonk);
 	}
 }
+
 
 private func DoCollectObject(int index, object clonk)
 {
@@ -661,6 +668,7 @@ private func DoCollectObject(int index, object clonk)
 	}
 }
 
+
 private func EffectCollect(object item, object clonk)
 {
 	clonk->Sound("Clonk::Action::Grab", 0, 0, clonk->GetOwner());
@@ -671,7 +679,8 @@ private func EffectCollect(object item, object clonk)
 //
 // Callbacks from game configuration and round managers
 
-protected func OnConfigurationEnd(object configuration)
+
+public func OnConfigurationEnd(object configuration)
 {
 	if (GetType(spawn_id_parameter) == C4V_String && configuration != nil)
 	{
@@ -685,19 +694,22 @@ protected func OnConfigurationEnd(object configuration)
 	}
 }
 
-protected func OnRoundStart()
+
+public func OnRoundStart()
 {
 	RemoveSpawnedObjects();
 	StartSpawning();
 }
 
-protected func OnRoundEnd()
+
+public func OnRoundEnd()
 {
 	StopSpawning();
 	RemoveSpawnedObjects();
 }
 
-protected func RemoveSpawnedObjects()
+
+private func RemoveSpawnedObjects()
 {
 	if (spawn_globally)
 	{
@@ -712,12 +724,14 @@ protected func RemoveSpawnedObjects()
 	}
 }
 
-protected func GetOverlay(int index)
+
+private func GetOverlay(int index)
 {
 	return GFX_Overlay + index;
 }
 
-protected func ResetTimer(int index)
+
+private func ResetTimer(int index)
 {
 	spawn_timer[index] = timer_interval;
 }
