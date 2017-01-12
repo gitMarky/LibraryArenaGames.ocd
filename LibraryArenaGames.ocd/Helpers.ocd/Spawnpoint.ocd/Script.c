@@ -21,6 +21,8 @@ static const SPAWNPOINT_Timer_Infinite = -1;
 static const SPAWNPOINT_Effect = "IntSpawn";
 public func  SpawnPointEffectInterval(){return 10;}
 
+static const SPAWNPOINT_Effect_Collection = "IntSpawnCollect";
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // definitions
@@ -419,6 +421,11 @@ private func StartSpawning()
 	{
 		AddEffect(SPAWNPOINT_Effect, this, 1, SpawnPointEffectInterval(), this);
 	}
+
+	if (spawn_collectible && !GetEffect(SPAWNPOINT_Effect_Collection, this))
+	{
+		AddEffect(SPAWNPOINT_Effect_Collection, this, 1, 1, this);
+	}
 }
 
 
@@ -433,6 +440,12 @@ private func StopSpawning()
 	if (effect != nil)
 	{
 		RemoveEffect(nil, this, effect);
+	}
+
+	var collect = GetEffect(SPAWNPOINT_Effect_Collection, this);
+	if (collect != nil)
+	{
+		RemoveEffect(nil, this, collect);
 	}
 }
 
@@ -595,6 +608,17 @@ private func RemoveSpawnedObject(int index)
 // handle collection
 
 
+private func FxIntSpawnCollectTimer(object target, proplist effect_nr, int timer)
+{
+	for (var crew in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20)))
+	{
+		if (TryCollectObject(crew))
+		{
+			break;
+		}
+	}
+}
+
 public func RejectEntrance(object clonk)
 {
 	TryCollectObject(clonk);
@@ -612,19 +636,19 @@ private func TryCollectObject(object clonk)
 	// Prevent collection if inactive
  	if (!is_active)
  	{
- 		return;
+ 		return false;
  	}
 
 	// Prevent collection for invalid teams
 	if (spawn_team && (spawn_team != GetPlayerTeam(clonk->GetOwner())))
 	{
-		return;
+		return false;
 	}
 
  	// Prevent collection if the clonk is not suited
  	if (!(clonk->GetOCF() & OCF_CrewMember) || (clonk->~CannotCollectFromSpawnpoints()))
 	{
-		return;
+		return false;
 	}
 	
 	var item_index = -1;
@@ -651,7 +675,7 @@ private func DoCollectObject(int index, object clonk)
 
 	if (!item)
 	{
-		return;
+		return false;
 	}
 
 	item.Visibility = spawn_visibility[index] ?? VIS_All; // Make item visible!
@@ -665,6 +689,7 @@ private func DoCollectObject(int index, object clonk)
 	{
 		// collecting did not work
 		// item->RemoveObject();
+		return false;
 	}
 	else
 	{
@@ -674,8 +699,9 @@ private func DoCollectObject(int index, object clonk)
 		{
 			spawn_object[index] = nil;
 		}
-		
+
 		SetGraphics(nil, this->GetID(), GetOverlay(index), GFXOV_MODE_Base);
+		return true;
 	}
 }
 
