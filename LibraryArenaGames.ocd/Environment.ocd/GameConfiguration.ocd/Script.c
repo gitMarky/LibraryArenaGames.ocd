@@ -45,6 +45,8 @@ static const GAMECONFIG_Property_Items = "items";
 local Name = "$Name$";
 local Description = "$Description$";
 
+local main_menu_entry_amount;
+
 local configuration_rules;		// proplist, consists of:
 								// * def - id: the id of the rule
 								// * instances - array: all objects with the given id
@@ -80,11 +82,35 @@ local color_active = -1; // = RGB(255, 255, 255);
 /**
  Makes bots configurable if it returns {@c true}.
  @return bool The default value is {@c true}.
+ @version 0.1.0
  */
 public func CanConfigureBots()
 {
 	return true;
 }
+
+
+/**
+ Makes goals configurable if it returns {@c true}.
+ @return bool The default value is {@c true}.
+ @version 0.3.0
+ */
+public func CanConfigureGoal()
+{
+	return true;
+}
+
+
+/**
+ Makes rules configurable if it returns {@c true}.
+ @return bool The default value is {@c true}.
+ @version 0.3.0
+ */
+public func CanConfigureRules()
+{
+	return true;
+}
+
 
 /**
  Makes configurable spawn points configurable if it returns {@c true}.
@@ -92,6 +118,17 @@ public func CanConfigureBots()
  @version 0.1.0
  */
 public func CanConfigureSpawnPoints()
+{
+	return true;
+}
+
+
+/**
+ Makes teams configurable if it returns {@c true}.
+ @return bool The default value is {@c true}.
+ @version 0.3.0
+ */
+public func CanConfigureTeams()
 {
 	return true;
 }
@@ -249,6 +286,8 @@ protected func CreateMainMenu(object player)
 {
 	CreateConfigurationMenu(player, GetIcon(GetID()), "$MenuCaption$");
 
+	main_menu_entry_amount = 0;
+
 	MainMenuAddItemGoal(player);
 	MainMenuAddItemWinScore(player);
 	MainMenuAddItemRules(player);
@@ -257,8 +296,16 @@ protected func CreateMainMenu(object player)
 	MainMenuAddItemItems(player);
 	
 	this->~MainMenuAddItemCustom(player);
-
-	MainMenuAddItemFinishConfiguration(player);
+	
+	if (main_menu_entry_amount > 0)
+	{
+		MainMenuAddItemFinishConfiguration(player);
+	}
+	else
+	{
+		player->CloseMenu();
+		ConfigurationFinished();
+	}
 }
 
 /**
@@ -272,6 +319,7 @@ protected func MainMenuAddItemBots(object player)
 	if (CanConfigureBots())
 	{
 		player->AddMenuItem("$TxtConfigureBots$", "MenuConfigureBots", GAMECONFIG_Icon_Bots, nil, player);
+		main_menu_entry_amount++;
 	}
 }
 
@@ -288,24 +336,29 @@ protected func MainMenuAddItemBots(object player)
  */
 protected func MainMenuAddItemGoal(object player)
 {
-	// do nothing if we have a goal already
-	if (configured_goal != nil) return;
-
-	// see if there are any goals
-	// otherwise assume that the scenario configured the goals already
-	var goals = this->~GetAvailableGoals();
-	if (goals == nil) return;
-
-	// create the only available goal
-	if (GetLength(goals) == 1)
+	if (CanConfigureGoal())
 	{
-		CreateGoal(goals[0]);
-	}
-	else // or configure a goal
-	{
-		// passing an array as parameter is not allowed
-		//player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", menu_symbol, nil, goals);
-		player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", GAMECONFIG_Icon_Goals, nil, player);
+		// do nothing if we have a goal already
+		if (configured_goal != nil) return;
+	
+		// see if there are any goals
+		// otherwise assume that the scenario configured the goals already
+		var goals = this->~GetAvailableGoals();
+		if (goals == nil) return;
+	
+		// create the only available goal
+		if (GetLength(goals) == 1)
+		{
+			CreateGoal(goals[0]);
+		}
+		else // or configure a goal
+		{
+			// passing an array as parameter is not allowed
+			//player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", menu_symbol, nil, goals);
+			player->AddMenuItem("$TxtConfigureGoals$", "MenuChooseGoal", GAMECONFIG_Icon_Goals, nil, player);
+		}
+		
+		main_menu_entry_amount++;
 	}
 }
 
@@ -320,6 +373,7 @@ protected func MainMenuAddItemItems(object player)
 	if (CanConfigureSpawnPoints())
 	{
 		player->AddMenuItem("$TxtConfigureItems$", "MenuConfigureItems", GAMECONFIG_Icon_Items, nil, player);
+		main_menu_entry_amount++;
 	}
 }
 
@@ -330,9 +384,15 @@ protected func MainMenuAddItemItems(object player)
  */
 protected func MainMenuAddItemRules(object player)
 {
-	// do nothing if no rules are configurable
-	if (GetLength(GetProperties(configuration_rules)) > 0)
-		player->AddMenuItem("$TxtConfigureRules$", "MenuConfigureRules", GAMECONFIG_Icon_Rules, nil, player);
+	if (CanConfigureRules())
+	{
+		// do nothing if no rules are configurable
+		if (GetLength(GetProperties(configuration_rules)) > 0)
+		{
+			player->AddMenuItem("$TxtConfigureRules$", "MenuConfigureRules", GAMECONFIG_Icon_Rules, nil, player);
+			main_menu_entry_amount++;
+		}
+	}
 }
 
 /**
@@ -342,11 +402,15 @@ protected func MainMenuAddItemRules(object player)
  */
 protected func MainMenuAddItemTeams(object player)
 {
-	// do nothing if the goal is not a team goal
-	//if (configured_goal != nil && !(configured_goal->~IsTeamGoal())) return;
-	if (!GetTeamCount()) return;
-	
-	player->AddMenuItem("$TxtConfigureTeams$", "MenuConfigureTeams", GAMECONFIG_Icon_Teams, nil, player);
+	if (CanConfigureTeams())
+	{
+		// do nothing if the goal is not a team goal
+		//if (configured_goal != nil && !(configured_goal->~IsTeamGoal())) return;
+		if (!GetTeamCount()) return;
+		
+		player->AddMenuItem("$TxtConfigureTeams$", "MenuConfigureTeams", GAMECONFIG_Icon_Teams, nil, player);
+		main_menu_entry_amount++;
+	}
 }
 
 /**
@@ -357,10 +421,15 @@ protected func MainMenuAddItemTeams(object player)
  */
 protected func MainMenuAddItemWinScore(object player)
 {
-	// do nothing if we have a goal already
-	if (configured_goal == nil) return;
-	
-	player->AddMenuItem(configured_goal->GetName(), "MenuConfigureGoal", GetIcon(configured_goal->GetID()), nil, player);
+	if (CanConfigureGoal())
+	{
+		// do nothing if we have a goal already
+		if (configured_goal == nil) return;
+		
+		player->AddMenuItem(configured_goal->GetName(), "MenuConfigureGoal", GetIcon(configured_goal->GetID()), nil, player);
+
+		main_menu_entry_amount++;
+	}
 }
 
 /**
@@ -848,7 +917,7 @@ protected func ChangeWinScore(id menu_symbol, object player, int selection, int 
 protected func ConfigurationFinished(id menu_symbol, parameter)
 {
 	this->~OnCloseMainMenu();
-	
+
 	configuration_finished = true;
 	
 	SetupGoal();
@@ -1089,7 +1158,7 @@ private func ChooseGoal(id menu_symbol, id goal, object player, int selection)
 private func SetupGoal()
 {
 	var goals = this->~GetAvailableGoals();
-
+	
 	if (!configured_goal && goals)
 	{
 		var multiple = [];
