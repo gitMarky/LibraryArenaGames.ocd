@@ -1,6 +1,6 @@
 [DefCore]
 id=SpawnPoint
-Version=6,0
+Version=8,0
 Category=C4D_StaticBack|C4D_Environment|C4D_MouseIgnore
 Width=10
 Height=10
