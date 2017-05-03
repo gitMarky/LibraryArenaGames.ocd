@@ -83,7 +83,7 @@ private func GetPlayerInTeamCount(int team)
 // 2 teams per default
 public func GetFactionCount()
 {
-	return 2;
+	return GetTeamCount();
 }
 
 private func GetFactionColor(int team)
