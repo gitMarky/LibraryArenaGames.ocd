@@ -219,8 +219,115 @@ private func GetScoreMessage(int faction)
 		return Format("%d", score);
 }
 
-private func GetFactionColor(int faction)
+public func GetFactionCount()
 {
+	FatalError("Implement this in a derived object");
 }
+
+public func GetFactionByIndex(int index)
+{
+	FatalError("Implement this in a derived object");
+}
+
+public func GetFactionColor(int faction)
+{
+	FatalError("Implement this in a derived object");
+}
+
+private func GetFactionName(int faction)
+{
+	return "$DefaultFactionName$";
+}
+
+
+/**
+ Determines the relative score of a faction,
+ that is the faction score compared to the best score.
+ */
+private func GetRelativeScore(int faction)
+{
+	var not_initialized = -1;
+	var best_faction = not_initialized, best_score = not_initialized;
+	for(var i = 0; i < GetFactionCount(); ++i)
+	{
+		var current_faction = GetFactionByIndex(i);
+		var score = GetScore(current_faction);
+		if (current_faction != faction && ((score > best_score) || (best_faction == -1)))
+		{
+			best_faction = current_faction;
+			best_score = score;
+		}
+	}
+	
+	var faction_score = GetScore(faction);
+	
+	// special case if there is only one player in the game
+	if(best_faction == not_initialized)
+	{
+		best_faction = faction;
+		best_score = faction_score;
+	}
+	
+	return {
+		best_faction = best_faction,
+		best_score = best_score,
+		relative_score = faction_score - best_score
+	};
+}
+
+
+public func Activate(int by_player)
+{
+	var message = GetDescription(by_player);
+	
+	MessageWindow(message, by_player);
+}
+
+
+private func EnsureArraySize(int factions)
+{
+	for (var i = 0; i <= factions && GetLength(score_list_points) <= factions; i++)
+	{
+		PushBack(score_list_points, 0);
+		PushBack(score_list_rounds, 0);
+	}
+}
+
+
+public func GetGoalDescription(int faction)
+{
+	if(IsFulfilled()) 
+	{
+		if (GetScore(faction) >= GetWinScore())
+		{
+			return "$MsgVictory$";
+		}
+		else
+		{
+			return "$MsgLost$";
+		}
+	} 
+	else 
+	{
+		var score = GetRelativeScore(faction);
+		if (score.relative_score > 0)
+		{
+			return Format("$MsgAhead$",	 score.relative_score,  GetFactionName(score.best_faction));
+		}
+		else if (score.relative_score < 0)
+		{
+			return Format("$MsgBehind$", -score.relative_score, GetFactionName(score.best_faction));
+		}
+		else if (score.best_faction == faction)
+		{
+			return Format("$MsgYouAreBest$", score.relative_score);
+		}
+		else
+		{
+			return Format("$MsgEqual$", GetFactionName(score.best_faction));
+		}
+	}
+}
+
 
 local Name = "$Name$";

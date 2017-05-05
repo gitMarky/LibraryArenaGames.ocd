@@ -7,7 +7,7 @@ public func GetDefaultWinScore()
 	return 10;
 }
 
-protected func RelaunchPlayer(int victim, int killer)
+public func RelaunchPlayer(int victim, int killer)
 {
 	//DebugLog("DM: Relaunching");
 	_inherited(victim, killer, ...);

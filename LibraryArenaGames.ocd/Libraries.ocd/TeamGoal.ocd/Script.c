@@ -7,30 +7,29 @@
 
 #include Library_ConfigurableGoal
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Properties
+
 public func IsTeamGoal()
 {
 	return true;
 }
 
-public func GetDescription(int plr)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Goal description texts
+
+public func GetDescription(int player)
 {
-	var flags = GetWinScore() - score_list_points[GetPlayerTeam(plr)];
-	if (IsFulfilled())
-		return "$MsgGoalFulfilled$";
-	else
-	{
-		var msg = "$MsgGoalCaptureTheFlag$";
-		if (flags == 1)
-			return Format("%s %s", msg, "$MsgGoalUnfulfilled1$");
-		else
-			return Format("%s %s", msg, Format("$MsgGoalUnfulfilledX$", flags));
-	}
+	var faction = GetPlayerTeam(player);
+	return GetGoalDescription(faction);
 }
 
 
-public func GetShortDescription(int plr)
+public func GetShortDescription(int player)
 {
-	var team = GetPlayerTeam(plr);
+	var team = GetPlayerTeam(player);
 	var score_message = "";
 
 	// start with own team
@@ -48,47 +47,36 @@ public func GetShortDescription(int plr)
 	return score_message;
 }
 
-public func Activate(int byplr)
-{
-	var msg = GetDescription(byplr);
-	
-	MessageWindow(msg, byplr);
-	return;
-}
-
-/*
-private func EliminateOthers(int win_team)
-{
-	for (var i = 0; i < GetPlayerCount(); i++)
-	{
-		var plr = GetPlayerByIndex(i);
-		var team = GetPlayerTeam(plr);
-		if (team != win_team)
-			EliminatePlayer(plr);	
-	}
-	return;
-}
-*/
-
 // Returns the number of players in a specific team.
 private func GetPlayerInTeamCount(int team)
 {
-	var cnt = 0;
-	for (var i = 0; i < GetPlayerCount(); i++)
-		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
-			cnt++;
-	return cnt;
+	var amount = 0;
+	for (var player = 0; player < GetPlayerCount(); player++)
+		if (GetPlayerTeam(GetPlayerByIndex(player)) == team)
+			amount++;
+	return amount;
 }
 
-// 2 teams per default
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Overloaded from configurable goal
+
 public func GetFactionCount()
 {
 	return GetTeamCount();
 }
 
-private func GetFactionColor(int team)
+public func GetFactionByIndex(int index)
+{
+	return GetTeamByIndex(index);
+}
+
+public func GetFactionColor(int team)
 {
 	return GetTeamColor(team);
 }
 
-local Name = "$Name$";
+public func GetFactionName(int team)
+{
+	return GetTeamName(team);
+}

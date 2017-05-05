@@ -7,7 +7,9 @@
 
 #include Library_ConfigurableGoal
 
-local Name = "$Name$";
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Engine callbacks
 
 protected func Initialize()
 {
@@ -34,16 +36,44 @@ protected func InitializePlayer(int player)
 	EnsureArraySize(player);
 }
 
-private func EnsureArraySize(int player)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Goal description texts
+
+public func GetDescription(int player)
 {
-	for (var i = 0; i <= player && GetLength(score_list_points) <= player; i++)
-	{
-		PushBack(score_list_points, 0);
-		PushBack(score_list_rounds, 0);
-	}
+	return GetGoalDescription(player);
 }
 
-private func GetFactionColor(int player)
+public func GetShortDescription(int player)
+{
+	var score = GetScore(player);
+	var target = GetWinScore();
+
+	return Format("%d / %d", score, target);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Overloaded from configurable goal
+
+public func GetFactionCount()
+{
+	return GetPlayerCount();
+}
+
+public func GetFactionByIndex(int index)
+{
+	return GetPlayerByIndex(index);
+}
+
+public func GetFactionColor(int player)
 {
 	return GetPlayerColor(player);
 }
+
+public func GetFactionName(int player)
+{
+	return GetPlayerName(player);
+}
+
