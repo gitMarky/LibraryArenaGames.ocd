@@ -1,0 +1,4 @@
+﻿Version 0.3.0
+------------------------------------------------------------------------------------------------
+* updated version of all definitions to 8,0
++ added change log file
