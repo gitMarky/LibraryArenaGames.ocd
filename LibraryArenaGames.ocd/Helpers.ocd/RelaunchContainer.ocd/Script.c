@@ -128,6 +128,7 @@ public func OnWeaponSelected(id weapon)
 private func RelaunchCrew()
 {
 	crew->Exit();
+	crew->SetPosition(GetX(), GetY()); // because the crew exits above the container
 	if (menu)
 		menu->Close();
 	PlayerMessage(crew->GetOwner(), "");
