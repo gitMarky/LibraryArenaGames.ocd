@@ -175,7 +175,7 @@ func DrawPad()
 func DrawBase()
 {
 
-	var fsin = +Sin(base_r, pad_size), fcos = Cos(base_r, pad_size);
+	var fsin = +Sin(-base_r, pad_size), fcos = Cos(-base_r, pad_size);
 
 	var width  = +fcos;
 	var height = +fcos;
