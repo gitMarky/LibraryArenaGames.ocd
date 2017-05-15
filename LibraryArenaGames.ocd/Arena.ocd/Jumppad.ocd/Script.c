@@ -80,7 +80,7 @@ public func SetPadR(int r)
 
 public func SetPadGraphics(string name, id type)
 {
-	SetGraphics(name, type);
+	SetGraphics(name, type ?? GetID());
 	return this;
 }
 
@@ -103,7 +103,7 @@ public func SetBaseR(int r)
 
 public func SetBaseGraphics(string name, id type)
 {
-	SetGraphics(name, type, JUMPPAD_LAYER_BASE, GFXOV_MODE_Action, "Base"); //ExtraGraphics);
+	SetGraphics(name, type ?? GetID(), JUMPPAD_LAYER_BASE, GFXOV_MODE_Action, "Base"); //ExtraGraphics);
 	return this;
 }
 
