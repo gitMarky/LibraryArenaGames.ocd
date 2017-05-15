@@ -1,3 +1,6 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// properties and internals
 
 static const JUMPPAD_DEFAULT_COLOR = 0xff64dcff;
 static const JUMPPAD_LAYER_LAMP = 1;
@@ -27,7 +30,46 @@ func Initialize()
 	Activate();
 }
 
-func SetPadR(int r)
+
+func SaveScenarioObject(proplist props)
+{
+	if (!_inherited(props, ...))
+		return false;
+	
+	if (GetR())
+	{
+		props->AddCall("SetPadR", this, "SetPadR", GetR());
+	}
+
+	if (base_r)
+	{
+		props->AddCall("SetBaseR", this, "SetBaseR", base_r);
+	}
+
+	if (pad_strength)
+	{
+		props->AddCall("SetStrength", this, "SetStrength", pad_strength);
+	}
+	
+	return true;
+}
+
+
+local ActMap = {
+Base = {
+	Prototype = Action,
+	Name = "Base",
+	Procedure = DFA_FLOAT,
+	X = 0, Y = 0,
+	Wdt = 30, Hgt = 18,
+}};
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// public interface
+
+public func SetPadR(int r)
 {
 	SetR(r);
 	DrawPad();
@@ -36,14 +78,14 @@ func SetPadR(int r)
 }
 
 
-func SetPadGraphics(string name, id type)
+public func SetPadGraphics(string name, id type)
 {
 	SetGraphics(name, type);
 	return this;
 }
 
 
-func SetBaseR(int r)
+public func SetBaseR(int r)
 {
 	base_r = r;
 	DrawPad();
@@ -51,13 +93,15 @@ func SetBaseR(int r)
 	return this;
 }
 
-func SetBaseGraphics(string name, id type)
+
+public func SetBaseGraphics(string name, id type)
 {
 	SetGraphics(name, type, JUMPPAD_LAYER_BASE, GFXOV_MODE_Action, "Base"); //ExtraGraphics);
 	return this;
 }
 
-func SetSize(int size)
+
+public func SetSize(int size)
 {
 	pad_size = size;
 	DrawBase();
@@ -65,6 +109,48 @@ func SetSize(int size)
 	return this;
 }
 
+
+public func Activate()
+{
+	is_active = true;
+	SetClrModulation(0xffffff, JUMPPAD_LAYER_LAMP);
+	SetClrModulation(pad_color, JUMPPAD_LAYER_LIGHT);
+	SetClrModulation(pad_color, JUMPPAD_LAYER_GLOW);
+}
+
+
+public func Deactivate()
+{
+	is_active = false;
+	SetClrModulation(SetRGBaValue(pad_color, 120, RGBA_ALPHA), JUMPPAD_LAYER_LAMP);
+	SetClrModulation(RGBa(255, 255, 255, 1), JUMPPAD_LAYER_LIGHT);
+	SetClrModulation(RGBa(255, 255, 255, 1), JUMPPAD_LAYER_GLOW);
+}
+
+
+func SetEffectColor(int color)
+{
+	this.pad_color = color;
+	Activate();
+	return this;
+}
+
+
+func SetStrength(int strength)
+{
+	pad_strength = strength;
+	return this;
+}
+
+
+func GetStrength()
+{
+	return pad_strength;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// visuals
 
 func DrawPad()
 {
@@ -93,48 +179,46 @@ func DrawBase()
 	                    yskew, height, y_adjust / 10, JUMPPAD_LAYER_BASE);
 }
 
-func Activate()
-{
-	is_active = true;
-	SetClrModulation(0xffffff, JUMPPAD_LAYER_LAMP);
-	SetClrModulation(pad_color, JUMPPAD_LAYER_LIGHT);
-	SetClrModulation(pad_color, JUMPPAD_LAYER_GLOW);
-}
 
-
-func Deactivate()
-{
-	is_active = false;
-	SetClrModulation(SetRGBaValue(pad_color, 120, RGBA_ALPHA), JUMPPAD_LAYER_LAMP);
-	SetClrModulation(RGBa(255, 255, 255, 1), JUMPPAD_LAYER_LIGHT);
-	SetClrModulation(RGBa(255, 255, 255, 1), JUMPPAD_LAYER_GLOW);
-}
-
-
-func SetEffectColor(int color)
-{
-	this.pad_color = color;
-	Activate();
-	return this;
-}
-
-
-func SetStrength(int strength)
-{
-	this.pad_strength = strength;
-	return this;
-}
-
-func GetStrength()
-{
-	return this.pad_strength;
-}
-
-func CheckBounce()
+func ParticleEffect()
 {
 	if (is_active)
 	{
-		// bounce targets
+		// particle effect for jump pad "waves"
+		var lifetime = 40;
+		var range = 180 * pad_size / 1000; // 18 pixels
+		var xdir = +Sin(GetR(), range / lifetime);
+		var ydir = -Cos(GetR(), range / lifetime);
+		CreateParticle("Arena_JumpPad", 0, 0, xdir, ydir, lifetime, Particles_JumpPad(GetR(), pad_color, pad_size), 1);
+	}
+}
+
+
+func Particles_JumpPad(int angle, int particle_color, int particle_size)
+{
+	particle_size = particle_size ?? 7000;
+	particle_color = particle_color ?? 0xffffffff;
+	
+	return
+	{
+		Size = 3 * particle_size / 1000,
+		Alpha = PV_KeyFrames(0, 0, 0, 400, 255, 1000, 0),
+		R = GetRGBaValue(pad_color, RGBA_RED),
+		G = GetRGBaValue(pad_color, RGBA_GREEN),
+		B = GetRGBaValue(pad_color, RGBA_BLUE),
+		Rotation = angle,
+	};
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// bouncing
+
+
+func CheckBounce()
+{
+	if (is_active) // bounce targets
+	{
 		for (var target in GetBounceTargets())
 		{
 			Bounce(target);
@@ -177,67 +261,3 @@ func OnBounce(object target)
 {
 	// does nothing at the moment
 }
-
-func ParticleEffect()
-{
-	if (is_active)
-	{
-		// particle effect for jump pad "waves"
-		var lifetime = 40;
-		var range = 180 * pad_size / 1000; // 18 pixels
-		var xdir = +Sin(GetR(), range / lifetime);
-		var ydir = -Cos(GetR(), range / lifetime);
-		CreateParticle("Arena_JumpPad", 0, 0, xdir, ydir, lifetime, Particles_JumpPad(GetR(), pad_color, pad_size), 1);
-	}
-}
-
-
-func Particles_JumpPad(int angle, int particle_color, int particle_size)
-{
-	particle_size = particle_size ?? 7000;
-	particle_color = particle_color ?? 0xffffffff;
-	
-	return
-	{
-		Size = 3 * particle_size / 1000,
-		Alpha = PV_KeyFrames(0, 0, 0, 400, 255, 1000, 0),
-		R = GetRGBaValue(pad_color, RGBA_RED),
-		G = GetRGBaValue(pad_color, RGBA_GREEN),
-		B = GetRGBaValue(pad_color, RGBA_BLUE),
-		Rotation = angle,
-	};
-}
-
-
-
-func SaveScenarioObject(proplist props)
-{
-	if (!_inherited(props, ...))
-		return false;
-	
-	if (GetR())
-	{
-		props->AddCall("SetPadR", this, "SetPadR", GetR());
-	}
-
-	if (base_r)
-	{
-		props->AddCall("SetBaseR", this, "SetBaseR", base_r);
-	}
-
-	if (pad_strength)
-	{
-		props->AddCall("SetStrength", this, "SetStrength", pad_strength);
-	}
-	
-	return true;
-}
-
-local ActMap = {
-Base = {
-	Prototype = Action,
-	Name = "Base",
-	Procedure = DFA_FLOAT,
-	X = 0, Y = 0,
-	Wdt = 30, Hgt = 18,
-}};
