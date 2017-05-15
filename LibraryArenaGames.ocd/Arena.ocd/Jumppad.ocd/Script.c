@@ -9,6 +9,7 @@ local strength;
 local color;
 local base_r;
 local active;
+local size;
 
 func Initialize()
 {
@@ -20,6 +21,7 @@ func Initialize()
  	AddTimer(this.ParticleEffect, 8);
  	SetObjDrawTransform(1000, 0, 0, 0, 1000, -4000, JUMPPAD_LAYER_GLOW);
 
+	SetSize(1000);
 	SetEffectColor(JUMPPAD_DEFAULT_COLOR);
 	Activate();
 }
@@ -41,6 +43,7 @@ func SetPadGraphics(string name, id type)
 func SetBaseR(int r)
 {
 	base_r = r;
+	DrawBase();
 	return this;
 }
 
@@ -50,13 +53,29 @@ func SetBaseGraphics(string name, id type)
 	return this;
 }
 
-func DrawBase(int r)
+func SetSize(int size)
 {
-	var w = 1000;
-	var h = 1000;
+	this.size = size;
+	DrawBase();
+	return this;
+}
+
+
+func DrawPad()
+{
+	SetObjDrawTransform(size, nil, nil, nil, size, nil, JUMPPAD_LAYER_LAMP);
+	SetObjDrawTransform(size, nil, nil, nil, size, nil, JUMPPAD_LAYER_LAMP);
+	SetObjDrawTransform(size, nil, nil, nil, size, nil, JUMPPAD_LAYER_LIGHT);
+	SetObjDrawTransform(size, nil, nil, nil, size, nil, JUMPPAD_LAYER_GLOW);
+}
+
+func DrawBase()
+{
+	var w = size;
+	var h = size;
 	var full_size = 1000;
 
-	var fsin = -Sin(r, 1000), fcos = Cos(r, 1000);
+	var fsin = -Sin(base_r, 1000), fcos = Cos(base_r, 1000);
 
 	var width  = +fcos * w / full_size;
 	var height = +fcos * h / full_size;
@@ -158,7 +177,7 @@ func ParticleEffect()
 	{
 		// particle effect for jump pad "waves"
 		var lifetime = 40;
-		var range = 180; // 18 pixels
+		var range = 180 * size / 1000; // 18 pixels
 		var xdir = +Sin(GetR(), range / lifetime);
 		var ydir = -Cos(GetR(), range / lifetime);
 		CreateParticle("Arena_JumpPad", 0, 0, xdir, ydir, lifetime, Particles_JumpPad(GetR(), color, 3), 1);
