@@ -11,15 +11,16 @@ local base_r;
 local active;
 local size;
 
+
 func Initialize()
 {
 	SetGraphics("Lamps", GetID(), JUMPPAD_LAYER_LAMP, GFXOV_MODE_ExtraGraphics);
 	SetGraphics("Light", GetID(), JUMPPAD_LAYER_LIGHT, GFXOV_MODE_ExtraGraphics, nil, GFX_BLIT_Additive);
 	SetGraphics("Shine", GetID(), JUMPPAD_LAYER_GLOW, GFXOV_MODE_ExtraGraphics, nil, GFX_BLIT_Additive);
 	SetBaseGraphics("BaseLarge", GetID());
+	
  	AddTimer(this.CheckBounce, 1);
  	AddTimer(this.ParticleEffect, 8);
- 	SetObjDrawTransform(1000, 0, 0, 0, 1000, -4000, JUMPPAD_LAYER_GLOW);
 
 	SetSize(1000);
 	SetEffectColor(JUMPPAD_DEFAULT_COLOR);
@@ -29,6 +30,8 @@ func Initialize()
 func SetPadR(int r)
 {
 	SetR(r);
+	DrawPad();
+	DrawBase();
 	return this;
 }
 
@@ -43,13 +46,14 @@ func SetPadGraphics(string name, id type)
 func SetBaseR(int r)
 {
 	base_r = r;
+	DrawPad();
 	DrawBase();
 	return this;
 }
 
 func SetBaseGraphics(string name, id type)
 {
-	SetGraphics(name, type, JUMPPAD_LAYER_BASE, GFXOV_MODE_ExtraGraphics);
+	SetGraphics(name, type, JUMPPAD_LAYER_BASE, GFXOV_MODE_Action, "Base"); //ExtraGraphics);
 	return this;
 }
 
@@ -57,33 +61,36 @@ func SetSize(int size)
 {
 	this.size = size;
 	DrawBase();
+	DrawPad();
 	return this;
 }
 
 
 func DrawPad()
 {
-	SetObjDrawTransform(size, nil, nil, nil, size, nil, JUMPPAD_LAYER_LAMP);
-	SetObjDrawTransform(size, nil, nil, nil, size, nil, JUMPPAD_LAYER_LAMP);
-	SetObjDrawTransform(size, nil, nil, nil, size, nil, JUMPPAD_LAYER_LIGHT);
-	SetObjDrawTransform(size, nil, nil, nil, size, nil, JUMPPAD_LAYER_GLOW);
+	SetObjDrawTransform(size, nil, nil, nil, size, nil, 0);
+ 	SetObjDrawTransform(1000, 0, 0, 0, 1000, -4 * size, JUMPPAD_LAYER_GLOW);
 }
 
 func DrawBase()
 {
-	var w = size;
-	var h = size;
-	var full_size = 1000;
 
-	var fsin = -Sin(base_r, 1000), fcos = Cos(base_r, 1000);
+	var fsin = +Sin(base_r, size), fcos = Cos(base_r, size);
 
-	var width  = +fcos * w / full_size;
-	var height = +fcos * h / full_size;
-	var xskew  = +fsin * h / full_size;
-	var yskew  = -fsin * w / full_size;
-
+	var width  = +fcos;
+	var height = +fcos;
+	var xskew  = +fsin;
+	var yskew  = -fsin;
+	
+	var xoff = -5;
+	var yoff = +50;
+	
+	var x_adjust = fcos * xoff - fsin * yoff;
+	var y_adjust = fcos * yoff - fsin * xoff;
+	
 	// set matrix values
-	SetObjDrawTransform(width, xskew, nil, yskew, height, nil, JUMPPAD_LAYER_BASE);
+	SetObjDrawTransform(width,  xskew, x_adjust / 10,
+	                    yskew, height, y_adjust / 10, JUMPPAD_LAYER_BASE);
 }
 
 func Activate()
@@ -180,9 +187,27 @@ func ParticleEffect()
 		var range = 180 * size / 1000; // 18 pixels
 		var xdir = +Sin(GetR(), range / lifetime);
 		var ydir = -Cos(GetR(), range / lifetime);
-		CreateParticle("Arena_JumpPad", 0, 0, xdir, ydir, lifetime, Particles_JumpPad(GetR(), color, 3), 1);
+		CreateParticle("Arena_JumpPad", 0, 0, xdir, ydir, lifetime, Particles_JumpPad(GetR(), color, size), 1);
 	}
 }
+
+
+func Particles_JumpPad(int angle, int particle_color, int particle_size)
+{
+	particle_size = particle_size ?? 7000;
+	particle_color = particle_color ?? 0xffffffff;
+	
+	return
+	{
+		Size = 3 * particle_size / 1000,
+		Alpha = PV_KeyFrames(0, 0, 0, 400, 255, 1000, 0),
+		R = GetRGBaValue(color, RGBA_RED),
+		G = GetRGBaValue(color, RGBA_GREEN),
+		B = GetRGBaValue(color, RGBA_BLUE),
+		Rotation = angle,
+	};
+}
+
 
 
 func SaveScenarioObject(proplist props)
@@ -201,3 +226,12 @@ func SaveScenarioObject(proplist props)
 	
 	return true;
 }
+
+local ActMap = {
+Base = {
+	Prototype = Action,
+	Name = "Base",
+	Procedure = DFA_FLOAT,
+	X = 0, Y = 0,
+	Wdt = 30, Hgt = 18,
+}};
