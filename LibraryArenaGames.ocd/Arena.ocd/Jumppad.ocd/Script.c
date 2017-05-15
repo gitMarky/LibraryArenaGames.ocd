@@ -217,11 +217,17 @@ func SaveScenarioObject(proplist props)
 	
 	if (GetR())
 	{
-		props->AddCall("Set", this, "Set", GetStrength(), GetR(), base_r);
+		props->AddCall("SetPadR", this, "SetPadR", GetR());
 	}
-	else
+
+	if (base_r)
 	{
-		props->AddCall("Set", this, "Set", GetStrength(), GetR());
+		props->AddCall("SetBaseR", this, "SetBaseR", base_r);
+	}
+
+	if (strength)
+	{
+		props->AddCall("SetStrength", this, "SetStrength", strength);
 	}
 	
 	return true;
