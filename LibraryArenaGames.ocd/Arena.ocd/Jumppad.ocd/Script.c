@@ -113,7 +113,7 @@ func Bounce(object target)
 	var xdir_new, ydir_new, xdir_old, ydir_old;
 	xdir_old = target->GetXDir();
 	ydir_old = target->GetYDir();
-	xdir_new = Sin(GetR(), strength);
+	xdir_new = +Sin(GetR(), strength);
 	ydir_new = -Cos(GetR(), strength);
 	// the object keeps a bit of its old velocity
 	xdir_new += xdir_old / 10;
@@ -122,7 +122,12 @@ func Bounce(object target)
 	target->SetAction("Jump");
 	target->SetSpeed(xdir_new, ydir_new);
 	target->~OnBouncedByJumpPad(this);
-	Sound("Structural::Jumppad"); // TODO: extract to function
+	this->OnBounce(target);
+}
+
+func OnBounce(object target)
+{
+	// does nothing at the moment
 }
 
 func ParticleEffect()
@@ -155,9 +160,13 @@ func SaveScenarioObject(proplist props)
 		return false;
 	
 	if (GetR())
+	{
 		props->AddCall("Set", this, "Set", GetStrength(), GetR(), angle_base);
+	}
 	else
+	{
 		props->AddCall("Set", this, "Set", GetStrength(), GetR());
+	}
 	
 	return true;
 }
