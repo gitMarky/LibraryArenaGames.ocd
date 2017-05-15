@@ -16,7 +16,8 @@ func Initialize()
 	SetGraphics("Light", GetID(), JUMPPAD_LAYER_LIGHT, GFXOV_MODE_ExtraGraphics, nil, GFX_BLIT_Additive);
 	SetGraphics("Shine", GetID(), JUMPPAD_LAYER_GLOW, GFXOV_MODE_ExtraGraphics, nil, GFX_BLIT_Additive);
 	SetGraphics("BaseLarge", GetID(), JUMPPAD_LAYER_BASE, GFXOV_MODE_ExtraGraphics);
- 	AddEffect("IntCheckBounce", this, 1, 1, this);
+ 	AddTimer(this.CheckBounce, 1);
+ 	AddTimer(this.ParticleEffect, 8);
  	SetObjDrawTransform(1000, 0, 0, 0, 1000, -4000, JUMPPAD_LAYER_GLOW);
 
 	color = JUMPPAD_DEFAULT_COLOR;
@@ -81,27 +82,29 @@ func GetStrength()
 	return this.strength;
 }
 
-func FxIntCheckBounceTimer(object pad, proplist fx, int timer)
+func CheckBounce()
 {
-	if (!active)  return;
-
-	// bounce targets
-	for (var target in FindObjects( // TODO: Extract as function
-			Find_InRect(-8, -8, 16, 16),
-			Find_Or(Find_OCF(OCF_Alive), Find_Func("IsBouncy")),
-			Find_NoContainer()))
+	if (active)
 	{
-		Bounce(target);
-	}
-	
-	// TODO: extract as function
+		// bounce targets
+		for (var target in GetBounceTargets())
+		{
+			Bounce(target);
+		}
+	}	
+}
 
-	// particle effect for jump pad "waves"
-	var lifetime = 40;
-	var range = 180; // 18 pixels
-	var xdir = +Sin(GetR(), range / lifetime);
-	var ydir = -Cos(GetR(), range / lifetime);
-	if (!(timer % 8)) CreateParticle("Arena_JumpPad", 0, 0, xdir, ydir, lifetime, Particles_JumpPad(GetR(), color, 3), 1);
+func GetBounceTargets()
+{
+	return FindObjects(
+			GetBounceArea(),
+			Find_Or(Find_OCF(OCF_Alive), Find_Func("IsBouncy")),
+			Find_NoContainer());
+}
+
+func GetBounceArea()
+{
+	return Find_InRect(-8, -8, 16, 16);
 }
 
 func Bounce(object target)
@@ -120,6 +123,19 @@ func Bounce(object target)
 	target->SetSpeed(xdir_new, ydir_new);
 	target->~OnBouncedByJumpPad(this);
 	Sound("Structural::Jumppad"); // TODO: extract to function
+}
+
+func ParticleEffect()
+{
+	if (active)
+	{
+		// particle effect for jump pad "waves"
+		var lifetime = 40;
+		var range = 180; // 18 pixels
+		var xdir = +Sin(GetR(), range / lifetime);
+		var ydir = -Cos(GetR(), range / lifetime);
+		CreateParticle("Arena_JumpPad", 0, 0, xdir, ydir, lifetime, Particles_JumpPad(GetR(), color, 3), 1);
+	}
 }
 
 
