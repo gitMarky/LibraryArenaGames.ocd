@@ -85,6 +85,13 @@ public func SetPadGraphics(string name, id type)
 }
 
 
+public func SetPadColor(int color)
+{
+	SetClrModulation(color);
+	return this;
+}
+
+
 public func SetBaseR(int r)
 {
 	base_r = r;
@@ -97,6 +104,13 @@ public func SetBaseR(int r)
 public func SetBaseGraphics(string name, id type)
 {
 	SetGraphics(name, type, JUMPPAD_LAYER_BASE, GFXOV_MODE_Action, "Base"); //ExtraGraphics);
+	return this;
+}
+
+
+public func SetBaseColor(int color)
+{
+	SetClrModulation(color, JUMPPAD_LAYER_BASE);
 	return this;
 }
 
