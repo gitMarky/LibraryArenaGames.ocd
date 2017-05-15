@@ -7,7 +7,7 @@ static const JUMPPAD_LAYER_BASE = 4;
 
 local strength;
 local color;
-local angle_base;
+local base_r;
 local active;
 
 func Initialize()
@@ -15,19 +15,39 @@ func Initialize()
 	SetGraphics("Lamps", GetID(), JUMPPAD_LAYER_LAMP, GFXOV_MODE_ExtraGraphics);
 	SetGraphics("Light", GetID(), JUMPPAD_LAYER_LIGHT, GFXOV_MODE_ExtraGraphics, nil, GFX_BLIT_Additive);
 	SetGraphics("Shine", GetID(), JUMPPAD_LAYER_GLOW, GFXOV_MODE_ExtraGraphics, nil, GFX_BLIT_Additive);
-	SetGraphics("BaseLarge", GetID(), JUMPPAD_LAYER_BASE, GFXOV_MODE_ExtraGraphics);
+	SetBaseGraphics("BaseLarge", GetID());
  	AddTimer(this.CheckBounce, 1);
  	AddTimer(this.ParticleEffect, 8);
  	SetObjDrawTransform(1000, 0, 0, 0, 1000, -4000, JUMPPAD_LAYER_GLOW);
 
-	color = JUMPPAD_DEFAULT_COLOR;
+	SetEffectColor(JUMPPAD_DEFAULT_COLOR);
 	Activate();
+}
+
+func SetPadR(int r)
+{
+	SetR(r);
+	return this;
+}
+
+
+func SetPadGraphics(string name, id type)
+{
+	SetGraphics(name, type);
+	return this;
 }
 
 
 func SetBaseR(int r)
 {
-	angle_base = r;
+	base_r = r;
+	return this;
+}
+
+func SetBaseGraphics(string name, id type)
+{
+	SetGraphics(name, type, JUMPPAD_LAYER_BASE, GFXOV_MODE_ExtraGraphics);
+	return this;
 }
 
 func DrawBase(int r)
@@ -69,12 +89,14 @@ func SetEffectColor(int color)
 {
 	this.color = color;
 	Activate();
+	return this;
 }
 
 
 func SetStrength(int strength)
 {
 	this.strength = strength;
+	return this;
 }
 
 func GetStrength()
@@ -144,16 +166,6 @@ func ParticleEffect()
 }
 
 
-func Set(int strength, int angle_top, int angle_base)
-{
-	SetR(angle_top);
-	SetStrength(strength);
-	SetBaseR(angle_base-angle_top);
-	
-	return this;
-}
-
-
 func SaveScenarioObject(proplist props)
 {
 	if (!_inherited(props, ...))
@@ -161,7 +173,7 @@ func SaveScenarioObject(proplist props)
 	
 	if (GetR())
 	{
-		props->AddCall("Set", this, "Set", GetStrength(), GetR(), angle_base);
+		props->AddCall("Set", this, "Set", GetStrength(), GetR(), base_r);
 	}
 	else
 	{
