@@ -67,6 +67,11 @@ public func GetFactionByIndex(int index)
 	return GetPlayerByIndex(index);
 }
 
+public func GetFactionByPlayer(int player)
+{
+	return player;
+}
+
 public func GetFactionColor(int player)
 {
 	return GetPlayerColor(player);
@@ -77,3 +82,8 @@ public func GetFactionName(int player)
 	return GetPlayerName(player);
 }
 
+public func DoWinRound(int faction)
+{
+	DoRoundScore(faction, 1);
+	_inherited(faction);
+}
