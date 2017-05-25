@@ -138,6 +138,15 @@ private func RelaunchCrew()
 
 
 /**
+ Callback when the crew is contained.
+ This happens after the crew has entered the container
+ @version 0.3.0
+ */
+public func OnInitializeCrew(object crew)
+{
+}
+
+/**
  Callback when the contained crew is relaunched.
  This happens after the crew has left the container and
  before the container is removed. 
@@ -183,7 +192,12 @@ public func PrepareRelaunch(object clonk)
 	}
 	// save clonk for later use
 	crew = clonk;
-	clonk->Enter(this);
+	
+	if (clonk->Contained() != this)
+	{
+		clonk->Enter(this);
+		OnInitializeCrew(clonk);
+	}
 	return true;
 }
 
@@ -191,7 +205,7 @@ public func StartRelaunch(object clonk)
 {
 	if (PrepareRelaunch(clonk))
 	{
-		ScheduleCall(this, "OpenWeaponMenu", RELAUNCH_Factor_Second, 0, clonk);
+		ScheduleCall(this, this.OpenWeaponMenu, RELAUNCH_Factor_Second, 0, clonk);
 		AddEffect("IntTimeLimit", this, 100, RELAUNCH_Factor_Second, this);
 		return true;
 	}

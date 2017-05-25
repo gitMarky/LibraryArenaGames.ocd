@@ -1,5 +1,9 @@
 ﻿Version 0.3.0
 ------------------------------------------------------------------------------------------------
+! fixed a problem where weapons were collected from spawn points while the user was contained (bug 13414)
++ added callbacks for winning the round in goals
++ added jump pad
+* moved assertion to OC repository
 ! RelaunchContainerEx now respawns the crew at its position, instead of above it
 * updated version of all definitions to 8,0
 + added change log file

@@ -229,6 +229,11 @@ public func GetFactionByIndex(int index)
 	FatalError("Implement this in a derived object");
 }
 
+public func GetFactionByPlayer(int player)
+{
+	FatalError("Implement this in a derived object");
+}
+
 public func GetFactionColor(int faction)
 {
 	FatalError("Implement this in a derived object");

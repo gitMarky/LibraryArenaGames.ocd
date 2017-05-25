@@ -643,6 +643,12 @@ private func TryCollectObject(object clonk)
 		return false;
 	}
 	
+	// Prevent collection for contained clonks
+	if (clonk->Contained())
+	{
+		return false;
+	}
+	
 	var item_index = -1;
 	
 	if (spawn_globally)
