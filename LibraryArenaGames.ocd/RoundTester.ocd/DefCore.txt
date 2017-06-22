@@ -13,4 +13,4 @@ Value=1
 Mass=30
 Projectile=1
 Rotate=1
-
+HideInCreator=true
