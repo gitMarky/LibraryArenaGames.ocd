@@ -244,6 +244,19 @@ private func GetFactionName(int faction)
 	return "$DefaultFactionName$";
 }
 
+public func GetFactionSize(int faction)
+{
+	var size = 0;
+	for (var i = 0; i < GetPlayerCount(); ++i)
+	{
+		if (faction == GetFactionByPlayer(GetPlayerByIndex(i)))
+		{
+			++size;
+		}
+	}
+	return size;
+}
+
 
 /**
  Determines the relative score of a faction,
