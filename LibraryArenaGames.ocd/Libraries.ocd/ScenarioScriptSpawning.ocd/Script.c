@@ -156,11 +156,7 @@ private func GetRelaunchLocation(int player)
 
 	for (var location in RelaunchLocations())
 	{
-		var team = location.team;
-		if (location.GetTeam)
-		{
-			team = location->GetTeam();
-		}
+		var team = location->GetTeam();
 		if (team == nil      // Free for all teams
 		 || team == NO_OWNER // As above, but compatibility implementation
 		 || team == team_nr) // Available for the specific team number
@@ -191,17 +187,9 @@ private func ContainPlayer(proplist relaunch_location, object crew)
 		relaunch_container->RemoveObject(true);
 	}
 	
-	// Get the position, with compatibility for old styl implementation
-	var x = relaunch_location.x;
-	if (relaunch_location.GetX)
-	{
-		x = relaunch_location->GetX();
-	}
-	var y = relaunch_location.y;
-	if (relaunch_location.GetY)
-	{
-		y = relaunch_location->GetY();
-	}
+	// Get the position
+	var x = relaunch_location->GetX();
+	var y = relaunch_location->GetY();
 
 	// Create the container
 	relaunch_container = relaunch_container ?? CreateObject(RelaunchContainerEx, 0, 0, crew->GetOwner());
