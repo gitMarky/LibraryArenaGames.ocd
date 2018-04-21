@@ -156,7 +156,14 @@ private func GetRelaunchLocation(int player)
 
 	for (var location in RelaunchLocations())
 	{
-		if (location.team == NO_OWNER || location.team == team_nr)
+		var team = location.team;
+		if (location.GetTeam)
+		{
+			team = location->GetTeam();
+		}
+		if (team == nil      // Free for all teams
+		 || team == NO_OWNER // As above, but compatibility implementation
+		 || team == team_nr) // Available for the specific team number
 		{
 			PushBack(possible_locations, location);
 		}
@@ -175,28 +182,31 @@ private func GetRelaunchLocation(int player)
  */
 private func ContainPlayer(proplist relaunch_location, object crew)
 {
-    // from existing one?
+    // From existing one?
 	var relaunch_container = crew->Contained();
 	
-	// delete foreign invalid containers...
+	// Delete foreign invalid containers...
 	if (relaunch_container != nil && relaunch_container->GetID() != RelaunchContainerEx)
 	{
 		relaunch_container->RemoveObject(true);
 	}
-
-	if (relaunch_container == nil)
+	
+	// Get the position, with compatibility for old styl implementation
+	var x = relaunch_location.x;
+	if (relaunch_location.GetX)
 	{
-		relaunch_container = CreateObject(RelaunchContainerEx,
-							              relaunch_location.x,
-							              relaunch_location.y,
-							              crew->GetOwner());
-     }
-     else
-     {
-     	relaunch_container->SetPosition(relaunch_location.x, relaunch_location.y);
-     }
+		x = relaunch_location->GetX();
+	}
+	var y = relaunch_location.y;
+	if (relaunch_location.GetY)
+	{
+		y = relaunch_location->GetY();
+	}
 
-	 relaunch_container->PrepareRelaunch(crew);
+	// Create the container
+	relaunch_container = relaunch_container ?? CreateObject(RelaunchContainerEx, 0, 0, crew->GetOwner());
+    relaunch_container->SetPosition(x, y);
+	relaunch_container->PrepareRelaunch(crew);
 }
 
 

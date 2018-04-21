@@ -91,3 +91,19 @@ public func SetTeam(int value)
 	this.team = value;
 	return this;
 }
+
+/* --- Other --- */
+
+/**
+	Definition call constructor.
+	
+	@par x The x position. Is set via {@link Arena_RelaunchLocation#SetX} directly.
+	@par y The y position. Is set via {@link Arena_RelaunchLocation#SetY} directly.
+	
+	@return proplist Returns the relaunch location.
+ */
+public func At(int x, int y)
+{
+	var location = new Arena_RelaunchLocation{};
+	return location->SetX(x)->SetY(y);
+}
