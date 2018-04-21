@@ -403,6 +403,28 @@ public func GetIDParameter()
 }
 
 
+/**
+ Gets the type of object that is actually spawned by the spawn point.
+ @return The ID that was determined from the spawn ID parameter.
+ @version 0.3.0
+ */
+public func GetIDSpawned()
+{
+	return spawn_id_parameter;
+}
+
+
+/**
+ Find out whether a clonk can collect an item from this spawn point
+ @return true, if an item is available for the clonk to collect.
+ @version 0.3.0
+ */
+public func HasCollectibleItem(object clonk)
+{
+	return GetCollectibleItemIndex(clonk) > -1;
+}
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Spawning and object
@@ -649,20 +671,23 @@ private func TryCollectObject(object clonk)
 		return false;
 	}
 	
-	var item_index = -1;
-	
-	if (spawn_globally)
-	{
-		item_index = 0;
-	}
-	else
-	{
-		item_index = GetPlayerIndex(clonk->GetOwner());
-	}
-
+	var item_index = GetCollectibleItemIndex(clonk);
 	if (item_index > -1)
 	{
 		DoCollectObject(item_index, clonk);
+	}
+}
+
+
+private func GetCollectibleItemIndex(object clonk)
+{
+	if (spawn_globally)
+	{
+		return 0;
+	}
+	else
+	{
+		return GetPlayerIndex(clonk->GetOwner());
 	}
 }
 

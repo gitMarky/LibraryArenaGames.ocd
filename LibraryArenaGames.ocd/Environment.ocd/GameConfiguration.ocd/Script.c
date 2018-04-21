@@ -1258,10 +1258,34 @@ public func ContainPlayer(int player)
  */
 public func ContainCrew(object crew)
 {
+	// Create the container
 	var container = CreateObject(RelaunchContainerEx, crew->GetX() - GetX(), crew->GetY() - GetY());
 	container->PrepareRelaunch(crew);
+	
+	// Possibly move the container to a location
+	var location = this->ContainCrewAt();
+	if (location)
+	{
+		container->SetPosition(location->GetX(), location->GetY());
+	}
+
 	return container;
 }
+
+
+/**
+	Crews are always contained at this point.
+	
+	@return An {@link Arena_RelaunchLocation}. 
+	        The default value is {@code nil}, 
+	        which means that the crew is contained
+	        where it is, and not moved.
+ */
+public func ContainCrewAt()
+{
+	return nil;
+}
+
 
 /**
  Releases all players from their relaunch containers.

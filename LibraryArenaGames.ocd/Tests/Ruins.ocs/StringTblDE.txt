@@ -1,4 +1,4 @@
 SpawnCenter=Mitte
 SpawnTopRight=Oben rechts
-SpawnColumn=Säule oben links
+SpawnColumn=Sï¿½ule oben links
 SpawnNearPit=Im Wasserbecken
