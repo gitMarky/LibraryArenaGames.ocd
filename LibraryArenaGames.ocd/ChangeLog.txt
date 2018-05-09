@@ -4,6 +4,7 @@
 + added callbacks for winning the round in goals
 + added jump pad
 * moved assertion to OC repository
+* renamed RelaunchContainerEx to Arena_RelaunchContainer
 ! RelaunchContainerEx now respawns the crew at its position, instead of above it
 * updated version of all definitions to 8,0
 + added change log file

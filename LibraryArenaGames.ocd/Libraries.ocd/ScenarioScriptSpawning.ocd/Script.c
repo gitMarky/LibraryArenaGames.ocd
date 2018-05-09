@@ -171,7 +171,7 @@ private func GetRelaunchLocation(int player)
 
 
 /**
- * Contains the player crew in a {@link RelaunchContainerEx}.
+ * Contains the player crew in a {@link Arena_RelaunchContainer}.
  *
  * @par relaunch_location A location definition where the player should relaunch.
  * @par crew The crew member that should be contained.
@@ -182,7 +182,7 @@ private func ContainPlayer(proplist relaunch_location, object crew)
 	var relaunch_container = crew->Contained();
 	
 	// Delete foreign invalid containers...
-	if (relaunch_container != nil && relaunch_container->GetID() != RelaunchContainerEx)
+	if (relaunch_container != nil && relaunch_container->GetID() != Arena_RelaunchContainer)
 	{
 		relaunch_container->RemoveObject(true);
 	}
@@ -192,7 +192,7 @@ private func ContainPlayer(proplist relaunch_location, object crew)
 	var y = relaunch_location->GetY();
 
 	// Create the container
-	relaunch_container = relaunch_container ?? CreateObject(RelaunchContainerEx, 0, 0, crew->GetOwner());
+	relaunch_container = relaunch_container ?? CreateObject(Arena_RelaunchContainer, 0, 0, crew->GetOwner());
     relaunch_container->SetPosition(x, y);
 	relaunch_container->PrepareRelaunch(crew);
 }
@@ -235,7 +235,7 @@ public func ReleaseCrew(object crew, bool instant)
 {
 	var container = crew->Contained();
 	
-	if ((container != nil) && (container->GetID() == RelaunchContainerEx))
+	if ((container != nil) && (container->GetID() == Arena_RelaunchContainer))
 	{
 		if (instant)
 		{

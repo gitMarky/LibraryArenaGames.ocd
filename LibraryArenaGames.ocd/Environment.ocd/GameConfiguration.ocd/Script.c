@@ -1259,7 +1259,7 @@ public func ContainPlayer(int player)
 public func ContainCrew(object crew)
 {
 	// Create the container
-	var container = CreateObject(RelaunchContainerEx, crew->GetX() - GetX(), crew->GetY() - GetY());
+	var container = CreateObject(Arena_RelaunchContainer, crew->GetX() - GetX(), crew->GetY() - GetY());
 	container->PrepareRelaunch(crew);
 	
 	// Possibly move the container to a location
@@ -1322,7 +1322,7 @@ public func ReleaseCrew(object crew, bool instant)
 {
 	var container = crew->Contained();
 	
-	if ((container != nil) && (container->GetID() == RelaunchContainerEx))
+	if ((container != nil) && (container->GetID() == Arena_RelaunchContainer))
 	{
 		if (instant)
 		{
