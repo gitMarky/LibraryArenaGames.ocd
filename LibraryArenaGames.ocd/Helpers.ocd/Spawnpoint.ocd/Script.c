@@ -112,7 +112,10 @@ local spawn_team;			// int: item can be collected by a team only
 local spawn_visibility;		// array map: player index to spawned object, original visibility
 local spawn_collectible;    // bool: object can be collected
 
-
+local spawn_callback;       // proplist:
+                            // * command - string or function: the function to call in the spawned object
+                            // * parameters - array: parameters for the function call, in order
+                            
 /**
  Marks the object as a spawn point.
  @version 0.1.0
@@ -138,6 +141,11 @@ public func Construction(object by_object)
 	spawn_team = nil;
 
 	spawn_collectible = false;
+	
+	spawn_callback = {
+		command = nil,
+		parameters = [],
+	};
 }
 
 
@@ -172,6 +180,8 @@ public func CopyDataFromTemplate(object template)
 
 	spawn_team = template.spawn_team;
 	spawn_collectible = template.spawn_collectible;
+	
+	spawn_callback = { Prototype = template.spawn_callback };
 }
 
 
@@ -376,6 +386,34 @@ public func SetTeam(int team)
 	ProhibitedWhileSpawning();
 
 	spawn_team = team;
+	return this;
+}
+
+
+/**
+ Sets a callback that is executed on the spawned object.
+
+ @par command This function is called in the spawned object.
+              Can be a string or function pointer.
+ @par parameters These parameters are added to the call.
+
+ @return object Returns the spawn point object, so that further function calls can be issued.
+ */
+public func SetCallbackOnSpawn(command, par0, par1, par2, par3, par4, par5, par6, par7, par8)
+{
+	ProhibitedWhileSpawning();
+
+	spawn_callback.command = command;
+	
+	spawn_callback.parameters[0] = par0;
+	spawn_callback.parameters[1] = par1;
+	spawn_callback.parameters[2] = par2;
+	spawn_callback.parameters[3] = par3;
+	spawn_callback.parameters[4] = par4;
+	spawn_callback.parameters[5] = par5;
+	spawn_callback.parameters[6] = par6;
+	spawn_callback.parameters[7] = par7;
+	spawn_callback.parameters[8] = par8;
 	return this;
 }
 
@@ -603,6 +641,20 @@ private func DoSpawnObject(int index)
 														 draw_transformation.yadjust,
 														 draw_transformation.overlay_id);
 			}
+		}
+		
+		if (spawn_callback && spawn_callback.command)
+		{
+			spawn_object[index]->Call(spawn_callback.command,
+			                          spawn_callback.parameters[0],
+			                          spawn_callback.parameters[1],
+			                          spawn_callback.parameters[2],
+			                          spawn_callback.parameters[3],
+			                          spawn_callback.parameters[4],
+			                          spawn_callback.parameters[5],
+			                          spawn_callback.parameters[6],
+			                          spawn_callback.parameters[7],
+			                          spawn_callback.parameters[8]);
 		}
 		
 		this->~EffectSpawn(index);
