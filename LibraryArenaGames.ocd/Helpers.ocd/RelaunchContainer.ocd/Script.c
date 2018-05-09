@@ -27,14 +27,12 @@ static const RELAUNCH_Factor_Second = 36;
 /* --- Properties --- */
 
 local time;
-local menu;
 local hold;
 local has_selected;
 
 local crew;
 
 local Name = "$Name$";
-
 
 
 /* --- Engine callbacks --- */
@@ -54,22 +52,6 @@ public func SaveScenarioObject() { return false; }
 /* --- Interface --- */
 
 /**
- Sets the time, in seconds, the crew is held in the container.
- 
- @par to_time The time to hold the crew, in seconds.
- @par to_hold If set to true, then the crew will be contained in
-              the container until the time has fully run out.
-              Otherwise the player can exit the container earlier.
-              
- @author Maikel
- */
-public func SetRelaunchTime(int to_time, bool to_hold)
-{
-	time = to_time * RELAUNCH_Factor_Second;
-	hold = to_hold;
-}
-
-/**
 	Returns the time, in seconds, that the clonk is held inside the container.
 	
 	@author Maikel
@@ -78,13 +60,58 @@ public func GetRelaunchTime() { return time / RELAUNCH_Factor_Second; }
 
 
 /**
-	Retrieve weapon list from scenario.
-	This issues a game call "RelaunchWeaponList" that should return an array of IDs.
-	
+	Sets the time, in seconds, the crew is held in the container.
+ 
+	@par to_time The time to hold the crew, in seconds.
+	@par to_hold If set to true, then the crew will be contained in
+                 the container until the time has fully run out.
+                 Otherwise the player can exit the container earlier.
+              
 	@author Maikel
+ */
+public func SetRelaunchTime(int to_time, bool to_hold)
+{
+	time = to_time * RELAUNCH_Factor_Second;
+	hold = to_hold;
+}
 
- */ 
-public func WeaponList() { return GameCall("RelaunchWeaponList"); }
+
+/**
+	Starts the relaunch process for a clonk.
+	
+	@par clonk This clonk will be relaunched.
+	@return bool Returns whether the relaunch was started successfully.
+	             Reasons for unsuccessful relaunch are: The container
+	             already contains another clonk.
+ */
+public func StartRelaunch(object clonk)
+{
+	if (PrepareRelaunch(clonk))
+	{
+		AddEffect("IntTimeLimit", this, 100, RELAUNCH_Factor_Second, this);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+/**
+	Relaunches the clonk immediately, if there is one.
+ */
+public func InstantRelaunch()
+{
+	if (!crew)
+	{
+		FatalError("There was no object that can be relaunched. The function PrepareRelaunch() or StartRelaunch() should be called first.");
+	}
+	
+	RelaunchCrew();
+}
+
+/* --- Overloadable callbacks --- */
 
 
 /**
@@ -109,40 +136,6 @@ public func OnRelaunchCrew(object crew)
 {
 }
 
-/**
-	Is called when the player selects a weapon.
-	This method should create the weapon and
-	let the player collect it. By default this function
-	does nothing.
-	
-	@par weapon_id This weapon was selected.
- */
-func GiveWeapon(id weapon_id)
-{
-}
-
-
-func OpenWeaponMenu(object clonk)
-{
-	if (!clonk)	return;	
-	if (!menu)
-	{
-		var weapons = WeaponList();
-		if (weapons && GetLength(weapons) > 0)
-		{
-			menu = CreateObject(MenuStyle_Default, nil, nil, clonk->GetOwner());
-			menu->SetPermanent();
-			menu->SetTitle(Format("$MsgWeapon$", time / RELAUNCH_Factor_Second));
-			clonk->SetMenu(menu); 
-
-			for (var weapon in weapons)
-				menu->AddItem(weapon, weapon->GetName(), nil, this, "OnWeaponSelected", weapon);
-	
-			menu->Open();
-		}
-	}
-}
-
 /* --- Internals --- */
 
 func FxIntTimeLimitTimer(object target, proplist effect, int fxtime)
@@ -154,32 +147,35 @@ func FxIntTimeLimitTimer(object target, proplist effect, int fxtime)
 	}
 	if (fxtime >= time)
 	{
-		var weapons = WeaponList();
-		if (!has_selected && weapons && GetLength(weapons) > 0)
-			GiveWeapon(weapons[Random(GetLength(weapons))]);
 		RelaunchCrew();
 		return FX_Execute_Kill;
 	}
-	if (menu)
-		menu->SetTitle(Format("$MsgWeapon$", (time - fxtime) / RELAUNCH_Factor_Second));
-	else
-		PlayerMessage(crew->GetOwner(), Format("$MsgRelaunch$", (time - fxtime) / RELAUNCH_Factor_Second));
+	PlayerMessage(crew->GetOwner(), Format("$MsgRelaunch$", (time - fxtime) / RELAUNCH_Factor_Second));
 	return FX_OK;
 }
 
-public func OnWeaponSelected(id weapon)
-{
-	GiveWeapon(weapon);
-	
-	has_selected = true;
-	// Close menu manually, to prevent selecting more weapons.
-	if (menu)
-		menu->Close();
 
-	if (!hold)
-		RelaunchCrew();
+func PrepareRelaunch(object clonk)
+{
+	// Some sanity checks first
+	AssertNotNil(clonk);
+	if (crew)
+	{
+		return clonk == crew;
+	}
+	
+	// Save clonk for later use and contain it
+	crew = clonk;
+	if (clonk->Contained() != this)
+	{
+		clonk->Enter(this);
+	}
+	
+	// Callback
+	OnInitializeCrew(clonk);
 	return true;
 }
+
 
 func RelaunchCrew()
 {
@@ -190,58 +186,16 @@ func RelaunchCrew()
 		SetCursor(crew->GetOwner(), crew);
 		SetPlrView(crew->GetOwner(), crew);
 	}
+	
+	// Eject crew and set it to the container position (because the crew would exit above the container)
 	crew->Exit();
-	crew->SetPosition(GetX(), GetY()); // because the crew exits above the container
-	if (menu)
-		menu->Close();
+	crew->SetPosition(GetX(), GetY());
+
+	// Remove relaunch time message
 	PlayerMessage(crew->GetOwner(), "");
+	
+	// Callback
 	OnRelaunchCrew(crew);
 	RemoveObject();
 }
 
-
-public func PrepareRelaunch(object clonk)
-{
-	if (!clonk) return false;
-	if (crew)
-	{
-		if (clonk == crew) 
-		{
-			return true;
-		}
-		return false;
-	}
-	// save clonk for later use
-	crew = clonk;
-	
-	if (clonk->Contained() != this)
-	{
-		clonk->Enter(this);
-		OnInitializeCrew(clonk);
-	}
-	return true;
-}
-
-public func StartRelaunch(object clonk)
-{
-	if (PrepareRelaunch(clonk))
-	{
-		ScheduleCall(this, this.OpenWeaponMenu, RELAUNCH_Factor_Second, 0, clonk);
-		AddEffect("IntTimeLimit", this, 100, RELAUNCH_Factor_Second, this);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-public func InstantRelaunch()
-{
-	if (!crew)
-	{
-		FatalError("There was no object that can be relaunched. The function PrepareRelaunch() or StartRelaunch() should be called first.");
-	}
-	
-	RelaunchCrew();
-}
