@@ -1,34 +1,30 @@
 /**
- Relaunch container.
+	Relaunch container.
  
- {@section Constants} The object offers new constants:
- <table>
- 	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
- 	<tr><td>RELAUNCH_Default_Time</td>  <td>360</td> <td>Time in frames, until the relaunch container ejects the player.</td></tr>
- 	<tr><td>RELAUNCH_Default_Hold</td>  <td>true</td>  <td>If true, then the player cannot exit the container himself.</td></tr>
- </table>
+ 	This container holds the clonk after relaunches.
+	* The time the clonk is held can be specified with SetRelaunchTime(int time);
+	* After that time the clonk is released and OnClonkLeftRelaunch(object clonk) is called in the scenario script.
+	* Optionally the clonk can choose a weapon if GetRelaunchWeaponList in the scenario script returns a valid id-array.
  
- @author Marky
- @credits Maikel
- @version 0.1.0
+ 
+	{@section Constants} The object offers new constants:
+	<table>
+ 		<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
+ 		<tr><td>RELAUNCH_Default_Time</td>  <td>360</td> <td>Time in frames, until the relaunch container ejects the player.</td></tr>
+ 		<tr><td>RELAUNCH_Default_Hold</td>  <td>true</td>  <td>If true, then the player cannot exit the container himself.</td></tr>
+	</table>
+ 
+ 	@author Marky
+	@credits Maikel
 */
 
-
+/* --- Constants --- */
 
 static const RELAUNCH_Default_Time = 360; // hold 10 seconds
 static const RELAUNCH_Default_Hold = true;
 static const RELAUNCH_Factor_Second = 36;
 
-//----------------------------------------------------------------------------
-/*--
-	Relaunch container
-	Author: Maikel
-
-	This container holds the clonk after relaunches.
-	* The time the clonk is held can be specified with SetRelaunchTime(int time);
-	* After that time the clonk is released and OnClonkLeftRelaunch(object clonk) is called in the scenario script.
-	* Optionally the clonk can choose a weapon if GetRelaunchWeaponList in the scenario script returns a valid id-array.
---*/
+/* --- Properties --- */
 
 local time;
 local menu;
@@ -37,14 +33,35 @@ local has_selected;
 
 local crew;
 
+local Name = "$Name$";
+
+
+
+/* --- Engine callbacks --- */
+
+func Initialize()
+{
+	time = RELAUNCH_Default_Time;
+	hold = RELAUNCH_Default_Hold;
+}
+
+/* --- Scenario saving --- */
+
+// Disabled
+public func SaveScenarioObject() { return false; }
+
+
+/* --- Interface --- */
+
 /**
  Sets the time, in seconds, the crew is held in the container.
+ 
  @par to_time The time to hold the crew, in seconds.
  @par to_hold If set to true, then the crew will be contained in
               the container until the time has fully run out.
               Otherwise the player can exit the container earlier.
+              
  @author Maikel
- @version 0.2.1
  */
 public func SetRelaunchTime(int to_time, bool to_hold)
 {
@@ -53,22 +70,59 @@ public func SetRelaunchTime(int to_time, bool to_hold)
 }
 
 /**
- Returns the time, in seconds the clonk is held.
- @author Maikel
- @version 0.2.1
+	Returns the time, in seconds, that the clonk is held inside the container.
+	
+	@author Maikel
  */
 public func GetRelaunchTime() { return time / RELAUNCH_Factor_Second; }
 
+
 /**
- Retrieve weapon list from scenario.
- This issues a game call "RelaunchWeaponList" that should return an array of IDs.
- @author Maikel
- @version 0.2.1
+	Retrieve weapon list from scenario.
+	This issues a game call "RelaunchWeaponList" that should return an array of IDs.
+	
+	@author Maikel
+
  */ 
 public func WeaponList() { return GameCall("RelaunchWeaponList"); }
 
 
-private func OpenWeaponMenu(object clonk)
+/**
+	Callback when the crew is contained.
+	This happens after the crew has entered the container.
+	
+	@par crew This object is being initialized.
+ */
+public func OnInitializeCrew(object crew)
+{
+}
+
+
+/**
+	Callback when the contained crew is relaunched.
+	This happens after the crew has left the container and
+	before the container is removed. 
+
+	@par crew This object is being relaunched.
+ */
+public func OnRelaunchCrew(object crew)
+{
+}
+
+/**
+	Is called when the player selects a weapon.
+	This method should create the weapon and
+	let the player collect it. By default this function
+	does nothing.
+	
+	@par weapon_id This weapon was selected.
+ */
+func GiveWeapon(id weapon_id)
+{
+}
+
+
+func OpenWeaponMenu(object clonk)
 {
 	if (!clonk)	return;	
 	if (!menu)
@@ -88,6 +142,8 @@ private func OpenWeaponMenu(object clonk)
 		}
 	}
 }
+
+/* --- Internals --- */
 
 func FxIntTimeLimitTimer(object target, proplist effect, int fxtime)
 {
@@ -125,8 +181,15 @@ public func OnWeaponSelected(id weapon)
 	return true;
 }
 
-private func RelaunchCrew()
+func RelaunchCrew()
 {
+	// When relaunching from disabled state (i.e base respawn), reset view to clonk.
+	if (!crew->GetCrewEnabled())
+	{
+		crew->SetCrewEnabled(true);
+		SetCursor(crew->GetOwner(), crew);
+		SetPlrView(crew->GetOwner(), crew);
+	}
 	crew->Exit();
 	crew->SetPosition(GetX(), GetY()); // because the crew exits above the container
 	if (menu)
@@ -136,48 +199,6 @@ private func RelaunchCrew()
 	RemoveObject();
 }
 
-
-/**
- Callback when the crew is contained.
- This happens after the crew has entered the container
- @version 0.3.0
- */
-public func OnInitializeCrew(object crew)
-{
-}
-
-/**
- Callback when the contained crew is relaunched.
- This happens after the crew has left the container and
- before the container is removed. 
- @version 0.2.0
- */
-public func OnRelaunchCrew(object crew)
-{
-}
-
-/**
- Is called when the player selects a weapon.
- This method should create the weapon and
- let the player collect it. By default this function
- does nothing.
- @par weapon_id This weapon was selected.
- */
-private func GiveWeapon(id weapon_id)
-{
-}
-
-public func SaveScenarioObject() { return false; }
-
-local Name = "$Name$";
-
-//----------------------------------------------------------------------------
-
-protected func Initialize()
-{
-	time = RELAUNCH_Default_Time;
-	hold = RELAUNCH_Default_Hold;
-}
 
 public func PrepareRelaunch(object clonk)
 {
