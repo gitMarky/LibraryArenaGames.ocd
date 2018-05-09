@@ -1,11 +1,7 @@
 /**
 	Relaunch container.
  
- 	This container holds the clonk after relaunches.
-	* The time the clonk is held can be specified with SetRelaunchTime(int time);
-	* After that time the clonk is released and OnClonkLeftRelaunch(object clonk) is called in the scenario script.
-	* Optionally the clonk can choose a weapon if GetRelaunchWeaponList in the scenario script returns a valid id-array.
- 
+ 	This container holds the crew after relaunches.
  
 	{@section Constants} The object offers new constants:
 	<table>
@@ -30,7 +26,7 @@ local time;
 local hold;
 local has_selected;
 
-local crew;
+local relaunch_crew;
 
 local Name = "$Name$";
 
@@ -52,7 +48,7 @@ public func SaveScenarioObject() { return false; }
 /* --- Interface --- */
 
 /**
-	Returns the time, in seconds, that the clonk is held inside the container.
+	Returns the time, in seconds, that the crew is held inside the container.
 	
 	@author Maikel
  */
@@ -77,18 +73,18 @@ public func SetRelaunchTime(int to_time, bool to_hold)
 
 
 /**
-	Starts the relaunch process for a clonk.
+	Starts the relaunch process for a crew.
 	
-	@par clonk This clonk will be relaunched.
+	@par crew This crew will be relaunched.
 	@return bool Returns whether the relaunch was started successfully.
 	             Reasons for unsuccessful relaunch are: The container
-	             already contains another clonk.
+	             already contains another crew.
  */
-public func StartRelaunch(object clonk)
+public func StartRelaunch(object crew)
 {
-	if (PrepareRelaunch(clonk))
+	if (PrepareRelaunch(crew))
 	{
-		AddEffect("IntTimeLimit", this, 100, RELAUNCH_Factor_Second, this);
+		CreateEffect(RelaunchCountdown, 100, RELAUNCH_Factor_Second);
 		return true;
 	}
 	else
@@ -99,11 +95,11 @@ public func StartRelaunch(object clonk)
 
 
 /**
-	Relaunches the clonk immediately, if there is one.
+	Relaunches the crew immediately, if there is one.
  */
 public func InstantRelaunch()
 {
-	if (!crew)
+	if (!relaunch_crew)
 	{
 		FatalError("There was no object that can be relaunched. The function PrepareRelaunch() or StartRelaunch() should be called first.");
 	}
@@ -136,66 +132,94 @@ public func OnRelaunchCrew(object crew)
 {
 }
 
-/* --- Internals --- */
+/**
+	Callback from the relaunch timer.
+	
+	By default this displays the remaining time as a message above the container.
 
-func FxIntTimeLimitTimer(object target, proplist effect, int fxtime)
+	@par frames This many frames are remaining.
+ */
+public func OnTimeRemaining(int frames)
 {
-	if (!crew)
-	{
-		RemoveObject();
-		return FX_Execute_Kill;
-	}
-	if (fxtime >= time)
-	{
-		RelaunchCrew();
-		return FX_Execute_Kill;
-	}
-	PlayerMessage(crew->GetOwner(), Format("$MsgRelaunch$", (time - fxtime) / RELAUNCH_Factor_Second));
-	return FX_OK;
+	PlayerMessage(relaunch_crew->GetOwner(), Format("$MsgRelaunch$", frames / RELAUNCH_Factor_Second));
 }
 
 
-func PrepareRelaunch(object clonk)
+/* --- Internals --- */
+
+local RelaunchCountdown = new Effect
+{
+	Timer = func (int time)
+	{
+		// Remove empty container
+		if (!this.Target.relaunch_crew)
+		{
+			this.Target->RemoveObject();
+			return FX_Execute_Kill;
+		}
+
+		// Block a successful relaunch?
+		var blocked = this.Target.relaunch_crew->GetMenu()
+		           || this.Target.relaunch_crew->~RejectRelaunch();
+
+		// Message output or user-defined effects
+		if (!blocked)
+		{
+			this.Target->OnTimeRemaining(this.Target.time - time);
+		}
+		
+		// Time has come and not blocked?
+		if (time >= this.Target.time && !blocked)
+		{
+			this.Target->RelaunchCrew();
+			return FX_Execute_Kill;
+		}
+		return FX_OK;
+	},
+};
+
+
+func PrepareRelaunch(object crew)
 {
 	// Some sanity checks first
-	AssertNotNil(clonk);
-	if (crew)
+	AssertNotNil(crew);
+	if (relaunch_crew)
 	{
-		return clonk == crew;
+		return crew == relaunch_crew;
 	}
 	
-	// Save clonk for later use and contain it
-	crew = clonk;
-	if (clonk->Contained() != this)
+	// Save crew for later use and contain it
+	relaunch_crew = crew;
+	if (crew->Contained() != this)
 	{
-		clonk->Enter(this);
+		crew->Enter(this);
 	}
 	
 	// Callback
-	OnInitializeCrew(clonk);
+	OnInitializeCrew(crew);
 	return true;
 }
 
 
 func RelaunchCrew()
 {
-	// When relaunching from disabled state (i.e base respawn), reset view to clonk.
-	if (!crew->GetCrewEnabled())
+	// When relaunching from disabled state (i.e base respawn), reset view to crew.
+	if (!relaunch_crew->GetCrewEnabled())
 	{
-		crew->SetCrewEnabled(true);
-		SetCursor(crew->GetOwner(), crew);
-		SetPlrView(crew->GetOwner(), crew);
+		relaunch_crew->SetCrewEnabled(true);
+		SetCursor(relaunch_crew->GetOwner(), relaunch_crew);
+		SetPlrView(relaunch_crew->GetOwner(), relaunch_crew);
 	}
 	
 	// Eject crew and set it to the container position (because the crew would exit above the container)
-	crew->Exit();
-	crew->SetPosition(GetX(), GetY());
+	relaunch_crew->Exit();
+	relaunch_crew->SetPosition(GetX(), GetY());
 
 	// Remove relaunch time message
-	PlayerMessage(crew->GetOwner(), "");
+	PlayerMessage(relaunch_crew->GetOwner(), "");
 	
 	// Callback
-	OnRelaunchCrew(crew);
+	OnRelaunchCrew(relaunch_crew);
 	RemoveObject();
 }
 
