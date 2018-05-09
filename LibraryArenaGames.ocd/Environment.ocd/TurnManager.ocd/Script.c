@@ -32,8 +32,7 @@
  @title Turns
  @id index
  @author Marky
- @version 0.3.0
- */
+  */
  
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,8 +50,7 @@ local Description = "$Description$";
  Use this to access the turn manager object from other objects.
  @return object A {@link Environment_TurnManager#index turn manager} object,
          or {@c nil} if it does not exist.
- @version 0.3.0
- */
+  */
 global func TurnManager()
 {
 	var manager = FindObject(Find_ID(Environment_TurnManager));
@@ -101,8 +99,7 @@ protected func Initialize()
  Displays a message window with the description of the object.
  @par player_index The player who selected the object in the rules menu.
  @return bool {@c true}.
- @version 0.3.0
- */
+  */
 public func Activate(int player_index)
 {
 	MessageWindow(this.Description, player_index);
@@ -118,8 +115,7 @@ public func Activate(int player_index)
        by calling {@link Environment_TurnManager#RemoveTurnStartBlocker}.
  @par blocker The object.
  @related {@link Environment_TurnManager#RegisterTurnEndBlocker}
- @version 0.3.0
- */
+  */
 public func RegisterTurnStartBlocker(object blocker)
 {
 	CheckBlocker(blocker);
@@ -136,8 +132,7 @@ public func RegisterTurnStartBlocker(object blocker)
  the turn manager.
  @par blocker The object.
  @related {@link Environment_TurnManager#RegisterTurnStartBlocker}, {@link Environment_TurnManager#RemoveTurnEndBlocker}.
- @version 0.3.0
- */
+  */
 public func RemoveTurnStartBlocker(object blocker)
 {
 	CheckBlocker(blocker);
@@ -154,8 +149,7 @@ public func RemoveTurnStartBlocker(object blocker)
        by calling {@link Environment_TurnManager#RemoveTurnEndBlocker}.
  @par blocker The object.
  @related {@link Environment_TurnManager#RegisterTurnStartBlocker}
- @version 0.3.0
- */
+  */
 public func RegisterTurnEndBlocker(object blocker)
 {
 	CheckBlocker(blocker);
@@ -172,8 +166,7 @@ public func RegisterTurnEndBlocker(object blocker)
  the turn manager.
  @par blocker The object.
  @related {@link Environment_TurnManager#RegisterTurnEndBlocker}, {@link Environment_TurnManager#RemoveTurnStartBlocker}.
- @version 0.3.0
- */
+  */
 public func RemoveTurnEndBlocker(object blocker)
 {
 	CheckBlocker(blocker);
@@ -187,8 +180,7 @@ public func RemoveTurnEndBlocker(object blocker)
  Use this to check if a turn in the game is currently active.
  @return {@c true} if the turn has started, including the game call "OnTurnStart",@br
          {@c false} if the turn has ended, including the game call "OnTurnend"
- @version 0.3.0
- */
+  */
 public func IsTurnActive()
 {
 	return turn_has_started;
@@ -198,8 +190,7 @@ public func IsTurnActive()
 
 /**
  GameCall when the turn is reset. 
- @version 0.3.0
- */
+  */
 protected func OnTurnReset(int turn_number)
 {
 	ScheduleCall(this, this.PrepareTurnStart, 5, 0);
@@ -212,8 +203,7 @@ protected func OnTurnReset(int turn_number)
  Checks if the object actually exists and throws an error if not.
  @par blocker The blocker object.
  @ignore
- @version 0.3.0
- */
+  */
 private func CheckBlocker(object blocker)
 {
 	if (blocker == nil)
@@ -225,8 +215,7 @@ private func CheckBlocker(object blocker)
 /**
  Prepares a new turn.
  Issues the game call {@c OnTurnEnd(int turn_number)}, increases the turn counter and calls {@c OnTurnReset(int turn_number)}.
- @version 0.3.0
- */
+  */
 private func NextTurn()
 {
 	// increase turn number
@@ -237,8 +226,7 @@ private func NextTurn()
 
 /**
  Gets called every time a turn start blocker is removed.
- @version 0.3.0
- */
+  */
 private func PrepareTurnStart()
 {
 	if (GetLength(turn_start_blocker) == 0)
@@ -249,8 +237,7 @@ private func PrepareTurnStart()
 
 /**
  Gets called every time a turn end blocker is removed.
- @version 0.3.0
- */
+  */
 private func PrepareTurnEnd()
 {
 	if (GetLength(turn_end_blocker) == 0)
@@ -262,8 +249,7 @@ private func PrepareTurnEnd()
 
 /**
  Issues the game call {@c GameCallEx("OnTurnEnd", turn_number)}.
- @version 0.3.0
- */
+  */
 private func DoTurnEnd()
 {
 	// reset the activity status
@@ -276,8 +262,7 @@ private func DoTurnEnd()
 
 /**
  Issues the game call {@c GameCallEx("OnTurnStart", turn_number)}.
- @version 0.3.0
- */
+  */
 private func DoTurnStart()
 {
 	if (!turn_has_started)
@@ -292,8 +277,7 @@ private func DoTurnStart()
 /**
  Gives the current turn number.
  @return int The number of the current turn. It starts counting at 1 and increases before {@c GameCallEx("OnTurnReset"")} is called.
- @version 0.3.0
- */
+  */
 public func GetTurnNumber()
 {
 	return turn_counter;

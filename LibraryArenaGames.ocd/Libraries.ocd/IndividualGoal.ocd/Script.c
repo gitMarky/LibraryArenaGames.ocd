@@ -2,8 +2,7 @@
  Library for a goal that is winnable by individual players.
  A faction in {@link Library_ConfigurableRule#index} corresponds to a player.
  @author Marky
- @version 0.1.0
- */
+  */
 
 #include Library_ConfigurableGoal
 

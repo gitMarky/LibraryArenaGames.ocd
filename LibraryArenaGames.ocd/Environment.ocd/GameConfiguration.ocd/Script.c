@@ -18,7 +18,6 @@
  @author Marky
  @id index
  @title Game Configuration
- @version 0.1.0
  */
 
 static const GAMECONFIG_Proplist_Items = "items";
@@ -82,7 +81,6 @@ local color_active = -1; // = RGB(255, 255, 255);
 /**
  Makes bots configurable if it returns {@c true}.
  @return bool The default value is {@c true}.
- @version 0.1.0
  */
 public func CanConfigureBots()
 {
@@ -93,7 +91,6 @@ public func CanConfigureBots()
 /**
  Makes goals configurable if it returns {@c true}.
  @return bool The default value is {@c true}.
- @version 0.3.0
  */
 public func CanConfigureGoal()
 {
@@ -104,7 +101,6 @@ public func CanConfigureGoal()
 /**
  Makes rules configurable if it returns {@c true}.
  @return bool The default value is {@c true}.
- @version 0.3.0
  */
 public func CanConfigureRules()
 {
@@ -115,7 +111,6 @@ public func CanConfigureRules()
 /**
  Makes configurable spawn points configurable if it returns {@c true}.
  @return bool The default value is {@c true}.
- @version 0.1.0
  */
 public func CanConfigureSpawnPoints()
 {
@@ -126,7 +121,6 @@ public func CanConfigureSpawnPoints()
 /**
  Makes teams configurable if it returns {@c true}.
  @return bool The default value is {@c true}.
- @version 0.3.0
  */
 public func CanConfigureTeams()
 {
@@ -138,7 +132,6 @@ public func CanConfigureTeams()
  Tells objects, that this is a game configuration. This becomes important if you include the
  configuration object.
  @return bool {@c true}
- @version 0.1.0
  */
 public func IsGameConfiguration()
 {
@@ -168,8 +161,7 @@ func MenuQueryCancel()
  2.) {@link Environment_Configuration#PreconfigureRules}@br
  3.) {@c GameCall("OnConfigurationStart")}@br
  3.) {@link Environment_Configuration#OpenMainMenu}@br
- @version 0.1.0
- */
+  */
 protected func Initialize()
 {
 	SetPosition();
@@ -201,8 +193,7 @@ protected func PostInitialize()
 
 /**
  Callback from the round manager, calls {@link Environment_Configuration#OpenMainMenu}.
- @version 0.1.0
- */
+  */
 public func OnRoundReset(int round_number)
 {
 	RoundManager()->RegisterRoundStartBlocker(this);
@@ -223,8 +214,7 @@ public func OnRoundReset(int round_number)
 
 /**
  Engine callback. Puts the player into a relaunch container if the configuration process is not finished.
- @version 0.1.0
- */
+  */
 public func InitializePlayer(int player, int x, int y, object base, int team, id extra_data)
 {
 	if (!configuration_finished)
@@ -245,8 +235,7 @@ public func InitializePlayer(int player, int x, int y, object base, int team, id
  Calls {@link Environment_Configuration#CreateMainMenu}.
  for custom effects.
  @note Has a callback {@c OnOpenMainMenu()}.
- @version 0.1.0
- */
+  */
 protected func OpenMainMenu(id dummy)
 {
 	var player = GetChoosingPlayer();
@@ -280,8 +269,7 @@ protected func OpenMainMenu(id dummy)
  6.) {@link Environment_Configuration#MainMenuAddItemFinishConfiguration}
  
  @par player The menu is displayed in this object.
- @version 0.1.0
- */
+  */
 protected func CreateMainMenu(object player)
 {
 	CreateConfigurationMenu(player, GetIcon(GetID()), "$MenuCaption$");
@@ -312,8 +300,7 @@ protected func CreateMainMenu(object player)
  Adds an option for adding and removing AI players (bots, 
  if {@link Environment_Configuration#CanConfigureSpawnPoints} returns {@c true}.
  @par player The menu is displayed in this object.
- @version 0.1.0
- */
+  */
 protected func MainMenuAddItemBots(object player)
 {
 	if (CanConfigureBots())
@@ -332,8 +319,7 @@ protected func MainMenuAddItemBots(object player)
  - It creates a menu with the available goals and has the player choose one goal.
  
  @par player The menu is displayed in this object.
- @version 0.1.0
- */
+  */
 protected func MainMenuAddItemGoal(object player)
 {
 	if (CanConfigureGoal())
@@ -366,8 +352,7 @@ protected func MainMenuAddItemGoal(object player)
  Adds an option for configuration of the equipment that is spawned by spawn points, 
  if {@link Environment_Configuration#CanConfigureSpawnPoints} returns {@c true}.
  @par player The menu is displayed in this object.
- @version 0.1.0
- */
+  */
 protected func MainMenuAddItemItems(object player)
 {
 	if (CanConfigureSpawnPoints())
@@ -380,8 +365,7 @@ protected func MainMenuAddItemItems(object player)
 /**
  Adds an option for configuration of game rules.
  @par player The menu is displayed in this object.
- @version 0.1.0
- */
+  */
 protected func MainMenuAddItemRules(object player)
 {
 	if (CanConfigureRules())
@@ -398,8 +382,7 @@ protected func MainMenuAddItemRules(object player)
 /**
  Adds an option for switching players between teams, if the scenario supports teams.
  @par player The menu is displayed in this object.
- @version 0.1.0
- */
+  */
 protected func MainMenuAddItemTeams(object player)
 {
 	if (CanConfigureTeams())
@@ -417,8 +400,7 @@ protected func MainMenuAddItemTeams(object player)
  Adds an option for choosing the win score of the chosen goal.
  
  @par player The menu is displayed in this object.
- @version 0.1.0
- */
+  */
 protected func MainMenuAddItemWinScore(object player)
 {
 	if (CanConfigureGoal())
@@ -436,8 +418,7 @@ protected func MainMenuAddItemWinScore(object player)
  Adds a finish option to a menu, the option calls {@link Environment_Configuration#ConfigurationFinished}.
  
  @par player The menu is displayed in this object.
- @version 0.1.0
- */
+  */
 protected func MainMenuAddItemFinishConfiguration(object player)
 {
 	player->AddMenuItem("$Finished$", "ConfigurationFinished", Icon_Ok, nil, nil, "$Finished$");
@@ -459,8 +440,7 @@ protected func MainMenuAddItemFinishConfiguration(object player)
  @note Has a callback {@c OnMenuChooseGoal()}. Has a callback {@c MenuChooseGoalCustomEntries(object player)} for adding further options.
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
- @version 0.1.0
- */
+  */
 protected func MenuChooseGoal(id menu_symbol, object player, int selection)
 {
 	this->~OnMenuChooseGoal();
@@ -507,8 +487,7 @@ protected func MenuChooseGoal(id menu_symbol, object player, int selection)
  @par selection This option will be selected when the menu is open. First option is 0.
  @par block_interaction If {@c true}, then the menu will be displayed grey and options have effect. This
                         should visualize that a player is being added or removed. 
- @version 0.1.0
- */
+  */
 protected func MenuConfigureBots(id menu_symbol, object player, int selection, bool block_interaction)
 {
 	this->~OnMenuConfigureBots();
@@ -560,8 +539,7 @@ protected func MenuConfigureBots(id menu_symbol, object player, int selection, b
  @par player The menu is displayed in this object.
  @par menu_symbol The menu has this icon. This should be the id of the goal.
  @par selection This entry will be selected. Makes choosing the same option several times a lot more easy.
- @version 0.1.0
- */
+  */
 protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
 {
 	this->~OnMenuConfigureGoal();
@@ -586,8 +564,7 @@ protected func MenuConfigureGoal(id menu_symbol, object player, int selection)
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par selection This option will be selected when the menu is open. First option is 0.
- @version 0.1.0
- */
+  */
 protected func MenuConfigureItems(id menu_symbol, object player, int selection)
 {	
 	this->~OnMenuConfigureItems();
@@ -655,8 +632,7 @@ protected func MenuConfigureItems(id menu_symbol, object player, int selection)
  @par player The menu is displayed in this object.
  @par selection This option will be selected when the menu is open. First option is 0.
  @par has_default_configurations If true, then the option returns to {@link Environment_Configuration#MenuConfigureItems}
- @version 0.1.0
- */
+  */
 protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selection, bool has_default_configurations)
 {
 	this->~OnMenuConfigureItemsCustom();
@@ -702,8 +678,7 @@ protected func MenuConfigureItemsCustom(id menu_symbol, object player, int selec
  @par index This option was selected in the parent menu. Is necessary for smooth navigation through the menus.
  @par configure_spawnpoint Should be {@true} if you want to configure a spawnpoint, or {@c false} if you want to configure equipment.
  @par selection This option will be selected when the menu is open. First option is 0.
- @version 0.1.0
- */
+  */
 protected func MenuConfigureItemSlot(id menu_symbol, object player, string key, int index, bool configure_spawnpoint, int selection)
 {
 	this->~OnMenuConfigureItemSlot();
@@ -750,8 +725,7 @@ protected func MenuConfigureItemSlot(id menu_symbol, object player, string key, 
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par selection This option will be selected when the menu is open. First option is 0.
- @version 0.1.0
- */
+  */
 protected func MenuConfigureRules(id menu_symbol, object player, int selection)
 {
 	this->~OnMenuConfigureRules();
@@ -850,8 +824,7 @@ protected func MenuConfigureRules(id menu_symbol, object player, int selection)
  @par menu_symbol The menu has this icon.
  @par player The menu is displayed in this object.
  @par selection This option will be selected when the menu is open. First option is 0.
- @version 0.1.0
- */
+  */
 protected func MenuConfigureTeams(id menu_symbol, object player, int selection)
 {
 	this->~OnMenuConfigureTeams();
@@ -912,8 +885,7 @@ protected func ChangeWinScore(id menu_symbol, object player, int selection, int 
  Tells the {@link Environment_RoundManager#index} that the configuration is finished and the round can start.
  @par menu_symbol Dummy parameter from the menu selection call.
  @par parameter Dummy parameter from the menu selection call.
- @version 0.1.0
- */
+  */
 protected func ConfigurationFinished(id menu_symbol, parameter)
 {
 	this->~OnCloseMainMenu();
@@ -1217,8 +1189,7 @@ private func MenuSwitchTeam(object player, int index)
 /**
  Gets the player who will configure the round. 
  @return object The currently choosing player.
- @version 0.1.0
- */
+  */
 public func GetChoosingPlayer()
 {
 	return GetCursor(GetPlayerByIndex(player_index, C4PT_User));
@@ -1227,8 +1198,7 @@ public func GetChoosingPlayer()
 
 /**
  Puts all players in relaunch containers.
- @version 0.1.0
- */
+  */
 public func ContainPlayers()
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
@@ -1240,8 +1210,7 @@ public func ContainPlayers()
 /**
  Puts a single player in a relaunch container.
  @par player The player index.
- @version 0.1.0
- */
+  */
 public func ContainPlayer(int player)
 {
 	for (var i = 0; i < GetCrewCount(player); i++)
@@ -1253,8 +1222,7 @@ public func ContainPlayer(int player)
 /**
  Puts a single clonk in a relaunch container.
  @par crew The player's clonk.
- @version 0.1.0
- @return returns the relaunch container since version 0.2.0
+  @return returns the relaunch container since version 0.2.0
  */
 public func ContainCrew(object crew)
 {
@@ -1290,8 +1258,7 @@ public func ContainCrewAt()
 /**
  Releases all players from their relaunch containers.
  @par instant If {@c true}, then the relaunch container exits the player immediately.
- @version 0.1.0
- */
+  */
 public func ReleasePlayers(bool instant)
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
@@ -1303,8 +1270,7 @@ public func ReleasePlayers(bool instant)
 /**
  Releases a single players from their relaunch containers.
  @par instant If {@c true}, then the relaunch container exits the player immediately.
- @version 0.1.0
- */
+  */
 public func ReleasePlayer(int player, bool instant)
 {
 	for (var i = 0; i < GetCrewCount(player); i++)
@@ -1316,8 +1282,7 @@ public func ReleasePlayer(int player, bool instant)
 /**
  Releases a clonk from his owner's service, relaunches the Clonk
  @par instant If {@c true}, then the relaunch container exits the player immediately.
- @version 0.1.0
- */
+  */
 public func ReleaseCrew(object crew, bool instant)
 {
 	var container = crew->Contained();
@@ -1338,8 +1303,7 @@ public func ReleaseCrew(object crew, bool instant)
 /**
  Interface for the spawn points, so that the configuration can be looked up.
  @return id The definition that is configured for the spawn point.
- @version 0.1.0
- */
+  */
 public func GetSpawnPointItem(string key)
 {
 	return GetProperty(GAMECONFIG_Proplist_Def, GetProperty(key, GetProperty(GAMECONFIG_Proplist_Items, configured_items)));
@@ -1366,8 +1330,7 @@ private func SetItemConfiguration(string key, proplist value)
                  than {@c nil}.
  @par number The icon number to be displayed. This is usually not needed, but in some cases,
              such as team selection, this may be useful.
- @version 0.2.0
- */
+  */
 public func GetIcon(id definition, int number)
 {
 	if (definition == nil)

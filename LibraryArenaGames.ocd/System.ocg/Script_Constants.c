@@ -29,8 +29,7 @@
  @author Marky
  @id constants
  @title Engine Constants
- @version 0.1.0
- */
+  */
 
 static const FRAME_Per_Second = 				36; // I am suprised that this is not a constant
 

@@ -2,8 +2,7 @@
  Colors the string with the given color.
  @par text The string
  @par color The color, in dword format.
- @version 0.1.0
- */
+  */
 global func ColorizeString(string text, int color)
 {
 	return Format("<c %x>%s</c>", MakeReadableColor(color), text);

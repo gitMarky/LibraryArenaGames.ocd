@@ -3,8 +3,7 @@
  menu.
  @author Marky
  @credits Hazard Team
- @version 0.1.0
- */
+  */
 
 
 #include Library_Goal
@@ -25,8 +24,7 @@ local is_inverted;
  @par force_negative By default, negative changes are ignored.
                      Set this parameter to {@c true} if you want to
                      decrease the score.
- @version 0.1.0
- */
+  */
 public func DoScore(int faction, int change, bool force_negative)
 {
 	AssertArrayBounds(score_list_points, faction);
@@ -51,8 +49,7 @@ public func DoScore(int faction, int change, bool force_negative)
  @par faction A player or team, by index.
  @par change The amount that the score should increase by.
              Negative numbers are ignored.
- @version 0.1.0
- */
+  */
 public func DoRoundScore(int faction, int change)
 {
 	AssertArrayBounds(score_list_rounds, faction);
@@ -64,8 +61,7 @@ public func DoRoundScore(int faction, int change)
  Gets the score of a faction, for the current round.
  @par faction A player or team, by index.
  @return int The score value.
- @version 0.1.0
- */
+  */
 public func GetScore(int faction)
 {
 	AssertArrayBounds(score_list_points, faction);
@@ -76,8 +72,7 @@ public func GetScore(int faction)
 /**
  Sets the score of a faction, for the current round.
  @par faction A player or team, by index.
- @version 0.1.0
- */
+  */
 public func SetScore(int faction, int value)
 {
 	DoScore(faction, value - GetScore(faction), true);
@@ -87,8 +82,7 @@ public func SetScore(int faction, int value)
  Gets the number of rounds that a faction won.
  @par faction A player or team, by index.
  @return int The number of rounds that the faction won.
- @version 0.1.0
- */
+  */
 public func GetRoundScore(int faction)
 {
 	AssertArrayBounds(score_list_rounds, faction);
@@ -100,8 +94,7 @@ public func GetRoundScore(int faction)
  Gets the number of points that a faction has to score in order to win.
  @return int If {@link Library_ConfigurableGoal#GetScore} of a faction is
              at least this number, then that faction wins the round.
- @version 0.1.0
- */
+  */
 public func GetWinScore()
 {
 	return win_score;
@@ -112,8 +105,7 @@ public func GetWinScore()
  @par score No matter the input value the score is at least 1. If
             {@link Library_ConfigurableGoal#GetScore} of a faction is
             at least this number, then that faction wins the round.
- @version 0.1.0
- */
+  */
 public func SetWinScore(int score)
 {
 	win_score = Max(1, score);
@@ -123,8 +115,7 @@ public func SetWinScore(int score)
  Increases the win score by the specified amount.
  @par change The win score changes by this amount.
              Can be a positive or negative value.
- @version 0.1.0
- */
+  */
 public func DoWinScore(int change)
 {
 	SetWinScore(GetWinScore() + change);
@@ -133,8 +124,7 @@ public func DoWinScore(int change)
 /**
  Lets a faction win the current round.
  @par faction A player or team, by index.
- @version 0.1.0
- */
+  */
 public func DoWinRound(int faction)
 {
 	if (RoundManager() != nil)
@@ -191,8 +181,7 @@ public func OnRoundStart(int round)
 /**
  Callback. This is called by {@link Environment_RoundManager#DoRoundStart}.
  Does nothing by default.
- @version 0.1.0
- */
+  */
 public func DoSetup(int round)
 {
 }

@@ -13,8 +13,7 @@ static const EFFECT_Disintegration_Precision = 100;
  @par additive If true, then the object will be drawn additive when the function is called.
  @related {@link global#IsDisintegrating}, {@link global#FxArenaDisintColorObject}, {@link global#FxArenaDisintColorParticle}
  @author Marky
- @version 0.2.0
- */
+  */
 global func Disintegrate(int lifetime, int dt, int dy, bool additive)
 {
 	if(!this)
@@ -138,8 +137,7 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 /**
  When you {@link global#Disintegrate} an object it will fade to this color.
  @return int A color value.
- @version 0.2.0
- */
+  */
 global func FxArenaDisintColorObject()
 {
 	return RGB(64, 128, 255);
@@ -148,8 +146,7 @@ global func FxArenaDisintColorObject()
 /**
  When you {@link global#Disintegrate} an object it create particles of this color.
  @return int A color value.
- @version 0.2.0
- */
+  */
 global func FxArenaDisintColorParticle()
 {
 	return RGB(64, 128, 255);
@@ -160,8 +157,7 @@ global func FxArenaDisintColorParticle()
  @par alpha The current alpha value of the fading out object. Particles should have a similar
             alpha value.
  @return proplist A particle proplist.
- @version 0.2.0
- */
+  */
 global func Particles_Disintegrate(int alpha)
 {
 	return {

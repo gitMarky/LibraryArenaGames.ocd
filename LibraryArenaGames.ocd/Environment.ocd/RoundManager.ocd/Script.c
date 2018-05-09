@@ -33,8 +33,7 @@
  @title Rounds
  @id index
  @author Marky
- @version 0.1.0
- */
+  */
  
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,8 +52,7 @@ local Description = "$Description$";
  Use this to access the round manager object from other objects.
  @return object A {@link Environment_RoundManager#index round manager} object,
          or {@c nil} if it does not exist.
- @version 0.1.0
- */
+  */
 global func RoundManager()
 {
 	var manager = FindObject(Find_ID(Environment_RoundManager));
@@ -110,8 +108,7 @@ protected func Initialize()
  Displays a message window with the description of the object.
  @par player_index The player who selected the object in the rules menu.
  @return bool {@c true}.
- @version 0.1.0
- */
+  */
 public func Activate(int player_index)
 {
 	MessageWindow(this.Description, player_index);
@@ -127,8 +124,7 @@ public func Activate(int player_index)
        by calling {@link Environment_RoundManager#RemoveRoundStartBlocker}.
  @par blocker The object.
  @related {@link Environment_RoundManager#RegisterRoundEndBlocker}
- @version 0.1.0
- */
+  */
 public func RegisterRoundStartBlocker(object blocker)
 {
 	CheckBlocker(blocker);
@@ -145,8 +141,7 @@ public func RegisterRoundStartBlocker(object blocker)
  the round manager.
  @par blocker The object.
  @related {@link Environment_RoundManager#RegisterRoundStartBlocker}, {@link Environment_RoundManager#RemoveRoundEndBlocker}.
- @version 0.1.0
- */
+  */
 public func RemoveRoundStartBlocker(object blocker)
 {
 	CheckBlocker(blocker);
@@ -163,8 +158,7 @@ public func RemoveRoundStartBlocker(object blocker)
        by calling {@link Environment_RoundManager#RemoveRoundEndBlocker}.
  @par blocker The object.
  @related {@link Environment_RoundManager#RegisterRoundStartBlocker}
- @version 0.1.0
- */
+  */
 public func RegisterRoundEndBlocker(object blocker)
 {
 	CheckBlocker(blocker);
@@ -181,8 +175,7 @@ public func RegisterRoundEndBlocker(object blocker)
  the round manager.
  @par blocker The object.
  @related {@link Environment_RoundManager#RegisterRoundEndBlocker}, {@link Environment_RoundManager#RemoveRoundStartBlocker}.
- @version 0.1.0
- */
+  */
 public func RemoveRoundEndBlocker(object blocker)
 {
 	CheckBlocker(blocker);
@@ -196,8 +189,7 @@ public func RemoveRoundEndBlocker(object blocker)
  Use this to check if a round in the game is currently active.
  @return {@c true} if the round has started, including the game call "OnRoundStart",@br
          {@c false} if the round has ended, including the game call "OnRoundend"
- @version 0.1.0
- */
+  */
 public func IsRoundActive()
 {
 	return round_has_started;
@@ -207,8 +199,7 @@ public func IsRoundActive()
 
 /**
  GameCall when the round is reset. 
- @version 0.1.0
- */
+  */
 protected func OnRoundReset(int round_number)
 {
 	if (chooser_id != nil)
@@ -230,8 +221,7 @@ protected func OnRoundReset(int round_number)
  Checks if the object actually exists and throws an error if not.
  @par blocker The blocker object.
  @ignore
- @version 0.1.0
- */
+  */
 private func CheckBlocker(object blocker)
 {
 	if (blocker == nil)
@@ -243,8 +233,7 @@ private func CheckBlocker(object blocker)
 /**
  Prepares a new round.
  Issues the game call {@c OnRoundEnd(int round_number)}, increases the round counter and calls {@c OnRoundReset(int round_number)}.
- @version 0.1.0
- */
+  */
 private func NextRound()
 {
 	// increase round number
@@ -255,8 +244,7 @@ private func NextRound()
 
 /**
  Gets called every time a round start blocker is removed.
- @version 0.1.0
- */
+  */
 private func PrepareRoundStart()
 {
 	if (GetLength(round_start_blocker) == 0)
@@ -267,8 +255,7 @@ private func PrepareRoundStart()
 
 /**
  Gets called every time a round end blocker is removed.
- @version 0.1.0
- */
+  */
 private func PrepareRoundEnd()
 {
 	if (GetLength(round_end_blocker) == 0)
@@ -280,8 +267,7 @@ private func PrepareRoundEnd()
 
 /**
  Issues the game call {@c GameCallEx("OnRoundEnd", round_number)}.
- @version 0.1.0
- */
+  */
 private func DoRoundEnd()
 {
 	if (round_has_started)
@@ -294,8 +280,7 @@ private func DoRoundEnd()
 
 /**
  Issues the game call {@c GameCallEx("OnRoundStart", round_number)}.
- @version 0.1.0
- */
+  */
 private func DoRoundStart()
 {
 	if (!round_has_started)
@@ -310,8 +295,7 @@ private func DoRoundStart()
 /**
  Gives the current round number.
  @return int The number of the current round. It starts counting at 1 and increases before {@c GameCallEx("OnRoundReset")} is called.
- @version 0.1.0
- */
+  */
 public func GetRoundNumber()
 {
 	return round_counter;

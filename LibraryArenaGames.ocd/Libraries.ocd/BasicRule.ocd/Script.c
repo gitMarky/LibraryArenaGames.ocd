@@ -2,8 +2,7 @@
  Library that gives the basic functionality for rules objects:@br
  - no more than {@c RuleMaximumCount} rule objects are created@br
  - show description of the rule when selecting the object in the rules menu
- @version 0.1.0
- @id index
+  @id index
  @title Basic Rule
  @author Marky
  */

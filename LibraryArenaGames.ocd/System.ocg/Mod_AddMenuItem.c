@@ -3,8 +3,7 @@
  @br
  This script uses a workaround to enable that - it renders an object instead!@br
  @author Marky
- @version 0.1.0
- */
+  */
 global func AddMenuItem(string caption, string command, id symbol, int count, parameter, string info_caption, int extra, XPar1, XPar2)
 {
 	
@@ -24,8 +23,7 @@ global func AddMenuItem(string caption, string command, id symbol, int count, pa
 
 /**
  @author Marky
- @version 0.1.0
- */
+  */
 global func HasMeshGraphics()
 {
 	if(!this) return false;

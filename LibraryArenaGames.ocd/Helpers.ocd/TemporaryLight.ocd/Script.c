@@ -1,8 +1,7 @@
 /**
  A temporary light source.
  @author Marky
- @version 0.1.0
- */
+  */
 
 static const TEMPLIGHT_Effect = "IntLight";
 
@@ -26,8 +25,7 @@ local lifetime = 1;
  @par x The x coordinate.
  @par y The y coordinate.
  @return object Returns the spawn point object, so that further function calls can be issued.
- @version 0.1.0
- */
+  */
 global func CreateTemporaryLight(int x, int y)
 {
 	if (!this && (x == nil || y == nil))

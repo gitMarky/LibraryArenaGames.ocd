@@ -1,8 +1,7 @@
 /**
  A temporary object.
  @author Marky
- @version 0.2.0
- */
+  */
 
 static const TEMPOBJECT_Effect = "IntTemporary";
 
@@ -23,8 +22,7 @@ local lifetime = 1;
  @par x The x coordinate.
  @par y The y coordinate.
  @return object Returns the temporary object, so that further function calls can be issued.
- @version 0.2.0
- */
+  */
 global func CreateTemporaryObject(int x, int y)
 {
 	if (!this && (x == nil || y == nil))
@@ -44,8 +42,7 @@ global func CreateTemporaryObject(int x, int y)
  * Defines how long the object exists once it has been activated with {@link TemporaryObject#Activate}.
  * @par frames The object will exist for this many frames.
  * @return object Returns the temporary object, so that further function calls can be issued.
- * @version 0.2.0
- */
+ *  */
 public func SetLifetime(int frames)
 {
 	ProhibitedWhileActive();

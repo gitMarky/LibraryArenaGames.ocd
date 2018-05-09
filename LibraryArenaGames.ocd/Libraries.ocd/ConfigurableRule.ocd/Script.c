@@ -2,8 +2,7 @@
  Include this library in rules that can be configured in
  {@link Environment_Configuration#MenuConfigureRules}.
  @author Marky
- @version 0.1.0
- */
+  */
 
 #include Library_BasicRule
 
