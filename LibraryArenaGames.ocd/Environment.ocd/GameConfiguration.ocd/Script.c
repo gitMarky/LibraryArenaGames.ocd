@@ -894,7 +894,7 @@ protected func ConfigurationFinished(id menu_symbol, parameter)
 	
 	SetupGoal();
 	CreateRules();
-	ReleasePlayers(true);
+	ReleasePlayers();
 	
 	GameCallEx("OnConfigurationEnd", this);
 	
@@ -1228,7 +1228,7 @@ public func ContainCrew(object crew)
 {
 	// Create the container
 	var container = CreateObject(Arena_RelaunchContainer, crew->GetX() - GetX(), crew->GetY() - GetY());
-	container->PrepareRelaunch(crew);
+	container->ContainCrew(crew);
 	
 	// Possibly move the container to a location
 	var location = this->ContainCrewAt();
@@ -1257,46 +1257,36 @@ public func ContainCrewAt()
 
 /**
  Releases all players from their relaunch containers.
- @par instant If {@c true}, then the relaunch container exits the player immediately.
   */
-public func ReleasePlayers(bool instant)
+public func ReleasePlayers()
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
-		ReleasePlayer(GetPlayerByIndex(i), instant);
+		ReleasePlayer(GetPlayerByIndex(i));
 	}
 }
 
 /**
  Releases a single players from their relaunch containers.
- @par instant If {@c true}, then the relaunch container exits the player immediately.
   */
-public func ReleasePlayer(int player, bool instant)
+public func ReleasePlayer(int player)
 {
 	for (var i = 0; i < GetCrewCount(player); i++)
 	{
-		ReleaseCrew(GetCrew(player, i), instant);
+		ReleaseCrew(GetCrew(player, i));
 	}
 }
 
 /**
- Releases a clonk from his owner's service, relaunches the Clonk
- @par instant If {@c true}, then the relaunch container exits the player immediately.
+ Releases a clonk from his owner's service.
   */
-public func ReleaseCrew(object crew, bool instant)
+public func ReleaseCrew(object crew)
 {
 	var container = crew->Contained();
 	
-	if ((container != nil) && (container->GetID() == Arena_RelaunchContainer))
+	if (container && (container->GetID() == Arena_RelaunchContainer))
 	{
-		if (instant)
-		{
-			container->InstantRelaunch();
-		}
-		else
-		{
-			container->StartRelaunch(crew);
-		}
+		container->EjectCrew(crew);
 	}
 }
 

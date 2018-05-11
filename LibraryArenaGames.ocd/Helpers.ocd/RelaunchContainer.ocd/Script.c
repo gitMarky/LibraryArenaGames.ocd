@@ -187,15 +187,12 @@ func PrepareRelaunch(object crew)
 	{
 		return crew == relaunch_crew;
 	}
-	
-	// Save crew for later use and contain it
+
+	// Save crew for later use, this also signals that the callback was issued
 	relaunch_crew = crew;
-	if (crew->Contained() != this)
-	{
-		crew->Enter(this);
-	}
-	
-	// Callback
+
+	// Contain crew and issue callback
+	ContainCrew(crew);
 	OnInitializeCrew(crew);
 	return true;
 }
@@ -211,9 +208,8 @@ func RelaunchCrew()
 		SetPlrView(relaunch_crew->GetOwner(), relaunch_crew);
 	}
 	
-	// Eject crew and set it to the container position (because the crew would exit above the container)
-	relaunch_crew->Exit();
-	relaunch_crew->SetPosition(GetX(), GetY());
+	// Eject crew
+	EjectCrew(relaunch_crew);
 
 	// Remove relaunch time message
 	PlayerMessage(relaunch_crew->GetOwner(), "");
@@ -223,3 +219,23 @@ func RelaunchCrew()
 	RemoveObject();
 }
 
+
+func ContainCrew(object crew)
+{
+	if (crew->Contained() != this)
+	{
+		crew->Enter(this);
+	}
+}
+
+
+func EjectCrew(object crew)
+{
+	crew = crew ?? FindObject(Find_Container(this), Find_OCF(OCF_CrewMember));
+	if (crew)
+	{
+		// Eject crew and set it to the container position (because the crew would exit above the container)
+		crew->Exit();
+		crew->SetPosition(GetX(), GetY());
+	}
+}

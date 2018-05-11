@@ -221,7 +221,7 @@ private func ContainPlayer(proplist relaunch_location, object crew)
 	// Create the container
 	relaunch_container = relaunch_container ?? CreateObject(Arena_RelaunchContainer, 0, 0, crew->GetOwner());
     relaunch_container->SetPosition(x, y);
-	relaunch_container->PrepareRelaunch(crew);
+	relaunch_container->ContainCrew(crew);
 }
 
 
