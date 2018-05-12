@@ -23,6 +23,7 @@ static const RELAUNCH_Factor_Second = 36;
 /* --- Properties --- */
 
 local time;
+local time_interval;
 local hold;
 local has_selected;
 
@@ -37,6 +38,7 @@ func Initialize()
 {
 	time = RELAUNCH_Default_Time;
 	hold = RELAUNCH_Default_Hold;
+	time_interval = RELAUNCH_Factor_Second;
 }
 
 /* --- Scenario saving --- */
@@ -62,13 +64,15 @@ public func GetRelaunchTime() { return time / RELAUNCH_Factor_Second; }
 	@par to_hold If set to true, then the crew will be contained in
                  the container until the time has fully run out.
                  Otherwise the player can exit the container earlier.
+    @par interval Sets the time interval for the countdown.
               
 	@author Maikel
  */
-public func SetRelaunchTime(int to_time, bool to_hold)
+public func SetRelaunchTime(int to_time, bool to_hold, int interval)
 {
 	time = to_time * RELAUNCH_Factor_Second;
 	hold = to_hold;
+	time_interval = interval ?? RELAUNCH_Factor_Second;
 }
 
 
@@ -84,7 +88,7 @@ public func StartRelaunch(object crew)
 {
 	if (PrepareRelaunch(crew))
 	{
-		CreateEffect(RelaunchCountdown, 100, RELAUNCH_Factor_Second);
+		CreateEffect(RelaunchCountdown, 100, time_interval);
 		return true;
 	}
 	else
