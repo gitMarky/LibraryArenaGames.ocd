@@ -118,6 +118,21 @@ public func GetRelaunchCrew()
 	return relaunch_crew;
 }
 
+
+/**
+	Find out whether a relaunch is currently blocked.
+	
+	@return bool Returns {@code true} if the relaunch is blocked.
+	             By default, this is if the crew has a menu,
+	             or if a callback "RejectRelaunch" in the crew
+	             returns {@code true}. 
+ */
+public func IsRelaunchBlocked()
+{
+	return relaunch_crew->GetMenu()
+		|| relaunch_crew->~RejectRelaunch();
+}
+
 /* --- Overloadable callbacks --- */
 
 
@@ -152,7 +167,10 @@ public func OnRelaunchCrew(object crew)
  */
 public func OnTimeRemaining(int frames)
 {
-	PlayerMessage(relaunch_crew->GetOwner(), Format("$MsgRelaunch$", frames / RELAUNCH_Factor_Second));
+	if (!IsRelaunchBlocked())
+	{
+		PlayerMessage(relaunch_crew->GetOwner(), Format("$MsgRelaunch$", frames / RELAUNCH_Factor_Second));
+	}
 }
 
 
@@ -170,14 +188,10 @@ local RelaunchCountdown = new Effect
 		}
 
 		// Block a successful relaunch?
-		var blocked = this.Target.relaunch_crew->GetMenu()
-		           || this.Target.relaunch_crew->~RejectRelaunch();
+		var blocked = this.Target->IsRelaunchBlocked();
 
 		// Message output or user-defined effects
-		if (!blocked)
-		{
-			this.Target->OnTimeRemaining(this.Target.time - time);
-		}
+		this.Target->OnTimeRemaining(this.Target.time - time);
 		
 		// Time has come and not blocked?
 		if (time >= this.Target.time && !blocked)
