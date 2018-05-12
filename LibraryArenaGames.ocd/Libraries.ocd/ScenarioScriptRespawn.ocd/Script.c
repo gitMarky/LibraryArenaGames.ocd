@@ -13,7 +13,7 @@ func OnConfigurationEnd()
 {
 	_inherited(...);
 
-	// the players have been released from their containers by
+	// The players have been released from their containers by
 	// the round countdown. Put them in relaunch containers
 	// at the starting position
 	for (var i = 0; i < GetPlayerCount(); i++)
@@ -29,7 +29,7 @@ func OnRoundStart(int round)
 {
 	_inherited(round, ...);
 
-    // release all players from their relaunch containers, with waiting period.
+    // Release all players from their relaunch containers, with waiting period.
 	ReleasePlayers(false);
 }
 
@@ -104,9 +104,8 @@ public func ReleaseCrew(object crew, bool instant)
 func SpawnPlayer(int player)
 {
 	var crew = SpawnPlayerCrew(player);
-	var relaunch_location = GetRelaunchLocation(player);
+	var relaunch_location = this->~GetRelaunchLocation(player);
     ContainPlayer(relaunch_location, crew);
-    CreateStartingEquipment(crew);
     return crew;
 }
 
@@ -135,69 +134,6 @@ func SpawnPlayerCrew(int player)
 
 
 /**
-	Creates starting equipment for the player.
-
-	@par crew Starting equipment will be created in this object.
- */
-func CreateStartingEquipment(object crew)
-{
-    RemoveEquipment(crew);
-	StartingEquipment(crew);
-}
-
-
-/**
-	Removes all contents from a crew member.
-
-	@par crew Equipment will be removed from this object.
- */
-func RemoveEquipment(object crew)
-{
-	// Remove previous contents
-	for (var contents = crew->Contents(); contents != nil; contents = crew->Contents())
-	{
-		contents->RemoveObject();
-	}
-}
-
-
-/**
-	Chooses a relaunch location for a player.
-
-	@par player The player number.
- */
-private func GetRelaunchLocation(int player)
-{
-	// sort the possible locations
-	var possible_locations = [];
-	
-	var team_nr;
-	if (GetTeamCount() > 1)
-	{
-		team_nr = GetPlayerTeam(player);
-	}
-	else
-	{
-		team_nr = player;
-	}
-
-	for (var location in RelaunchLocations())
-	{
-		var team = location->GetTeam();
-		if (team == nil      // Free for all teams
-		 || team == NO_OWNER // As above, but compatibility implementation
-		 || team == team_nr) // Available for the specific team number
-		{
-			PushBack(possible_locations, location);
-		}
-	}
-
-	// determine a random location
-	return possible_locations[Random(GetLength(possible_locations))];
-}
-
-
-/**
 	Contains the player crew in a {@link Arena_RelaunchContainer}.
 
 	@par relaunch_location A location definition where the player should relaunch.
@@ -215,8 +151,17 @@ private func ContainPlayer(proplist relaunch_location, object crew)
 	}
 	
 	// Get the position
-	var x = relaunch_location->GetX();
-	var y = relaunch_location->GetY();
+	var x, y;
+	if (relaunch_location)
+	{
+		x = relaunch_location->GetX();
+		y = relaunch_location->GetY();
+	}
+	else
+	{
+		x = LandscapeWidth() / 2;
+		y = LandscapeHeight() / 2;
+	}
 
 	// Create the container
 	relaunch_container = relaunch_container ?? CreateObject(Arena_RelaunchContainer, 0, 0, crew->GetOwner());
@@ -238,37 +183,4 @@ private func ContainPlayer(proplist relaunch_location, object crew)
 public func GetPlayerCrewID(int player)
 {
 	return Clonk;
-}
-
-
-/**
-	Defines the starting equipment after spawning.
-	By default this function does nothing, so
-	overload it to add starting equipment.
-	
-	@par crew The crew member that will get starting equpment.
- */
-public func StartingEquipment(object crew)
-{
-    // does nothing, overload this function
-}
-
-
-/**
-	Defines relaunch locations where the players can launch.
-	
-	@return array An array of proplists. Each proplist has the following
-	              attributes:<br>
-	              {@c x}: The x position.<br>
-	              {@c y}: The y position.<br>
-	              {@c team}: Defines the location as exclusive for a team or player.<br>
-	                         If there is more than one team, this reserves the location
-	                         for a specific team.<br>
-	                         Otherwise, this defines a specific player number.<br>
-	                         A value of {@c NO_OWNER} makes the location accessible for
-	                         all players.
- */
-public func RelaunchLocations()
-{
-	return [{ x = LandscapeWidth() / 2, y = 20, team = NO_OWNER}];
 }

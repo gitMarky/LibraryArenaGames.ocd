@@ -1,11 +1,29 @@
 ﻿Version 0.3.0
 ------------------------------------------------------------------------------------------------
-! fixed a problem where weapons were collected from spawn points while the user was contained (bug 13414)
-+ added callbacks for winning the round in goals
-+ added jump pad
-* moved assertion to OC repository
-- removed the weapon menu from Arena_RelaunchContainer
-* renamed RelaunchContainerEx to Arena_RelaunchContainer
++ Added change log file
++ Added callbacks for winning the round in goals
++ Added jump pad
+
+# Fixed a problem where weapons were collected from spawn points while the user was contained (bug 13414)
+
+* Updated version of all definitions to 8,0
+* Moved assertion to OC repository
+
+! Split Library_ScenarioScript_PlayerRespawn into two additional plugins:
+  Plugin_ScenarioScript_PlayerRespawn_RandomLocation, Plugin_ScenarioScript_PlayerRespawn_StartEquipment
+! Renamed RelaunchContainerEx to Arena_RelaunchContainer
 ! RelaunchContainerEx now respawns the crew at its position, instead of above it
-* updated version of all definitions to 8,0
-+ added change log file
+
+- Removed the weapon menu from Arena_RelaunchContainer
+
+
+
+
+
+Legend
+------------------------------------------------------------------------------------------------
++ = Addition
+- = Removal
+! = Changed behaviour, your code may need adjustments
+* = Change, should not affect your code
+# = Bugfix, patch
