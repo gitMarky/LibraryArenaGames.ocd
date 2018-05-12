@@ -107,6 +107,17 @@ public func InstantRelaunch()
 	RelaunchCrew();
 }
 
+
+/**
+	Gets the crew member that will be relaunched.
+	
+	@return the crew member, or nil if there is none.
+ */
+public func GetRelaunchCrew()
+{
+	return relaunch_crew;
+}
+
 /* --- Overloadable callbacks --- */
 
 
