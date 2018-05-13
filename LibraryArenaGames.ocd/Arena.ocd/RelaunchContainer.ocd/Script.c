@@ -268,3 +268,11 @@ func EjectCrew(object crew)
 		crew->SetPosition(GetX(), GetY());
 	}
 }
+
+func Ejection(object outgoing)
+{
+	if (!GetEffect("RelaunchCountdown", this))
+	{
+		RemoveObject();
+	}
+}
