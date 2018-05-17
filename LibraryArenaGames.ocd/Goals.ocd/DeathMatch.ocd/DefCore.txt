@@ -1,5 +1,6 @@
 [DefCore]
-id=Goal_DeathMatchEx
+id=Arena_Goal_DeathMatch
 Version=8,0
 Category=C4D_StaticBack|C4D_Goal
 Picture=0,0,128,128
+HideInCreator=true
