@@ -14,8 +14,9 @@ local score_list_rounds;
 local win_score;
 
 local is_fulfilled;
-
 local is_inverted;
+
+local leading_faction;
 
 /**
  Changes the score of a faction for the current round.
@@ -41,6 +42,10 @@ public func DoScore(int faction, int change, bool force_negative)
 	if (score_list_points[faction] >= win_score)
 	{
 		DoWinRound(faction);
+	}
+	else if (GetLeadingFaction() == NO_OWNER || GetScore(faction) > GetScore(GetLeadingFaction()))
+	{
+		SetLeadingFaction(faction);
 	}
 }
 
@@ -137,9 +142,36 @@ public func DoWinRound(int faction)
 	}
 }
 
+/**
+ Sets the leading faction, for the current round.
+ @par faction A player or team, by index.
+  */
+public func SetLeadingFaction(int faction)
+{
+	if (faction == leading_faction)
+	{
+		this->~OnLeadingFactionOngoing(faction);
+	}
+	else
+	{
+		this->~OnLeadingFactionChanged(leading_faction, faction);
+	}
+	leading_faction = faction;
+}
+
+/**
+ Gets the leading faction, for the current round.
+  */
+public func GetLeadingFaction()
+{
+	return leading_faction;
+}
+
 protected func Initialize()
 {
 	var factions = Max(1, this->~GetFactionCount());
+	
+	leading_faction = NO_OWNER;
 	
 	score_list_points = [];
 	score_list_rounds = [];
