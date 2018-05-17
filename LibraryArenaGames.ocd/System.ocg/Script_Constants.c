@@ -45,3 +45,6 @@ static const PROP_Touchable_Grab = 1;
 static const PROP_Touchable_GrabAndPush = 2;
 
 static const RGBA_MAX = 255;
+
+static const FRAME_Factor_Second = 36;
+
