@@ -13,7 +13,7 @@ public func RelaunchPlayer(int victim, int killer)
 
 	if (victim != killer)
 	{
-		DoScore(GetPlayerTeam(killer), +1);
+		DoScore(GetFactionByPlayer(killer), +1);
 	}
 
 	return;
