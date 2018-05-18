@@ -1,12 +1,15 @@
 /**
- Library for a goal that is configurable in the {@link Environment_Configuration#MenuConfigureGoal}
- menu.
- @author Marky
- @credits Hazard Team
-  */
+	Library for a goal that is configurable in the {@link Environment_Configuration#MenuConfigureGoal}
+	menu.
+	
+	@author Marky
+	@credits Hazard Team
+ */
 
 
 #include Library_Goal
+
+/* --- Properties --- */
 
 local score_list_points;
 local score_list_rounds;
@@ -18,14 +21,19 @@ local is_inverted;
 
 local leading_faction;
 
+local Name = "$Name$";
+
+/* --- Interface --- */
+
 /**
- Changes the score of a faction for the current round.
- @par faction A player or team, by index.
- @par change The amount that the score should change.
- @par force_negative By default, negative changes are ignored.
-                     Set this parameter to {@c true} if you want to
-                     decrease the score.
-  */
+	Changes the score of a faction for the current round.
+
+	@par faction A player or team, by index.
+	@par change The amount that the score should change.
+	@par force_negative By default, negative changes are ignored.
+                        Set this parameter to {@c true} if you want to
+                        decrease the score.
+ */
 public func DoScore(int faction, int change, bool force_negative)
 {
 	AssertArrayBounds(score_list_points, faction);
@@ -49,12 +57,14 @@ public func DoScore(int faction, int change, bool force_negative)
 	}
 }
 
+
 /**
- Increases the number of won rounds for a faction.
- @par faction A player or team, by index.
- @par change The amount that the score should increase by.
-             Negative numbers are ignored.
-  */
+	Increases the number of won rounds for a faction.
+
+	@par faction A player or team, by index.
+	@par change The amount that the score should increase by.
+             	Negative numbers are ignored.
+ */
 public func DoRoundScore(int faction, int change)
 {
 	AssertArrayBounds(score_list_rounds, faction);
@@ -62,11 +72,14 @@ public func DoRoundScore(int faction, int change)
 	score_list_rounds[faction] += Max(0, change);
 }
 
+
 /**
- Gets the score of a faction, for the current round.
- @par faction A player or team, by index.
- @return int The score value.
-  */
+	Gets the score of a faction, for the current round.
+
+	@par faction A player or team, by index.
+
+	@return int The score value.
+ */
 public func GetScore(int faction)
 {
 	AssertArrayBounds(score_list_points, faction);
@@ -74,20 +87,24 @@ public func GetScore(int faction)
 	return score_list_points[faction];
 }
 
+
 /**
- Sets the score of a faction, for the current round.
- @par faction A player or team, by index.
-  */
+	Sets the score of a faction, for the current round.
+
+	@par faction A player or team, by index.
+ */
 public func SetScore(int faction, int value)
 {
 	DoScore(faction, value - GetScore(faction), true);
 }
 
+
 /**
- Gets the number of rounds that a faction won.
- @par faction A player or team, by index.
- @return int The number of rounds that the faction won.
-  */
+	Gets the number of rounds that a faction won.
+
+	@par faction A player or team, by index.
+	@return int The number of rounds that the faction won.
+ */
 public func GetRoundScore(int faction)
 {
 	AssertArrayBounds(score_list_rounds, faction);
@@ -95,41 +112,49 @@ public func GetRoundScore(int faction)
 	return score_list_rounds[faction];
 }
 
+
 /**
- Gets the number of points that a faction has to score in order to win.
- @return int If {@link Library_ConfigurableGoal#GetScore} of a faction is
-             at least this number, then that faction wins the round.
-  */
+	Gets the number of points that a faction has to score in order to win.
+
+	@return int If {@link Library_ConfigurableGoal#GetScore} of a faction is
+                at least this number, then that faction wins the round.
+ */
 public func GetWinScore()
 {
 	return win_score;
 }
 
+
 /**
- Sets the number of points that a faction has to score in order to win.
- @par score No matter the input value the score is at least 1. If
-            {@link Library_ConfigurableGoal#GetScore} of a faction is
-            at least this number, then that faction wins the round.
-  */
+	Sets the number of points that a faction has to score in order to win.
+
+	@par score No matter the input value the score is at least 1. If
+               {@link Library_ConfigurableGoal#GetScore} of a faction is
+               at least this number, then that faction wins the round.
+ */
 public func SetWinScore(int score)
 {
 	win_score = Max(1, score);
 }
 
+
 /**
- Increases the win score by the specified amount.
- @par change The win score changes by this amount.
-             Can be a positive or negative value.
-  */
+	Increases the win score by the specified amount.
+
+	@par change The win score changes by this amount.
+             	Can be a positive or negative value.
+ */
 public func DoWinScore(int change)
 {
 	SetWinScore(GetWinScore() + change);
 }
 
+
 /**
- Lets a faction win the current round.
- @par faction A player or team, by index.
-  */
+	Lets a faction win the current round.
+
+	@par faction A player or team, by index.
+ */
 public func DoWinRound(int faction)
 {
 	if (RoundManager() != nil)
@@ -142,10 +167,11 @@ public func DoWinRound(int faction)
 	}
 }
 
+
 /**
- Sets the leading faction, for the current round.
- @par faction A player or team, by index.
-  */
+	Sets the leading faction, for the current round.
+	@par faction A player or team, by index.
+ */
 public func SetLeadingFaction(int faction)
 {
 	if (faction == leading_faction)
@@ -159,15 +185,19 @@ public func SetLeadingFaction(int faction)
 	leading_faction = faction;
 }
 
+
 /**
- Gets the leading faction, for the current round.
-  */
+	Gets the leading faction, for the current round.
+ */
 public func GetLeadingFaction()
 {
 	return leading_faction;
 }
 
-protected func Initialize()
+
+/* --- Engine callbacks --- */
+
+func Initialize()
 {
 	var factions = Max(1, this->~GetFactionCount());
 	
@@ -176,7 +206,7 @@ protected func Initialize()
 	score_list_points = [];
 	score_list_rounds = [];
 	
-	// fill the arrays. "<=" is correct, because the team numbers start at 1
+	// Fill the arrays. "<=" is correct, because the team numbers start at 1
 	// in single player and team goals one goal will be a dummy, but I do not care :)
 	for (var i = 0; i <= factions; i++)
 	{
@@ -203,26 +233,15 @@ protected func Initialize()
 	return _inherited(...);
 }
 
-public func IsFulfilled() { return is_fulfilled; }
 
-public func OnRoundStart(int round)
+func Destruction()
 {
-	this->DoSetup(round);
-}
-
-/**
- Callback. This is called by {@link Environment_RoundManager#DoRoundStart}.
- Does nothing by default.
-  */
-public func DoSetup(int round)
-{
-}
-
-public func Destruction()
-{
-	var round_number = 1;
-	
-	if (RoundManager() != nil)
+	var round_number;
+	if (RoundManager() == nil)
+	{
+		round_number = 1;
+	}
+	else
 	{
 		round_number = RoundManager()->GetRoundNumber();
 	}
@@ -230,7 +249,21 @@ public func Destruction()
 	this->~DoCleanup(round_number);
 }
 
-private func GetScoreMessage(int faction)
+
+/* --- Callbacks from goal system --- */
+
+func IsFulfilled() { return is_fulfilled; }
+
+
+func Activate(int by_player)
+{
+	var message = GetDescription(by_player);
+	
+	MessageWindow(message, by_player);
+}
+
+
+func GetScoreMessage(int faction)
 {
 	var color = this->GetFactionColor(faction);
 	var score = GetScore(faction);
@@ -240,100 +273,8 @@ private func GetScoreMessage(int faction)
 		return Format("%d", score);
 }
 
-public func GetFactionCount()
-{
-	FatalError("Implement this in a derived object");
-}
 
-public func GetFactionByIndex(int index)
-{
-	FatalError("Implement this in a derived object");
-}
-
-public func GetFactionByPlayer(int player)
-{
-	FatalError("Implement this in a derived object");
-}
-
-public func GetFactionColor(int faction)
-{
-	FatalError("Implement this in a derived object");
-}
-
-private func GetFactionName(int faction)
-{
-	return "$DefaultFactionName$";
-}
-
-public func GetFactionSize(int faction)
-{
-	var size = 0;
-	for (var i = 0; i < GetPlayerCount(); ++i)
-	{
-		if (faction == GetFactionByPlayer(GetPlayerByIndex(i)))
-		{
-			++size;
-		}
-	}
-	return size;
-}
-
-
-/**
- Determines the relative score of a faction,
- that is the faction score compared to the best score.
- */
-private func GetRelativeScore(int faction)
-{
-	var not_initialized = -1;
-	var best_faction = not_initialized, best_score = not_initialized;
-	for(var i = 0; i < GetFactionCount(); ++i)
-	{
-		var current_faction = GetFactionByIndex(i);
-		var score = GetScore(current_faction);
-		if (current_faction != faction && ((score > best_score) || (best_faction == -1)))
-		{
-			best_faction = current_faction;
-			best_score = score;
-		}
-	}
-	
-	var faction_score = GetScore(faction);
-	
-	// special case if there is only one player in the game
-	if(best_faction == not_initialized)
-	{
-		best_faction = faction;
-		best_score = faction_score;
-	}
-	
-	return {
-		best_faction = best_faction,
-		best_score = best_score,
-		relative_score = faction_score - best_score
-	};
-}
-
-
-public func Activate(int by_player)
-{
-	var message = GetDescription(by_player);
-	
-	MessageWindow(message, by_player);
-}
-
-
-private func EnsureArraySize(int factions)
-{
-	for (var i = 0; i <= factions && GetLength(score_list_points) <= factions; i++)
-	{
-		PushBack(score_list_points, 0);
-		PushBack(score_list_rounds, 0);
-	}
-}
-
-
-public func GetGoalDescription(int faction)
+func GetGoalDescription(int faction)
 {
 	if(IsFulfilled()) 
 	{
@@ -369,4 +310,121 @@ public func GetGoalDescription(int faction)
 }
 
 
-local Name = "$Name$";
+/**
+	Determines the relative score of a faction,
+	that is the faction score compared to the best score.
+ */
+func GetRelativeScore(int faction)
+{
+	var not_initialized = -1;
+	var best_faction = not_initialized, best_score = not_initialized;
+	for(var i = 0; i < GetFactionCount(); ++i)
+	{
+		var current_faction = GetFactionByIndex(i);
+		var score = GetScore(current_faction);
+		if (current_faction != faction && ((score > best_score) || (best_faction == -1)))
+		{
+			best_faction = current_faction;
+			best_score = score;
+		}
+	}
+	
+	var faction_score = GetScore(faction);
+	
+	// special case if there is only one player in the game
+	if(best_faction == not_initialized)
+	{
+		best_faction = faction;
+		best_score = faction_score;
+	}
+	
+	return {
+		best_faction = best_faction,
+		best_score = best_score,
+		relative_score = faction_score - best_score
+	};
+}
+
+
+/* --- Callbacks from round manager --- */
+
+// From round manager
+func OnRoundStart(int round)
+{
+	this->DoSetup(round);
+	_inherited(round);
+}
+
+
+/**
+	Callback. This is called by {@link Environment_RoundManager#DoRoundStart}.
+	Does nothing by default.
+ */
+public func DoSetup(int round)
+{
+}
+
+
+/**
+	Callback. This is called by {@link Library_ConfigurableGoal#Destruction}.
+	Does nothing by default.
+ */
+public func DoCleanup(int round)
+{
+}
+
+
+/* --- Should be overloaded --- */
+
+public func GetFactionCount()
+{
+	FatalError("Implement this in a derived object");
+}
+
+public func GetFactionByIndex(int index)
+{
+	FatalError("Implement this in a derived object");
+}
+
+public func GetFactionByPlayer(int player)
+{
+	FatalError("Implement this in a derived object");
+}
+
+public func GetFactionColor(int faction)
+{
+	FatalError("Implement this in a derived object");
+}
+
+private func GetFactionName(int faction)
+{
+	return "$DefaultFactionName$";
+}
+
+/* --- Internals --- */
+
+
+func GetFactionSize(int faction)
+{
+	var size = 0;
+	for (var i = 0; i < GetPlayerCount(); ++i)
+	{
+		if (faction == GetFactionByPlayer(GetPlayerByIndex(i)))
+		{
+			++size;
+		}
+	}
+	return size;
+}
+
+
+func EnsureArraySize(int factions)
+{
+	for (var i = 0; i <= factions && GetLength(score_list_points) <= factions; ++i)
+	{
+		PushBack(score_list_points, 0);
+		PushBack(score_list_rounds, 0);
+	}
+}
+
+
