@@ -9,7 +9,14 @@
 * Updated version of all definitions to 8,0
 * Moved assertion to OC repository
 
-! Goals: Renamed functions GetScore => GetFactionScore, SetScore => SetFactionScore
+! Goals: Renamed definitions
+         Library_ConfigurableGoal => Library_Goal_Configurable
+         Library_IndividualGoal => Library_Goal_ForPlayer
+         Library_TeamGoal => Library_Goal_ForTeam 
+! Goals: Renamed functions
+         DoScore  => DoFactionScore
+         GetScore => GetFactionScore, 
+         SetScore => SetFactionScore
          The old functions still exist, but change the value for the player's faction.
 ! Renamed RelaunchContainerEx to Arena_RelaunchContainer
 ! RelaunchContainerEx now respawns the crew at its position, instead of above it

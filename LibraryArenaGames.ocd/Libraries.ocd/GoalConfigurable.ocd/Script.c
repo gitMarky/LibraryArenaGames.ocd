@@ -155,7 +155,7 @@ public func GetRoundScore(int faction)
 /**
 	Gets the number of points that a faction has to score in order to win.
 
-	@return int If {@link Library_ConfigurableGoal#GetFactionScore} of a faction is
+	@return int If {@link Library_Goal_Configurable#GetFactionScore} of a faction is
                 at least this number, then that faction wins the round.
  */
 public func GetWinScore()
@@ -168,7 +168,7 @@ public func GetWinScore()
 	Sets the number of points that a faction has to score in order to win.
 
 	@par score No matter the input value the score is at least 1. If
-               {@link Library_ConfigurableGoal#GetFactionScore} of a faction is
+               {@link Library_Goal_Configurable#GetFactionScore} of a faction is
                at least this number, then that faction wins the round.
  */
 public func SetWinScore(int score)
@@ -405,7 +405,7 @@ public func DoSetup(int round)
 
 
 /**
-	Callback. This is called by {@link Library_ConfigurableGoal#Destruction}.
+	Callback. This is called by {@link Library_Goal_Configurable#Destruction}.
 	Does nothing by default.
  */
 public func DoCleanup(int round)

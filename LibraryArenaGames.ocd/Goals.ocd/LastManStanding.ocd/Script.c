@@ -1,4 +1,4 @@
-#include Library_IndividualGoal
+#include Library_Goal_ForPlayer
 
 local Name = "$Name$";
 

@@ -1,4 +1,4 @@
-#include Library_TeamGoal
+#include Library_Goal_ForTeam
 
 local Name = "$Name$";
 
