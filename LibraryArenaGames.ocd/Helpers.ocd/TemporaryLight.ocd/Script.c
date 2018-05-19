@@ -1,13 +1,12 @@
 /**
- A temporary light source.
- @author Marky
-  */
+	A temporary light source.
+
+	@author Marky
+ */
 
 static const TEMPLIGHT_Effect = "IntLight";
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// definitions
+/* --- Properties --- */
 
 local Name = "Light";
 
@@ -15,9 +14,7 @@ local light_range_0 = nil;
 local light_range_1 = nil;
 local lifetime = 1;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// global functions
+/* --- Global functions --- */
 
 
 /**
@@ -37,14 +34,7 @@ global func CreateTemporaryLight(int x, int y)
 	return point;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// finished functions
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// temporary functions
-
+/* --- Interface --- */
 
 public func LightRangeStart(int value)
 {
@@ -103,6 +93,8 @@ public func Activate()
 		SetLightRange(light_range_0);
 	}
 }
+
+/* --- Internals --- */
 
 func IsActive()
 {

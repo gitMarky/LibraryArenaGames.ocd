@@ -4,15 +4,17 @@ static const EFFECT_Disintegration_BaseAlpha = 60;
 static const EFFECT_Disintegration_Precision = 100;
 
 /**
- Fades out and removes an object over a short amount of time.
- @par lifetime The object will fade to the color {@link global#FxArenaDisintColorObject}
-               over this amount of frames. Afterwards it fades out.
- @par dt After {@c lifetime} frames have passed the object will fade out over this amount
-         of frames.
- @par dy The target changes its y position by {@c dy} over the course of {@c lifetime + dt} frames.
- @par additive If true, then the object will be drawn additive when the function is called.
- @related {@link global#IsDisintegrating}, {@link global#FxArenaDisintColorObject}, {@link global#FxArenaDisintColorParticle}
- @author Marky
+	Fades out and removes an object over a short amount of time.
+
+	@par lifetime The object will fade to the color {@link global#FxArenaDisintColorObject}
+                  over this amount of frames. Afterwards it fades out.
+	@par dt After {@c lifetime} frames have passed the object will fade out over this amount
+            of frames.
+	@par dy The target changes its y position by {@c dy} over the course of {@c lifetime + dt} frames.
+	@par additive If true, then the object will be drawn additive when the function is called.
+
+	@related {@link global#IsDisintegrating}, {@link global#FxArenaDisintColorObject}, {@link global#FxArenaDisintColorParticle}
+	@author Marky
   */
 global func Disintegrate(int lifetime, int dt, int dy, bool additive)
 {
@@ -135,29 +137,32 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 }
 
 /**
- When you {@link global#Disintegrate} an object it will fade to this color.
- @return int A color value.
-  */
+	When you {@link global#Disintegrate} an object it will fade to this color.
+	@return int A color value.
+ */
 global func FxArenaDisintColorObject()
 {
 	return RGB(64, 128, 255);
 }
 
+
 /**
- When you {@link global#Disintegrate} an object it create particles of this color.
- @return int A color value.
-  */
+	When you {@link global#Disintegrate} an object it create particles of this color.
+	@return int A color value.
+ */
 global func FxArenaDisintColorParticle()
 {
 	return RGB(64, 128, 255);
 }
 
+
 /**
- Defines what particles are used when you {@link global#Disintegrate} an object.
- @par alpha The current alpha value of the fading out object. Particles should have a similar
-            alpha value.
- @return proplist A particle proplist.
-  */
+	Defines what particles are used when you {@link global#Disintegrate} an object.
+
+	@par alpha The current alpha value of the fading out object. Particles should have a similar
+               alpha value.
+	@return proplist A particle proplist.
+ */
 global func Particles_Disintegrate(int alpha)
 {
 	return {

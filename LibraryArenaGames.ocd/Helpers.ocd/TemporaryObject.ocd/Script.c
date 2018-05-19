@@ -1,28 +1,27 @@
 /**
- A temporary object.
- @author Marky
+	A temporary object.
+	
+	@author Marky
   */
 
 static const TEMPOBJECT_Effect = "IntTemporary";
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// definitions
+/* --- Properties --- */
 
 local Name = "Dummy";
 
 local lifetime = 1;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// global functions
+/* --- Global functions --- */
 
 /**
- Creates a temporary object at the given coordinates. The coordinates are relative to object coordinates in local context.
- @par x The x coordinate.
- @par y The y coordinate.
- @return object Returns the temporary object, so that further function calls can be issued.
-  */
+	Creates a temporary object at the given coordinates. The coordinates are relative to object coordinates in local context.
+
+	@par x The x coordinate.
+	@par y The y coordinate.
+	
+	@return object Returns the temporary object, so that further function calls can be issued.
+ */
 global func CreateTemporaryObject(int x, int y)
 {
 	if (!this && (x == nil || y == nil))
@@ -34,15 +33,15 @@ global func CreateTemporaryObject(int x, int y)
 	return point;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// finished functions
+/* --- Interface --- */
 
 /**
- * Defines how long the object exists once it has been activated with {@link TemporaryObject#Activate}.
- * @par frames The object will exist for this many frames.
- * @return object Returns the temporary object, so that further function calls can be issued.
- *  */
+	Defines how long the object exists once it has been activated with {@link TemporaryObject#Activate}.
+	
+	@par frames The object will exist for this many frames.
+	
+	@return object Returns the temporary object, so that further function calls can be issued.
+ */
 public func SetLifetime(int frames)
 {
 	ProhibitedWhileActive();
@@ -58,7 +57,7 @@ public func SetLifetime(int frames)
 }
 
 /**
- Activates the temporary object. That means that the object then lives the defined time.
+	Activates the temporary object. That means that the object then lives the defined time.
  */
 public func Activate()
 {
@@ -69,6 +68,8 @@ public func Activate()
 	
 	return this;
 }
+
+/* --- Internal --- */
 
 func IsActive()
 {

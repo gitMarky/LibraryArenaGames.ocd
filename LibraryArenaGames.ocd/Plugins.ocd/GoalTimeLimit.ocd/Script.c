@@ -105,7 +105,10 @@ func OnRoundReset(int round)
 
 func StartCountdown()
 {
-	var countdown = GetEffect("TimeLimitCountdown", this) ?? CreateEffect(TimeLimitCountdown, 1, FRAME_Factor_Second);
+	if (!GetEffect("TimeLimitCountdown", this))
+	{
+		CreateEffect(TimeLimitCountdown, 1, FRAME_Factor_Second);
+	}
 }
 
 

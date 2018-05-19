@@ -22,6 +22,7 @@ func OnConfigurationEnd()
 	}
 }
 
+
 /**
 	Callback from the round manager.
  */
@@ -32,6 +33,7 @@ func OnRoundStart(int round)
     // Release all players from their relaunch containers, with waiting period.
 	ReleasePlayers(false);
 }
+
 
 /**
 	Callback from the thing that relaunches the players.
@@ -44,7 +46,9 @@ func RelaunchPlayer(int player, int killer)
 	ReleaseCrew(crew);
 }
 
+
 /* --- Interface --- */
+
 
 /**
 	Releases all players from their relaunch containers.
@@ -97,6 +101,7 @@ public func ReleaseCrew(object crew, bool instant)
 }
 
 /* --- Internals --- */
+
 
 /**
 	Puts a player in a relaunch container, without releasing him.
@@ -171,6 +176,7 @@ func ContainPlayer(proplist relaunch_location, object crew)
 
 
 /* --- Overloadable callbacks --- */
+
 
 /**
 	Defines which crew will be spawned for the player.

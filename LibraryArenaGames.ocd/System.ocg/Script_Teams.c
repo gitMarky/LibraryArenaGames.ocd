@@ -1,10 +1,12 @@
 
 /**
- Gets the number of players in a team.
- @par team The team index.
- @return The number of players that are in the team.
- @author Unknown
-  */
+	Gets the number of players in a team.
+
+	@par team The team index.
+	@return The number of players that are in the team.
+	
+	@author Unknown
+ */
 global func GetTeamPlayerCount(int team)
 {
 	for(var i = GetPlayerCount() - 1, j; i > -1; i--)
@@ -14,11 +16,12 @@ global func GetTeamPlayerCount(int team)
 }
 
 /**
- @par team The team index.
- @par player The team member, starting from 0, of that team.
- @return int The engine player index of the team member.
- @author Unknown
-  */
+	@par team The team index.
+	@par player The team member, starting from 0, of that team.
+	@return int The engine player index of the team member.
+
+	@author Unknown
+ */
 global func GetTeamPlayer(int team, int player)
 {	
 	for (var i = 0; i < GetPlayerCount(); i++)

@@ -1,23 +1,14 @@
 /**
- Dummy object. You can create this if you want to test the round system
- without having proper conditions for round end and start yet.
+	Dummy object. You can create this if you want to test the round system
+	without having proper conditions for round end and start yet.
  */
+
+/* --- Properties --- */
 
 local Name = "$Name$";
 local Description = "$Description$";
 
-public func Initialize()
-{
-	return true;
-}
-
-public func OnRoundReset(int counter)
-{
-	DebugLog("[%d] RoundHelper preparing for round %d", FrameCounter(), counter);
-	RoundManager()->RegisterRoundStartBlocker(this);
-	
-	ScheduleCall(this, "TriggerRoundStart", 60, 0);
-}
+/* --- Interface --- */
 
 public func TriggerRoundStart()
 {
@@ -25,12 +16,6 @@ public func TriggerRoundStart()
 	RoundManager()->RemoveRoundStartBlocker(this);
 }
 
-public func OnRoundStart(int counter)
-{
-	DebugLog("[%d] RoundHelper: Round %d starts", FrameCounter(), counter);
-	RoundManager()->RegisterRoundEndBlocker(this);
-	ScheduleCall(this, "TriggerRoundEnd", 36*10, 0);
-}
 
 public func TriggerRoundEnd()
 {
@@ -38,7 +23,28 @@ public func TriggerRoundEnd()
 	RoundManager()->RemoveRoundEndBlocker(this);
 }
 
-public func OnRoundEnd(int counter)
+
+/* --- Callbacks from round manager --- */
+
+
+func OnRoundReset(int counter)
+{
+	DebugLog("[%d] RoundHelper preparing for round %d", FrameCounter(), counter);
+	RoundManager()->RegisterRoundStartBlocker(this);
+	
+	ScheduleCall(this, "TriggerRoundStart", 60, 0);
+}
+
+
+func OnRoundStart(int counter)
+{
+	DebugLog("[%d] RoundHelper: Round %d starts", FrameCounter(), counter);
+	RoundManager()->RegisterRoundEndBlocker(this);
+	ScheduleCall(this, "TriggerRoundEnd", 36*10, 0);
+}
+
+
+func OnRoundEnd(int counter)
 {
 	DebugLog("[%d] RoundHelper: Round %d ends", FrameCounter(), counter);
 }

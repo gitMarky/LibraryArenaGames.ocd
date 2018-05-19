@@ -1,10 +1,11 @@
 /**
- Library that gives the basic functionality for rules objects:@br
- - no more than {@c RuleMaximumCount} rule objects are created@br
- - show description of the rule when selecting the object in the rules menu
-  @id index
- @title Basic Rule
- @author Marky
+	Library that gives the basic functionality for rules objects:@br
+	 - no more than {@c RuleMaximumCount} rule objects are created@br
+	 - show description of the rule when selecting the object in the rules menu
+
+	@id index
+	@title Basic Rule
+	@author Marky
  */
 
 func Initialize()

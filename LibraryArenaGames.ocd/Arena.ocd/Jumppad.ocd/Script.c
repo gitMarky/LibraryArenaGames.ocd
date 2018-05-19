@@ -1,6 +1,4 @@
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// properties and internals
+/* --- Properties --- */
 
 static const JUMPPAD_DEFAULT_COLOR = 0xff64dcff;
 static const JUMPPAD_LAYER_LAMP = 1;
@@ -14,6 +12,16 @@ local pad_size;
 local base_r;
 local is_active;
 
+local ActMap = {
+Base = {
+	Prototype = Action,
+	Name = "Base",
+	Procedure = DFA_FLOAT,
+	X = 0, Y = 0,
+	Wdt = 30, Hgt = 18,
+}};
+
+/* --- Engine callbacks --- */
 
 func Initialize()
 {
@@ -55,19 +63,7 @@ func SaveScenarioObject(proplist props)
 }
 
 
-local ActMap = {
-Base = {
-	Prototype = Action,
-	Name = "Base",
-	Procedure = DFA_FLOAT,
-	X = 0, Y = 0,
-	Wdt = 30, Hgt = 18,
-}};
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// public interface
+/* --- Public interface --- */
 
 public func SetPadR(int r)
 {
@@ -142,7 +138,7 @@ public func Deactivate()
 }
 
 
-func SetEffectColor(int color)
+public func SetEffectColor(int color)
 {
 	this.pad_color = color;
 	Activate();
@@ -150,21 +146,19 @@ func SetEffectColor(int color)
 }
 
 
-func SetStrength(int strength)
+public func SetStrength(int strength)
 {
 	pad_strength = strength;
 	return this;
 }
 
 
-func GetStrength()
+public func GetStrength()
 {
 	return pad_strength;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// visuals
+/* --- Visuals --- */
 
 func DrawPad()
 {
@@ -224,9 +218,7 @@ func Particles_JumpPad(int angle, int particle_color, int particle_size)
 	};
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// bouncing
+/* --- Bouncing objects --- */
 
 
 func CheckBounce()

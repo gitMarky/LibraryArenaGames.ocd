@@ -1,8 +1,9 @@
 /**
- The default AddMenuItem cannot render icons for 3d graphics.@br
- @br
- This script uses a workaround to enable that - it renders an object instead!@br
- @author Marky
+	The default AddMenuItem cannot render icons for 3d graphics.@br
+	@br
+	This script uses a workaround to enable that - it renders an object instead!@br
+
+	@author Marky
   */
 global func AddMenuItem(string caption, string command, id symbol, int count, parameter, string info_caption, int extra, XPar1, XPar2)
 {
@@ -22,8 +23,8 @@ global func AddMenuItem(string caption, string command, id symbol, int count, pa
 }
 
 /**
- @author Marky
-  */
+	@author Marky
+ */
 global func HasMeshGraphics()
 {
 	if(!this) return false;
