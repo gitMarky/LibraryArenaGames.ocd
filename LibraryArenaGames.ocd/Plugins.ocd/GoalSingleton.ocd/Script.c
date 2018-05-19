@@ -14,6 +14,7 @@ func Initialize()
 	
 	if (ObjectCount(Find_ID(GetID())) > 1)
 	{
+		RemoveObject();
 		FatalError("This object may exist only once");
 	}
 }
