@@ -132,7 +132,16 @@ static const IntTestControl = new Effect
 
 global func doTest(description, returned, expected)
 {
-	var test = (returned == expected);
+	var test;
+	
+	if (GetType(returned) == C4V_PropList || GetType(returned) == C4V_Array)
+	{
+		test = DeepEqual(returned, expected);
+	}
+	else
+	{
+		test = (returned == expected);
+	}
 	
 	var predicate = "[Fail]";
 	if (test) predicate = "[Pass]";

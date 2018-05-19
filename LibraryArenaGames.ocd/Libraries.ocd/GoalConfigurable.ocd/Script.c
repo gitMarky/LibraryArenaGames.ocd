@@ -11,6 +11,7 @@
 
 /* --- Properties --- */
 
+local score_time_points;
 local score_list_points;
 local score_list_rounds;
 
@@ -62,14 +63,9 @@ public func DoFactionScore(int faction, int change, bool force_negative)
 		score_list_points[faction] += Max(0, change);
 	}
 	
-	if (score_list_points[faction] >= win_score)
-	{
-		DoWinRound(faction);
-	}
-	else if (GetLeadingFaction() == NO_OWNER || GetFactionScore(faction) > GetFactionScore(GetLeadingFaction()))
-	{
-		SetLeadingFaction(faction);
-	}
+	score_time_points[faction] = -FrameCounter(); // Save as negative value, for picking the earliest value as maximum.
+	
+	this->OnFactionScoreChange(faction);
 }
 
 
@@ -100,6 +96,22 @@ public func GetFactionScore(int faction)
 	AssertArrayBounds(score_list_points, faction);
 
 	return score_list_points[faction];
+}
+
+
+/**
+	Gets the frame when the score of the faction
+	changed the last time, for the current round.
+
+	@par faction The faction, by index.
+
+	@return int The frame when the score changed
+ */
+public func GetFactionScoreFrame(int faction)
+{
+	AssertArrayBounds(score_time_points, faction);
+
+	return score_time_points[faction];
 }
 
 
@@ -190,11 +202,11 @@ public func DoWinScore(int change)
 
 
 /**
-	Lets a faction win the current round.
+	Lets a list of factions win the current round.
 
-	@par faction The faction, by index.
+	@par factions An array of factions that won the round.
  */
-public func DoWinRound(int faction)
+public func DoWinRound(array factions)
 {
 	if (RoundManager() == nil)
 	{
@@ -209,9 +221,9 @@ public func DoWinRound(int faction)
 
 /**
 	Sets the leading faction, for the current round.
-	@par faction The faction, by index.
+	@par faction An array of faction indices, by index.
  */
-public func SetLeadingFaction(int faction)
+public func SetLeadingFaction(array faction)
 {
 	if (faction == leading_faction)
 	{
@@ -227,6 +239,9 @@ public func SetLeadingFaction(int faction)
 
 /**
 	Gets the leading faction, for the current round.
+	
+	@return array Returns an array of the best factions.
+	              Usually this is length 1. 
  */
 public func GetLeadingFaction()
 {
@@ -240,8 +255,9 @@ func Initialize()
 {
 	var factions = Max(1, this->~GetFactionCount());
 	
-	leading_faction = NO_OWNER;
+	leading_faction = [];
 	
+	score_time_points = [];
 	score_list_points = [];
 	score_list_rounds = [];
 	
@@ -440,7 +456,55 @@ func GetFactionName(int faction)
 	return "$DefaultFactionName$";
 }
 
+/* --- Event callbacks --- */
+
+/**
+	Callback when the score of a faction changes.
+	
+	@par faction The faction, by index.
+ */
+func OnFactionScoreChange(int faction)
+{
+	SetLeadingFaction(DetermineLeadingFaction());
+	
+	if (score_list_points[faction] >= win_score)
+	{
+		DoWinRound(GetLeadingFaction());
+	}
+	_inherited(faction, ...);
+}
+
+
+
 /* --- Internals --- */
+
+
+func DetermineLeadingFaction()
+{
+	var best = DetermineHighestScoringFaction();
+
+	if (GetLength(best) > 1)
+	{
+		return DetermineEarliestScoringFaction(best);
+	}
+	else
+	{
+		return best;
+	}
+}
+
+func DetermineHighestScoringFaction()
+{
+	// Get the best factions
+	return GetMaxValueIndices(score_list_points);
+}
+
+func DetermineEarliestScoringFaction(array factions)
+{
+	var times = PickArrayValues(score_time_points, factions);
+
+	return GetMaxValueIndices(times);
+}
 
 
 func GetFactionSize(int faction)

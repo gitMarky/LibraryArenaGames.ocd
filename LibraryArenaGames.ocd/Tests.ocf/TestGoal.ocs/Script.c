@@ -4,10 +4,13 @@
  
 static script_plr;
 
+static frame_counter;
+
 func Initialize()
 {
 	// Create a script player for some tests.
 	script_plr = nil;
+	frame_counter = 1;
 	CreateScriptPlayer("Buddy", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
 }
 
@@ -318,47 +321,47 @@ global func Test7_Execute()
 	var player_a = GetPlayerID(GetPlayerByIndex(0, C4PT_User));
 	var player_b = GetPlayerID(GetPlayerByIndex(0, C4PT_Script));
 	
-	doTest("Leading faction before any values are manipulated is %d, expected %d.", goal->GetLeadingFaction(), NO_OWNER);
+	doTest("Leading faction before any values are manipulated is %v, expected %v.", goal->GetLeadingFaction(), []);
 	
 	Log("> Take the lead with faction %d", player_a);
 	goal->DoFactionScore(player_a, 1);
 	doTestFactionScores(goal, player_a, 1, player_b, 0);
-	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+	doTest("Leading faction is %v, expected %v.", goal->GetLeadingFaction(), [player_a]);
 	
 	Log("> Go equal to the lead with faction %d, first faction should still have the lead", player_b);
 	goal->DoFactionScore(player_b, 1);
 	doTestFactionScores(goal, player_a, 1, player_b, 1);
-	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+	doTest("Leading faction is %v, expected %v.", goal->GetLeadingFaction(), [player_a]);
 	
 	Log("> Take the lead with faction %d", player_b);
 	goal->DoFactionScore(player_b, 1);
 	doTestFactionScores(goal, player_a, 1, player_b, 2);
-	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_b);
+	doTest("Leading faction is %v, expected %v.", goal->GetLeadingFaction(), [player_b]);
 	
 	Log("> Take the lead with faction %d, by setting the value", player_a);
 	goal->SetFactionScore(player_a, 10);
 	doTestFactionScores(goal, player_a, 10, player_b, 2);
-	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+	doTest("Leading faction is %v, expected %v.", goal->GetLeadingFaction(), [player_a]);
 
 	Log("> Go equal to the lead with faction %d, by setting the value", player_b);
 	goal->SetFactionScore(player_b, 10);
 	doTestFactionScores(goal, player_a, 10, player_b, 10);
-	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+	doTest("Leading faction is %v, expected %v.", goal->GetLeadingFaction(), [player_a]);
 	
 	Log("> Reduce score of faction %d, best faction should take the lead", player_a);
 	goal->DoFactionScore(player_a, -1, true);
 	doTestFactionScores(goal, player_a, 9, player_b, 10);
-	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_b);
+	doTest("Leading faction is %v, expected %v.", goal->GetLeadingFaction(), [player_b]);
 	
 	Log("> Increase score of faction %d, it should take the lead", player_a);
 	goal->DoFactionScore(player_a, 2);
 	doTestFactionScores(goal, player_a, 11, player_b, 10);
-	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+	doTest("Leading faction is %v, expected %v.", goal->GetLeadingFaction(), [player_a]);
 	
 	Log("> Reduce score of faction %d, the other should take the lead", player_a);
 	goal->DoFactionScore(player_a, -1, true);
 	doTestFactionScores(goal, player_a, 10, player_b, 10);
-	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_b);
+	doTest("Leading faction is %v, expected %v.", goal->GetLeadingFaction(), [player_b]);
 
 	// Cleanup
 	
@@ -379,4 +382,13 @@ global func doTestScores(object goal, int playerA, int score_playerA, int player
 {
 	doTest("Score for player A is %d, expected %d.", goal->GetScore(playerA), score_playerA);
 	doTest("Score for player B is %d, expected %d.", goal->GetScore(playerB), score_playerB);
+}
+
+
+global func FrameCounter()
+{
+	// Override for the test. Increased each time;
+	var counter = frame_counter;
+	frame_counter += 10;
+	return counter;
 }

@@ -85,7 +85,6 @@ public func TimeExpired()
 
 func OnRoundStart(int round)
 {
-	Log("Goal with timeout: start round");
 	StartCountdown();
 	_inherited(round, ...);
 }

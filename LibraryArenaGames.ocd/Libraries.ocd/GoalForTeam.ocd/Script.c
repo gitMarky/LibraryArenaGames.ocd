@@ -85,8 +85,11 @@ func GetFactionName(int team)
 	return GetTeamName(team);
 }
 
-func DoWinRound(int faction)
+func DoWinRound(array factions)
 {
-	DoRoundScore(faction, 1);
-	_inherited(faction);
+	for (var faction in factions)
+	{
+		DoRoundScore(faction, 1);
+	}
+	_inherited(factions);
 }
