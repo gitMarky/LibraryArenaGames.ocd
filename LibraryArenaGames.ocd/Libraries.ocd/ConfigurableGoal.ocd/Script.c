@@ -38,13 +38,13 @@ public func DoScore(int faction, int change, bool force_negative)
 {
 	AssertArrayBounds(score_list_points, faction);
 
-	if (!force_negative)
+	if (force_negative)
 	{
-		score_list_points[faction] += Max(0, change);
+		score_list_points[faction] += change;
 	}
 	else
 	{
-		score_list_points[faction] += change;
+		score_list_points[faction] += Max(0, change);
 	}
 	
 	if (score_list_points[faction] >= win_score)
