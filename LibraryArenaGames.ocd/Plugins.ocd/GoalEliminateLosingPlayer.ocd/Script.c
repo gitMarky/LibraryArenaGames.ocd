@@ -19,6 +19,7 @@ public func DoWinRound(array winning_factions)
 		var player = GetPlayerByIndex(i);
 		var faction = this->GetFactionByPlayer(player);
 		
-		Arena_PlayerManager->MarkForElimination(player, !IsValueInArray(winning_factions, faction));
+		Arena_PlayerManager->GetInstance()->MarkForElimination(player, !IsValueInArray(winning_factions, faction));
 	}
+	_inherited(winning_factions);
 }

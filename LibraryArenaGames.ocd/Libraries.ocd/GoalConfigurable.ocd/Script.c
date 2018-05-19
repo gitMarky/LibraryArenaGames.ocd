@@ -216,6 +216,7 @@ public func DoWinRound(array factions)
 	{
 		RoundManager()->RemoveRoundEndBlocker(this);
 	}
+	_inherited(factions, ...);
 }
 
 
