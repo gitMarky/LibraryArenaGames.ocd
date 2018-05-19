@@ -302,6 +302,72 @@ global func Test6_Execute()
 	return Evaluate();
 }
 
+
+global func Test7_OnStart(int player){ return true;}
+global func Test7_OnFinished(){ return; }
+global func Test7_Execute()
+{
+	Log("Test the behaviour of GetLeadingFaction for single player goal");
+
+	// Preparation
+
+	var goal = CreateObject(Test_Goal_ForPlayer);
+	var win_score = 25;
+	goal->SetWinScore(win_score);
+	
+	var player_a = GetPlayerID(GetPlayerByIndex(0, C4PT_User));
+	var player_b = GetPlayerID(GetPlayerByIndex(0, C4PT_Script));
+	
+	doTest("Leading faction before any values are manipulated is %d, expected %d.", goal->GetLeadingFaction(), NO_OWNER);
+	
+	Log("> Take the lead with faction %d", player_a);
+	goal->DoFactionScore(player_a, 1);
+	doTestFactionScores(goal, player_a, 1, player_b, 0);
+	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+	
+	Log("> Go equal to the lead with faction %d, first faction should still have the lead", player_b);
+	goal->DoFactionScore(player_b, 1);
+	doTestFactionScores(goal, player_a, 1, player_b, 1);
+	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+	
+	Log("> Take the lead with faction %d", player_b);
+	goal->DoFactionScore(player_b, 1);
+	doTestFactionScores(goal, player_a, 1, player_b, 2);
+	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_b);
+	
+	Log("> Take the lead with faction %d, by setting the value", player_a);
+	goal->SetFactionScore(player_a, 10);
+	doTestFactionScores(goal, player_a, 10, player_b, 2);
+	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+
+	Log("> Go equal to the lead with faction %d, by setting the value", player_b);
+	goal->SetFactionScore(player_b, 10);
+	doTestFactionScores(goal, player_a, 10, player_b, 10);
+	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+	
+	Log("> Reduce score of faction %d, best faction should take the lead", player_a);
+	goal->DoFactionScore(player_a, -1, true);
+	doTestFactionScores(goal, player_a, 9, player_b, 10);
+	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_b);
+	
+	Log("> Increase score of faction %d, it should take the lead", player_a);
+	goal->DoFactionScore(player_a, 2);
+	doTestFactionScores(goal, player_a, 11, player_b, 10);
+	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_a);
+	
+	Log("> Reduce score of faction %d, the other should take the lead", player_a);
+	goal->DoFactionScore(player_a, -1, true);
+	doTestFactionScores(goal, player_a, 10, player_b, 10);
+	doTest("Leading faction is %d, expected %d.", goal->GetLeadingFaction(), player_b);
+
+	// Cleanup
+	
+	goal->RemoveObject();
+
+	// Result
+	return Evaluate();
+}
+
 global func doTestFactionScores(object goal, int factionA, int score_factionA, int factionB, int score_factionB)
 {
 	doTest("Score for faction A is %d, expected %d.", goal->GetFactionScore(factionA), score_factionA);
