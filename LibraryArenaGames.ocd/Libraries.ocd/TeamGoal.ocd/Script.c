@@ -33,14 +33,14 @@ public func GetShortDescription(int player)
 
 	// start with own team
 	if (team && team > 0)
-		score_message = GetScoreMessage(team);
+		score_message = GetFactionScoreMessage(team);
 
 	var other_team;
 	for (var i = 0; i < GetTeamCount(); ++i)
 	{
 		other_team = GetTeamByIndex(i);
 		if (other_team > 0 && other_team != team)
-			score_message = Format("%s : %s", score_message, GetScoreMessage(other_team));
+			score_message = Format("%s : %s", score_message, GetFactionScoreMessage(other_team));
 	}
 	
 	return score_message;

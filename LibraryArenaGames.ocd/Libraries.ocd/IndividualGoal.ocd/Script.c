@@ -46,7 +46,7 @@ public func GetDescription(int player)
 
 public func GetShortDescription(int player)
 {
-	var score = GetScore(player);
+	var score = GetFactionScore(player);
 	var target = GetWinScore();
 
 	return Format("%d / %d", score, target);

@@ -9,10 +9,13 @@
 * Updated version of all definitions to 8,0
 * Moved assertion to OC repository
 
-! Split Library_ScenarioScript_PlayerRespawn into two additional plugins:
-  Plugin_ScenarioScript_PlayerRespawn_RandomLocation, Plugin_ScenarioScript_PlayerRespawn_StartEquipment
+! Goals: Renamed functions GetScore => GetFactionScore, SetScore => SetFactionScore
+         The old functions still exist, but change the value for the player's faction.
 ! Renamed RelaunchContainerEx to Arena_RelaunchContainer
 ! RelaunchContainerEx now respawns the crew at its position, instead of above it
+! Split Library_ScenarioScript_PlayerRespawn into two additional plugins:
+  Plugin_ScenarioScript_PlayerRespawn_RandomLocation, Plugin_ScenarioScript_PlayerRespawn_StartEquipment
+
 
 - Removed the weapon menu from Arena_RelaunchContainer
 

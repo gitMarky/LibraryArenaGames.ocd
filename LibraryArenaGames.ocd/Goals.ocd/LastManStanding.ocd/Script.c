@@ -59,7 +59,7 @@ protected func DoWinCheck()
 	}
 }
 
-private func IsPlayerEliminated(int faction)
+private func IsPlayerEliminated(int player)
 {
-	return (GetScore(faction) < 0);
+	return (GetScore(player) < 0);
 }

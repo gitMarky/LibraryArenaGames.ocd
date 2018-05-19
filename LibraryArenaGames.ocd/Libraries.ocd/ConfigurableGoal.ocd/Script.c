@@ -26,15 +26,30 @@ local Name = "$Name$";
 /* --- Interface --- */
 
 /**
+	Changes the score of a player's faction for the current round.
+
+	@par player The player number.
+	@par change The amount that the score should change.
+	@par force_negative By default, negative changes are ignored.
+                        Set this parameter to {@code true} if you want to
+                        decrease the score.
+ */
+public func DoScore(int player, int change, bool force_negative)
+{
+	return DoFactionScore(GetFactionByPlayer(player), change, force_negative);
+}
+
+
+/**
 	Changes the score of a faction for the current round.
 
-	@par faction A player or team, by index.
+	@par faction The faction, by index.
 	@par change The amount that the score should change.
 	@par force_negative By default, negative changes are ignored.
                         Set this parameter to {@c true} if you want to
                         decrease the score.
  */
-public func DoScore(int faction, int change, bool force_negative)
+public func DoFactionScore(int faction, int change, bool force_negative)
 {
 	AssertArrayBounds(score_list_points, faction);
 
@@ -51,7 +66,7 @@ public func DoScore(int faction, int change, bool force_negative)
 	{
 		DoWinRound(faction);
 	}
-	else if (GetLeadingFaction() == NO_OWNER || GetScore(faction) > GetScore(GetLeadingFaction()))
+	else if (GetLeadingFaction() == NO_OWNER || GetFactionScore(faction) > GetFactionScore(GetLeadingFaction()))
 	{
 		SetLeadingFaction(faction);
 	}
@@ -61,7 +76,7 @@ public func DoScore(int faction, int change, bool force_negative)
 /**
 	Increases the number of won rounds for a faction.
 
-	@par faction A player or team, by index.
+	@par faction The faction, by index.
 	@par change The amount that the score should increase by.
              	Negative numbers are ignored.
  */
@@ -76,11 +91,11 @@ public func DoRoundScore(int faction, int change)
 /**
 	Gets the score of a faction, for the current round.
 
-	@par faction A player or team, by index.
+	@par faction The faction, by index.
 
 	@return int The score value.
  */
-public func GetScore(int faction)
+public func GetFactionScore(int faction)
 {
 	AssertArrayBounds(score_list_points, faction);
 
@@ -89,20 +104,44 @@ public func GetScore(int faction)
 
 
 /**
+	Gets the score of a player's faction, for the current round.
+
+	@par player The player number.
+
+	@return int The score value.
+ */
+public func GetScore(int player)
+{
+	return GetFactionScore(GetFactionByPlayer(player));
+}
+
+
+/**
 	Sets the score of a faction, for the current round.
 
-	@par faction A player or team, by index.
+	@par faction The faction, by index.
  */
-public func SetScore(int faction, int value)
+public func SetFactionScore(int faction, int value)
 {
-	DoScore(faction, value - GetScore(faction), true);
+	DoFactionScore(faction, value - GetFactionScore(faction), true);
+}
+
+
+/**
+	Sets the score of a player's faction, for the current round.
+
+	@par player The player number.
+ */
+public func SetScore(int player, int value)
+{
+	return SetFactionScore(GetFactionByPlayer(player), value);
 }
 
 
 /**
 	Gets the number of rounds that a faction won.
 
-	@par faction A player or team, by index.
+	@par faction The faction, by index.
 	@return int The number of rounds that the faction won.
  */
 public func GetRoundScore(int faction)
@@ -116,7 +155,7 @@ public func GetRoundScore(int faction)
 /**
 	Gets the number of points that a faction has to score in order to win.
 
-	@return int If {@link Library_ConfigurableGoal#GetScore} of a faction is
+	@return int If {@link Library_ConfigurableGoal#GetFactionScore} of a faction is
                 at least this number, then that faction wins the round.
  */
 public func GetWinScore()
@@ -129,7 +168,7 @@ public func GetWinScore()
 	Sets the number of points that a faction has to score in order to win.
 
 	@par score No matter the input value the score is at least 1. If
-               {@link Library_ConfigurableGoal#GetScore} of a faction is
+               {@link Library_ConfigurableGoal#GetFactionScore} of a faction is
                at least this number, then that faction wins the round.
  */
 public func SetWinScore(int score)
@@ -153,7 +192,7 @@ public func DoWinScore(int change)
 /**
 	Lets a faction win the current round.
 
-	@par faction A player or team, by index.
+	@par faction The faction, by index.
  */
 public func DoWinRound(int faction)
 {
@@ -170,7 +209,7 @@ public func DoWinRound(int faction)
 
 /**
 	Sets the leading faction, for the current round.
-	@par faction A player or team, by index.
+	@par faction The faction, by index.
  */
 public func SetLeadingFaction(int faction)
 {
@@ -263,10 +302,10 @@ func Activate(int by_player)
 }
 
 
-func GetScoreMessage(int faction)
+func GetFactionScoreMessage(int faction)
 {
 	var color = this->GetFactionColor(faction);
-	var score = GetScore(faction);
+	var score = GetFactionScore(faction);
 	if (color)
 		return Format("<c %x>%d</c>", color, score);
 	else
@@ -278,7 +317,7 @@ func GetGoalDescription(int faction)
 {
 	if(IsFulfilled()) 
 	{
-		if (GetScore(faction) >= GetWinScore())
+		if (GetFactionScore(faction) >= GetWinScore())
 		{
 			return "$MsgVictory$";
 		}
@@ -321,7 +360,7 @@ func GetRelativeScore(int faction)
 	for(var i = 0; i < GetFactionCount(); ++i)
 	{
 		var current_faction = GetFactionByIndex(i);
-		var score = GetScore(current_faction);
+		var score = GetFactionScore(current_faction);
 		if (current_faction != faction && ((score > best_score) || (best_faction == -1)))
 		{
 			best_faction = current_faction;
@@ -329,7 +368,7 @@ func GetRelativeScore(int faction)
 		}
 	}
 	
-	var faction_score = GetScore(faction);
+	var faction_score = GetFactionScore(faction);
 	
 	// special case if there is only one player in the game
 	if(best_faction == not_initialized)
