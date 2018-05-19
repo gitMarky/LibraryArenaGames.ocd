@@ -277,22 +277,26 @@ global func Test6_OnStart(int player){ return true;}
 global func Test6_OnFinished(){ return; }
 global func Test6_Execute()
 {
-	Log("Test the behaviour of single goal");
+	Log("Test the behaviour of singleton goal");
 
 	// Preparation
 
 	var goal_singleton = CreateObject(Test_Goal_Singleton);
 
-	doTest("Get() returned %v, expected %v.", Test_Goal_Singleton->Get(), goal_singleton);
+	doTest("GetInstance() returned %v, expected %v.", Test_Goal_Singleton->GetInstance(), goal_singleton);
 	
 	var copy = CreateObject(Test_Goal_Singleton);
 	doTest("Cannot create another goal object. Got %v, expected %v.", copy, nil);
+	
+	if (goal_singleton) goal_singleton->RemoveObject();
+	
+	var instance = Test_Goal_Singleton->GetInstance();
 
+	doTest("GetInstance() returned %v, expected %v.", !!instance, true);
 
 	// Cleanup
 	
-	if (goal_singleton) goal_singleton->RemoveObject();
-	if (copy) copy->RemoveObject();
+	RemoveAll(Find_ID(Test_Goal_Singleton));
 
 	// Result
 	return Evaluate();

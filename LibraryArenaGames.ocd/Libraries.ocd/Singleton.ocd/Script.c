@@ -27,9 +27,19 @@ func Construction(object creator)
 	
 	@return object The object, or {@code nil} if no such goal exists.
  */
-public func Get()
+public func GetInstance()
 {
 	AssertDefinitionContext();
 
-	return FindObject(Find_ID(this));
+	var instance = FindObject(Find_ID(this));
+	
+	if (this.Singleton_GetterCreatesInstance && nil == instance)
+	{
+		return CreateObject(this);
+	}
+	
+	return instance;
 }
+
+
+local Singleton_GetterCreatesInstance = false;
