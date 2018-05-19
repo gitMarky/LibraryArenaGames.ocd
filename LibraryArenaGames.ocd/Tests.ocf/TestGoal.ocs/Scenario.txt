@@ -1,0 +1,5 @@
+[Head]
+Title=Goals
+
+[Definitions]
+Definition2=LibraryArenaGames.ocd

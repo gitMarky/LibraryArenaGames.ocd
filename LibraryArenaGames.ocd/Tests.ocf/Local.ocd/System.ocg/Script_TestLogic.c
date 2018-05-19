@@ -90,6 +90,8 @@ static const IntTestControl = new Effect
 			}
 			this.launched = true;
 			this.count_total++;
+			this.current_result = false;
+			this.current_check = true;
 		}
 		
 		// waiting
@@ -116,7 +118,6 @@ static const IntTestControl = new Effect
 			
 			// Update global result
 			this.global_result &= this.current_result;
-			this.current_result = false;
 	
 			// Call the test on finished function.
 			Call(Format("~Test%d_OnFinished", this.testnr));
@@ -137,6 +138,8 @@ global func doTest(description, returned, expected)
 	if (test) predicate = "[Pass]";
 	
 	Log(Format("%s %s", predicate, description), returned, expected);
+
+	CurrentTest().current_check &= test;
 	return test;
 }
 
@@ -144,6 +147,13 @@ global func doTest(description, returned, expected)
 global func CurrentTest()
 {
 	return GetEffect("IntTestControl", Scenario);
+}
+
+global func Evaluate()
+{
+	var test = CurrentTest();
+	test.current_result = test.current_check;
+	return true;
 }
 
 
