@@ -3,6 +3,7 @@
 + Added change log file
 + Added callbacks for winning the round in goals
 + Added jump pad
++ Added player manager 
 
 # Fixed a problem where weapons were collected from spawn points while the user was contained (bug 13414)
 
