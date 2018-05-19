@@ -1,2 +1,2 @@
 #include Library_Goal_ForPlayer
-#include Plugin_Goal_Singleton
+#include Library_Singleton
