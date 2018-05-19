@@ -196,13 +196,13 @@ public func DoWinScore(int change)
  */
 public func DoWinRound(int faction)
 {
-	if (RoundManager() != nil)
+	if (RoundManager() == nil)
 	{
-		RoundManager()->RemoveRoundEndBlocker(this);
+		is_fulfilled = true;
 	}
 	else
 	{
-		is_fulfilled = true;
+		RoundManager()->RemoveRoundEndBlocker(this);
 	}
 }
 
