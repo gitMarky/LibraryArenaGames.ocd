@@ -70,12 +70,12 @@ public func Activate()
 	return this;
 }
 
-private func IsActive()
+func IsActive()
 {
 	return GetEffect(TEMPOBJECT_Effect, this) != nil;
 }
 
-private func ProhibitedWhileActive()
+func ProhibitedWhileActive()
 {
 	if (IsActive())
 	{
@@ -83,7 +83,7 @@ private func ProhibitedWhileActive()
 	}
 }
 
-private func FxIntTemporaryTimer(object target, proplist effect_nr, int timer)
+func FxIntTemporaryTimer(object target, proplist effect_nr, int timer)
 {
 	if (target != this)
 	{

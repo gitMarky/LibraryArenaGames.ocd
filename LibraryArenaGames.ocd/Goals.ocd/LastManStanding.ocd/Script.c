@@ -7,7 +7,7 @@ public func GetDefaultWinScore()
 	return 5;
 }
 
-protected func DoSetup(int round_number)
+func DoSetup(int round_number)
 {
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
@@ -17,7 +17,7 @@ protected func DoSetup(int round_number)
 	}
 }
 
-protected func RelaunchPlayer(int victim, int killer)
+func RelaunchPlayer(int victim, int killer)
 {
 	_inherited(victim, killer, ...);
 
@@ -33,7 +33,7 @@ protected func RelaunchPlayer(int victim, int killer)
 	return;
 }
 
-protected func DoWinCheck()
+func DoWinCheck()
 {
 	var winner;
 	var candidates = 0;
@@ -59,7 +59,7 @@ protected func DoWinCheck()
 	}
 }
 
-private func IsPlayerEliminated(int player)
+func IsPlayerEliminated(int player)
 {
 	return (GetScore(player) < 0);
 }

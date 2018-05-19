@@ -47,7 +47,7 @@ public func GetShortDescription(int player)
 }
 
 // Returns the number of players in a specific team.
-private func GetPlayerInTeamCount(int team)
+func GetPlayerInTeamCount(int team)
 {
 	var amount = 0;
 	for (var player = 0; player < GetPlayerCount(); player++)

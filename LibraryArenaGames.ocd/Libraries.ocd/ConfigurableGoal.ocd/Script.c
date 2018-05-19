@@ -435,7 +435,7 @@ public func GetFactionColor(int faction)
 	FatalError("Implement this in a derived object");
 }
 
-private func GetFactionName(int faction)
+func GetFactionName(int faction)
 {
 	return "$DefaultFactionName$";
 }

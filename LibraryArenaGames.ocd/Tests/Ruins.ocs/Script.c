@@ -7,7 +7,7 @@
 
 static const RUINS_RAIN_PERIOD_TIME=3200;
 
-protected func Initialize()
+func Initialize()
 {
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
@@ -56,7 +56,7 @@ protected func Initialize()
 }
 
 // Gamecall from LastManStanding goal, on respawning.
-protected func RelaunchPlayer(int plr, int killer)
+func RelaunchPlayer(int plr, int killer)
 {
 	var clonk = CreateObject(Clonk, 0, 0, plr);
 	clonk->MakeCrewMember(plr);

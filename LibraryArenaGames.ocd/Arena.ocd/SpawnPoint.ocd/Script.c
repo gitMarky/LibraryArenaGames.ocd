@@ -453,7 +453,7 @@ public func HasCollectibleItem(object clonk)
  Spawn point starts spawning, if it is enabled.
  @note This is an internal function, if you want to switch a spawn point on or off, use {@link SpawnPoint#SetActive}.
   */
-private func StartSpawning()
+func StartSpawning()
 {
 	if (!IsSpawning())
 	{
@@ -471,7 +471,7 @@ private func StartSpawning()
  Spawn point stops spawning, for round end and so forth. 
  @note This is an internal function, if you want to switch a spawn point on or off, use {@link SpawnPoint#SetActive}.
   */
-private func StopSpawning()
+func StopSpawning()
 {
 	var effect = GetEffect(SPAWNPOINT_Effect, this);
 	if (effect != nil)
@@ -487,7 +487,7 @@ private func StopSpawning()
 }
 
 
-private func IsSpawning()
+func IsSpawning()
 {
 	return GetEffect(SPAWNPOINT_Effect, this) != nil;
 }
@@ -499,7 +499,7 @@ private func IsSpawning()
  {@c EffectTimer(int timer)} in the spawn point. The original implementation has no effect,
  but you can implement this function for custom effects.
   */
-private func FxIntSpawnTimer(object target, proplist effect_nr, int timer)
+func FxIntSpawnTimer(object target, proplist effect_nr, int timer)
 {
 	// error handling
 	var error_message = nil;
@@ -540,7 +540,7 @@ private func FxIntSpawnTimer(object target, proplist effect_nr, int timer)
 }
 
 
-private func ProhibitedWhileSpawning()
+func ProhibitedWhileSpawning()
 {
 	if (IsSpawning())
 	{
@@ -549,7 +549,7 @@ private func ProhibitedWhileSpawning()
 }
 
 
-private func DecreaseTimer(int index)
+func DecreaseTimer(int index)
 {
 	if (spawn_object[index] == nil)
 	{		
@@ -573,7 +573,7 @@ private func DecreaseTimer(int index)
        but you can implement this function for custom effects.
  @par index The objects are saved in an array, this parameter indicates the position in the array. 
   */
-private func DoSpawnObject(int index)
+func DoSpawnObject(int index)
 {
 	ResetTimer(index);
 
@@ -643,7 +643,7 @@ private func DoSpawnObject(int index)
  Deletes a spawned object.
  @par index The objects are saved in an array, this parameter indicates the position in the array. 
   */
-private func RemoveSpawnedObject(int index)
+func RemoveSpawnedObject(int index)
 {
 	if (GetType(spawn_object[index]) == C4V_C4Object)
 	{
@@ -656,7 +656,7 @@ private func RemoveSpawnedObject(int index)
 // handle collection
 
 
-private func FxIntSpawnCollectTimer(object target, proplist effect_nr, int timer)
+func FxIntSpawnCollectTimer(object target, proplist effect_nr, int timer)
 {
 	for (var crew in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(SpawnPointCollectionRadius())))
 	{
@@ -668,7 +668,7 @@ private func FxIntSpawnCollectTimer(object target, proplist effect_nr, int timer
 }
 
 
-private func TryCollectObject(object clonk)
+func TryCollectObject(object clonk)
 {
 	if (!clonk)
 	{
@@ -707,7 +707,7 @@ private func TryCollectObject(object clonk)
 }
 
 
-private func GetCollectibleItemIndex(object clonk)
+func GetCollectibleItemIndex(object clonk)
 {
 	if (spawn_globally)
 	{
@@ -720,7 +720,7 @@ private func GetCollectibleItemIndex(object clonk)
 }
 
 
-private func DoCollectObject(int index, object clonk)
+func DoCollectObject(int index, object clonk)
 {
 	var item = spawn_object[index];
 
@@ -757,7 +757,7 @@ private func DoCollectObject(int index, object clonk)
 }
 
 
-private func EffectCollect(object item, object clonk)
+func EffectCollect(object item, object clonk)
 {
 	clonk->Sound("Clonk::Action::Grab", 0, 0, clonk->GetOwner());
 }
@@ -798,7 +798,7 @@ public func OnRoundEnd()
 }
 
 
-private func RemoveSpawnedObjects()
+func RemoveSpawnedObjects()
 {
 	if (spawn_globally)
 	{
@@ -814,13 +814,13 @@ private func RemoveSpawnedObjects()
 }
 
 
-private func GetOverlay(int index)
+func GetOverlay(int index)
 {
 	return GFX_Overlay + index;
 }
 
 
-private func ResetTimer(int index)
+func ResetTimer(int index)
 {
 	spawn_timer[index] = timer_interval;
 }

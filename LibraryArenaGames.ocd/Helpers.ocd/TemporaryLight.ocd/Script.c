@@ -104,12 +104,12 @@ public func Activate()
 	}
 }
 
-private func IsActive()
+func IsActive()
 {
 	return GetEffect(TEMPLIGHT_Effect, this) != nil;
 }
 
-private func ProhibitedWhileActive()
+func ProhibitedWhileActive()
 {
 	if (IsActive())
 	{
@@ -117,7 +117,7 @@ private func ProhibitedWhileActive()
 	}
 }
 
-private func FxIntLightTimer(object target, proplist fx, int timer)
+func FxIntLightTimer(object target, proplist fx, int timer)
 {
 	if (target != this)
 	{

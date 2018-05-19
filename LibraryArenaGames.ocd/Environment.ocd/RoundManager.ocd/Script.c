@@ -88,7 +88,7 @@ local max_rounds;		// int:  the game automatically stops after this many rounds
 
 //---------- engine calls ----------//
 
-protected func Initialize()
+func Initialize()
 {
 	round_counter = 0; // on purpose
 	round_has_started = false;
@@ -200,7 +200,7 @@ public func IsRoundActive()
 /**
  GameCall when the round is reset. 
   */
-protected func OnRoundReset(int round_number)
+func OnRoundReset(int round_number)
 {
 	if (chooser_id != nil)
 	{
@@ -222,7 +222,7 @@ protected func OnRoundReset(int round_number)
  @par blocker The blocker object.
  @ignore
   */
-private func CheckBlocker(object blocker)
+func CheckBlocker(object blocker)
 {
 	if (blocker == nil)
 	{
@@ -234,7 +234,7 @@ private func CheckBlocker(object blocker)
  Prepares a new round.
  Issues the game call {@c OnRoundEnd(int round_number)}, increases the round counter and calls {@c OnRoundReset(int round_number)}.
   */
-private func NextRound()
+func NextRound()
 {
 	// increase round number
 	round_counter++;
@@ -245,7 +245,7 @@ private func NextRound()
 /**
  Gets called every time a round start blocker is removed.
   */
-private func PrepareRoundStart()
+func PrepareRoundStart()
 {
 	if (GetLength(round_start_blocker) == 0)
 	{
@@ -256,7 +256,7 @@ private func PrepareRoundStart()
 /**
  Gets called every time a round end blocker is removed.
   */
-private func PrepareRoundEnd()
+func PrepareRoundEnd()
 {
 	if (GetLength(round_end_blocker) == 0)
 	{
@@ -268,7 +268,7 @@ private func PrepareRoundEnd()
 /**
  Issues the game call {@c GameCallEx("OnRoundEnd", round_number)}.
   */
-private func DoRoundEnd()
+func DoRoundEnd()
 {
 	if (round_has_started)
 	{
@@ -281,7 +281,7 @@ private func DoRoundEnd()
 /**
  Issues the game call {@c GameCallEx("OnRoundStart", round_number)}.
   */
-private func DoRoundStart()
+func DoRoundStart()
 {
 	if (!round_has_started)
 	{

@@ -10,7 +10,7 @@
 //
 // Engine callbacks
 
-protected func Initialize()
+func Initialize()
 {
 	_inherited(...);
 	
@@ -28,7 +28,7 @@ protected func Initialize()
 	EnsureArraySize(player);
 }
 
-protected func InitializePlayer(int player)
+func InitializePlayer(int player)
 {
 	_inherited(player, ...);
 	

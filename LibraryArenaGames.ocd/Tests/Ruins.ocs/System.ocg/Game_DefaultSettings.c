@@ -6,17 +6,17 @@
  
  #appendto Environment_Configuration
 
-protected func GetDefaultRules()
+func GetDefaultRules()
 {
 	return [];
 }
 
-protected func GetAvailableGoals()
+func GetAvailableGoals()
 {
 	return [Goal_LastManStandingEx, Goal_DeathMatchEx];
 }
 
-protected func GetDefaultItemConfigurations()
+func GetDefaultItemConfigurations()
 {
 	return [
 	{ keys = "default", name = "Default", icon = Environment_Configuration, items = { a = { def=Firestone },
@@ -27,7 +27,7 @@ protected func GetDefaultItemConfigurations()
 	];
 }
 
-protected func GetConfigurableItems()
+func GetConfigurableItems()
 {
 	return [Firestone, IronBomb, Dynamite, Bread];
 }

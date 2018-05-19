@@ -139,7 +139,7 @@ func SpawnPlayerCrew(int player)
 	@par relaunch_location A location definition where the player should relaunch.
 	@par crew The crew member that should be contained.
  */
-private func ContainPlayer(proplist relaunch_location, object crew)
+func ContainPlayer(proplist relaunch_location, object crew)
 {
     // From existing one?
 	var relaunch_container = crew->Contained();

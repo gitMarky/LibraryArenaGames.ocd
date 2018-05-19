@@ -82,7 +82,7 @@ local max_turns;		// int:  the game automatically stops after this many turns
 
 //---------- engine calls ----------//
 
-protected func Initialize()
+func Initialize()
 {
 	turn_counter = 0; // on purpose
 	turn_has_started = false;
@@ -191,7 +191,7 @@ public func IsTurnActive()
 /**
  GameCall when the turn is reset. 
   */
-protected func OnTurnReset(int turn_number)
+func OnTurnReset(int turn_number)
 {
 	ScheduleCall(this, this.PrepareTurnStart, 5, 0);
 }
@@ -204,7 +204,7 @@ protected func OnTurnReset(int turn_number)
  @par blocker The blocker object.
  @ignore
   */
-private func CheckBlocker(object blocker)
+func CheckBlocker(object blocker)
 {
 	if (blocker == nil)
 	{
@@ -216,7 +216,7 @@ private func CheckBlocker(object blocker)
  Prepares a new turn.
  Issues the game call {@c OnTurnEnd(int turn_number)}, increases the turn counter and calls {@c OnTurnReset(int turn_number)}.
   */
-private func NextTurn()
+func NextTurn()
 {
 	// increase turn number
 	turn_counter++;
@@ -227,7 +227,7 @@ private func NextTurn()
 /**
  Gets called every time a turn start blocker is removed.
   */
-private func PrepareTurnStart()
+func PrepareTurnStart()
 {
 	if (GetLength(turn_start_blocker) == 0)
 	{
@@ -238,7 +238,7 @@ private func PrepareTurnStart()
 /**
  Gets called every time a turn end blocker is removed.
   */
-private func PrepareTurnEnd()
+func PrepareTurnEnd()
 {
 	if (GetLength(turn_end_blocker) == 0)
 	{
@@ -250,7 +250,7 @@ private func PrepareTurnEnd()
 /**
  Issues the game call {@c GameCallEx("OnTurnEnd", turn_number)}.
   */
-private func DoTurnEnd()
+func DoTurnEnd()
 {
 	// reset the activity status
 	if (turn_has_started)
@@ -263,7 +263,7 @@ private func DoTurnEnd()
 /**
  Issues the game call {@c GameCallEx("OnTurnStart", turn_number)}.
   */
-private func DoTurnStart()
+func DoTurnStart()
 {
 	if (!turn_has_started)
 	{
