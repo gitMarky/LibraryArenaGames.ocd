@@ -1,23 +1,21 @@
 /**
- Library for a goal that is winnable by teams.
- A faction in {@link Library_ConfigurableRule#index} corresponds to a team.
- @author Marky
-  */
+	Library for a goal that is winnable by teams.
+
+	A faction in {@link Library_Goal_Configurable#index} corresponds to a team.
+	
+	@author Marky
+ */
 
 #include Library_Goal_Configurable
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Properties
+/* --- Properties --- */
 
 public func IsTeamGoal()
 {
 	return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Goal description texts
+/* --- Goal description texts --- */
 
 public func GetDescription(int player)
 {
@@ -31,16 +29,20 @@ public func GetShortDescription(int player)
 	var team = GetPlayerTeam(player);
 	var score_message = "";
 
-	// start with own team
+	// Start with own team
 	if (team && team > 0)
+	{
 		score_message = GetFactionScoreMessage(team);
+	}
 
 	var other_team;
 	for (var i = 0; i < GetTeamCount(); ++i)
 	{
 		other_team = GetTeamByIndex(i);
 		if (other_team > 0 && other_team != team)
+		{
 			score_message = Format("%s : %s", score_message, GetFactionScoreMessage(other_team));
+		}
 	}
 	
 	return score_message;
@@ -56,36 +58,34 @@ func GetPlayerInTeamCount(int team)
 	return amount;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Overloaded from configurable goal
+/* --- Overloaded from configurable goal --- */
 
-public func GetFactionCount()
+func GetFactionCount()
 {
 	return GetTeamCount();
 }
 
-public func GetFactionByIndex(int index)
+func GetFactionByIndex(int index)
 {
 	return GetTeamByIndex(index);
 }
 
-public func GetFactionByPlayer(int player)
+func GetFactionByPlayer(int player)
 {
 	return GetPlayerTeam(player);
 }
 
-public func GetFactionColor(int team)
+func GetFactionColor(int team)
 {
 	return GetTeamColor(team);
 }
 
-public func GetFactionName(int team)
+func GetFactionName(int team)
 {
 	return GetTeamName(team);
 }
 
-public func DoWinRound(int faction)
+func DoWinRound(int faction)
 {
 	DoRoundScore(faction, 1);
 	_inherited(faction);

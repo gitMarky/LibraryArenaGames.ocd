@@ -1,14 +1,14 @@
 /**
- Library for a goal that is winnable by individual players.
- A faction in {@link Library_ConfigurableRule#index} corresponds to a player.
- @author Marky
-  */
+	Library for a goal that is winnable by individual players.
+	
+	A faction in {@link Library_Goal_Configurable#index} corresponds to a player.
+	
+	@author Marky
+ */
 
 #include Library_Goal_Configurable
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Engine callbacks
+/* --- Engine callbacks --- */
 
 func Initialize()
 {
@@ -35,16 +35,14 @@ func InitializePlayer(int player)
 	EnsureArraySize(player);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Goal description texts
+/* --- Goal description texts --- */
 
-public func GetDescription(int player)
+func GetDescription(int player)
 {
 	return GetGoalDescription(player);
 }
 
-public func GetShortDescription(int player)
+func GetShortDescription(int player)
 {
 	var score = GetFactionScore(player);
 	var target = GetWinScore();
@@ -52,36 +50,34 @@ public func GetShortDescription(int player)
 	return Format("%d / %d", score, target);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Overloaded from configurable goal
+/* --- Overloaded from configurable goal --- */
 
-public func GetFactionCount()
+func GetFactionCount()
 {
 	return GetPlayerCount();
 }
 
-public func GetFactionByIndex(int index)
+func GetFactionByIndex(int index)
 {
 	return GetPlayerByIndex(index);
 }
 
-public func GetFactionByPlayer(int player)
+func GetFactionByPlayer(int player)
 {
 	return player;
 }
 
-public func GetFactionColor(int player)
+func GetFactionColor(int player)
 {
 	return GetPlayerColor(player);
 }
 
-public func GetFactionName(int player)
+func GetFactionName(int player)
 {
 	return GetPlayerName(player);
 }
 
-public func DoWinRound(int faction)
+func DoWinRound(int faction)
 {
 	DoRoundScore(faction, 1);
 	_inherited(faction);
