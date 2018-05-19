@@ -242,21 +242,21 @@ global func Test5_Execute()
 	doTest("Can set team of player B to 2, call returned %v, expected %v.", SetPlayerTeam(player_b, 2), true);
 	
 	Log("> GetFactionByPlayer");
-	doTest("Faction of player A is player %d, expected player %d.", goal_player->GetFactionByPlayer(player_a), player_a);
-	doTest("Faction of player B is player %d, expected player %d.", goal_player->GetFactionByPlayer(player_b), player_b);
+	doTest("Faction of player A is player %d, expected player %d.", goal_player->GetFactionByPlayer(player_a), GetPlayerID(player_a));
+	doTest("Faction of player B is player %d, expected player %d.", goal_player->GetFactionByPlayer(player_b), GetPlayerID(player_b));
 	doTest("Faction of player A is team %d, expected team %d.", goal_team->GetFactionByPlayer(player_a), 1);
 	doTest("Faction of player B is team %d, expected team %d.", goal_team->GetFactionByPlayer(player_b), 2);
 
 
 	Log("> GetFactionByIndex");
-	doTest("Faction 0 is player %d, expected player %d.", goal_player->GetFactionByIndex(0), player_a);
-	doTest("Faction 1 is player %d, expected player %d.", goal_player->GetFactionByIndex(1), player_b);
+	doTest("Faction 0 is player %d, expected player %d.", goal_player->GetFactionByIndex(0), GetPlayerID(player_a));
+	doTest("Faction 1 is player %d, expected player %d.", goal_player->GetFactionByIndex(1), GetPlayerID(player_b));
 	doTest("Faction 0 is team %d, expected team %d.", goal_team->GetFactionByIndex(0), 1);
 	doTest("Faction 1 is team %d, expected team %d.", goal_team->GetFactionByIndex(1), 2);
 	
 	Log("> GetFactionSize");
-	doTest("Faction size for player A is %d, expected %d.", goal_player->GetFactionSize(player_a), 1);
-	doTest("Faction size for player B is %d, expected %d.", goal_player->GetFactionSize(player_b), 1);
+	doTest("Faction size for player A is %d, expected %d.", goal_player->GetFactionSize(1), 1);
+	doTest("Faction size for player B is %d, expected %d.", goal_player->GetFactionSize(2), 1);
 	doTest("Faction size for team A is %d, expected %d.", goal_team->GetFactionSize(1), 1);
 	doTest("Faction size for team B is %d, expected %d.", goal_team->GetFactionSize(2), 1);
 	

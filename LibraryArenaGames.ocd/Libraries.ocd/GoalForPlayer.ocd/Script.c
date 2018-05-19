@@ -25,14 +25,14 @@ func Initialize()
 		}
 	}
 	
-	EnsureArraySize(player);
+	EnsureArraySize(GetFactionByPlayer(player));
 }
 
 func InitializePlayer(int player)
 {
 	_inherited(player, ...);
 	
-	EnsureArraySize(player);
+	EnsureArraySize(GetFactionByPlayer(player));
 }
 
 /* --- Goal description texts --- */
@@ -59,12 +59,12 @@ func GetFactionCount()
 
 func GetFactionByIndex(int index)
 {
-	return GetPlayerByIndex(index);
+	return GetFactionByPlayer(GetPlayerByIndex(index));
 }
 
 func GetFactionByPlayer(int player)
 {
-	return player;
+	return GetPlayerID(player);
 }
 
 func GetFactionColor(int player)
