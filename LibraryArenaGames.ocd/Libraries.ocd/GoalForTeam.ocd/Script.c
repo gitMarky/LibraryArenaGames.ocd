@@ -39,7 +39,7 @@ public func GetShortDescription(int player)
 	for (var i = 0; i < GetTeamCount(); ++i)
 	{
 		other_team = GetTeamByIndex(i);
-		if (other_team > 0 && other_team != team)
+		if (other_team > 0 && other_team != team && GetPlayerInTeamCount(other_team) > 0)
 		{
 			score_message = Format("%s : %s", score_message, GetFactionScoreMessage(other_team));
 		}
