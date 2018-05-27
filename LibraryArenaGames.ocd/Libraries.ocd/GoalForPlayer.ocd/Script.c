@@ -8,32 +8,6 @@
 
 #include Library_Goal_Configurable
 
-/* --- Engine callbacks --- */
-
-func Initialize()
-{
-	_inherited(...);
-	
-	var player = 0;
-	for (var i = 0; i < GetPlayerCount(); i++)
-	{
-		var current = GetPlayerByIndex(i);
-		
-		if (current > player)
-		{
-			player = current;
-		}
-	}
-	
-	EnsureArraySize(GetFactionByPlayer(player));
-}
-
-func InitializePlayer(int player)
-{
-	_inherited(player, ...);
-	
-	EnsureArraySize(GetFactionByPlayer(player));
-}
 
 /* --- Goal description texts --- */
 

@@ -255,13 +255,13 @@ public func GetLeadingFaction()
 func Initialize()
 {
 	var factions = Max(1, this->~GetFactionCount());
-	
+
 	leading_faction = [];
-	
+
 	score_time_points = [];
 	score_list_points = [];
 	score_list_rounds = [];
-	
+
 	// Fill the arrays. "<=" is correct, because the team numbers start at 1
 	// in single player and team goals one goal will be a dummy, but I do not care :)
 	for (var i = 0; i <= factions; i++)
@@ -269,13 +269,13 @@ func Initialize()
 		PushBack(score_list_points, 0);
 		PushBack(score_list_rounds, 0);
 	}
-	
+
 	is_fulfilled = false;
 	is_inverted = false;
-	
-	
+
+
 	win_score = Max(1, this->~GetDefaultWinScore());
-	
+
 	if (RoundManager() != nil)
 	{
 		RoundManager()->RegisterRoundEndBlocker(this);
@@ -285,7 +285,22 @@ func Initialize()
 		var round_number = 1;
 		this->~DoSetup(round_number);
 	}
-	
+
+	// Determine faction size
+
+	var player = 0;
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var current = GetPlayerByIndex(i);
+		
+		if (current > player)
+		{
+			player = current;
+		}
+	}
+
+	EnsureArraySize(GetFactionByPlayer(player));
+
 	return _inherited(...);
 }
 
@@ -303,6 +318,14 @@ func Destruction()
 	}
 
 	this->~DoCleanup(round_number);
+}
+
+
+func InitializePlayer(int player)
+{
+	_inherited(player, ...);
+	
+	EnsureArraySize(GetFactionByPlayer(player));
 }
 
 
@@ -530,5 +553,3 @@ func EnsureArraySize(int factions)
 		PushBack(score_list_rounds, 0);
 	}
 }
-
-
