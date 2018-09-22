@@ -69,7 +69,7 @@ static const IntTestControl = new Effect
 			Log("=====================================");
 			Log("Test %d started:", this.testnr);
 			// Start the test if available, otherwise finish test sequence.
-			if (!Call(Format("~Test%d_OnStart", this.testnr), this.player))
+			if (!this->HasNextTest())
 			{
 				Log("Test %d not available, the previous test was the last test.", this.testnr);
 				Log("=====================================");
@@ -102,7 +102,7 @@ static const IntTestControl = new Effect
 		}
 		
 		// Check whether the current test has been finished.
-		if (Call(Format("Test%d_Execute", this.testnr)))
+		if (this->ExecuteTest())
 		{
 			this.launched = false;
 			
@@ -120,13 +120,31 @@ static const IntTestControl = new Effect
 			this.global_result &= this.current_result;
 	
 			// Call the test on finished function.
-			Call(Format("~Test%d_OnFinished", this.testnr));
+			this->CleanupTest();
 			// Log result and increase test number.
 			Log("Test %d successfully completed.", this.testnr);
 			this.testnr++;
 		}
 		return FX_OK;
-	}
+	},
+	
+	
+	HasNextTest = func ()
+	{
+		return Call(Format("~Test%d_OnStart", this.testnr), this.player);
+	},
+	
+	
+	ExecuteTest = func ()
+	{
+		return Call(Format("Test%d_Execute", this.testnr));
+	},
+	
+	
+	CleanupTest = func ()
+	{
+		Call(Format("~Test%d_OnFinished", this.testnr));
+	},
 };
 
 
