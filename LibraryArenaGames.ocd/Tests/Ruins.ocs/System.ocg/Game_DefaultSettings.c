@@ -13,7 +13,7 @@ func GetDefaultRules()
 
 func GetAvailableGoals()
 {
-	return [Goal_LastManStandingEx, Goal_DeathMatchEx];
+	return [Arena_Goal_LastManStanding, Arena_Goal_DeathMatch];
 }
 
 func GetDefaultItemConfigurations()
