@@ -54,7 +54,6 @@ func AllowNewObjects(int player)
 
 func EvaluateObjectLimit(int player)
 {
-	Log("Evaluating object limit for owner %d; Player limit %d, global limit %d", player, this.ObjectLimitPlayer, this.ObjectLimitGlobal);
 	var replace = this.ObjectLimitReplace;
 	
 	// Player limits are enforced, if the player is not "-1"
@@ -75,7 +74,6 @@ func EvaluateObjectLimit(int player)
 
 func ApplyObjectLimit(int limit, array objects, bool replace)
 {
-	Log("Applying object limit to %v", objects);
 	while (GetLength(objects) > limit)
 	{
 		var remove;
@@ -87,7 +85,6 @@ func ApplyObjectLimit(int limit, array objects, bool replace)
 		{
 			remove = PopFront(objects);
 		}
-		Log("Removing object %v", remove);
 		remove->RemoveObject();
 	}
 }
