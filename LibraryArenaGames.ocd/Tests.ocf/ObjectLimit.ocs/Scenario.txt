@@ -1,0 +1,5 @@
+[Head]
+Title=Object Limit
+
+[Definitions]
+Definition2=LibraryArenaGames.ocd
