@@ -62,12 +62,26 @@ func GetPlayerInTeamCount(int team)
 
 func GetFactionCount()
 {
-	return GetTeamCount();
+	if (GoalForActiveTeams)
+	{
+		return GetLength(GetActiveTeams());
+	}
+	else
+	{
+		return GetTeamCount();
+	}
 }
 
 func GetFactionByIndex(int index)
 {
-	return GetTeamByIndex(index);
+	if (GoalForActiveTeams)
+	{
+		return GetActiveTeams()[index];
+	}
+	else
+	{
+		return GetTeamByIndex(index);
+	}
 }
 
 func GetFactionByPlayer(int player)
@@ -93,3 +107,5 @@ func DoWinRound(array factions)
 	}
 	_inherited(factions);
 }
+
+local GoalForActiveTeams = true;
