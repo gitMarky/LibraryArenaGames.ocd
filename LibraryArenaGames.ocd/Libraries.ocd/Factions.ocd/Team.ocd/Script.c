@@ -35,7 +35,14 @@ func GetFactionByPlayer(int player)
 
 func GetFactionColor(int team)
 {
-	return GetTeamColor(team);
+	if (GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(team) == 1)
+	{
+		return GetPlayerColor(GetTeamPlayer(team, 0));
+	}
+	else
+	{
+		return GetTeamColor(team);
+	}
 }
 
 func GetFactionName(int team)
