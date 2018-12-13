@@ -7,6 +7,7 @@
  */
 
 #include Library_Goal_Configurable
+#include Library_Faction_Player
 
 
 /* --- Goal description texts --- */
@@ -25,31 +26,6 @@ func GetShortDescription(int player)
 }
 
 /* --- Overloaded from configurable goal --- */
-
-func GetFactionCount()
-{
-	return GetPlayerCount();
-}
-
-func GetFactionByIndex(int index)
-{
-	return GetFactionByPlayer(GetPlayerByIndex(index));
-}
-
-func GetFactionByPlayer(int player)
-{
-	return GetPlayerID(player);
-}
-
-func GetFactionColor(int player)
-{
-	return GetPlayerColor(player);
-}
-
-func GetFactionName(int player)
-{
-	return GetPlayerName(player);
-}
 
 func DoWinRound(array factions)
 {

@@ -10,6 +10,7 @@
 
 * Updated version of all definitions to 8,0
 * Moved assertion to OC repository
+* Changed faction logic to plugins
 
 ! Goals: Renamed definitions
          Library_ConfigurableGoal => Library_Goal_Configurable

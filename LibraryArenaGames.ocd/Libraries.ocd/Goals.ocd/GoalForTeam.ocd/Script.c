@@ -7,6 +7,7 @@
  */
 
 #include Library_Goal_Configurable
+#include Library_Faction_Team
 
 /* --- Properties --- */
 
@@ -60,45 +61,6 @@ func GetPlayerInTeamCount(int team)
 
 /* --- Overloaded from configurable goal --- */
 
-func GetFactionCount()
-{
-	if (GoalForActiveTeams)
-	{
-		return GetLength(GetActiveTeams());
-	}
-	else
-	{
-		return GetTeamCount();
-	}
-}
-
-func GetFactionByIndex(int index)
-{
-	if (GoalForActiveTeams)
-	{
-		return GetActiveTeams()[index];
-	}
-	else
-	{
-		return GetTeamByIndex(index);
-	}
-}
-
-func GetFactionByPlayer(int player)
-{
-	return GetPlayerTeam(player);
-}
-
-func GetFactionColor(int team)
-{
-	return GetTeamColor(team);
-}
-
-func GetFactionName(int team)
-{
-	return GetTeamName(team);
-}
-
 func DoWinRound(array factions)
 {
 	for (var faction in factions)
@@ -107,5 +69,3 @@ func DoWinRound(array factions)
 	}
 	_inherited(factions);
 }
-
-local GoalForActiveTeams = true;
