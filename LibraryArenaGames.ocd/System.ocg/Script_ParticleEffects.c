@@ -1,7 +1,7 @@
 /**
 	Particle effects.
  */
- 
+
 
 global func CreateLEDEffect(int color, int x, int y, int size, int lifetime, bool attach)
 {
@@ -11,7 +11,7 @@ global func CreateLEDEffect(int color, int x, int y, int size, int lifetime, boo
 	{
 		colors.Alpha = 128;
 	}
-	
+
 	var attachment = nil;
 	if (attach)
 	{

@@ -1,6 +1,6 @@
 /**
 	Plugin for goal script.
-	
+
 	The goal lasts eliminates players that lost the round.
 
 	@author Marky
@@ -18,7 +18,7 @@ public func DoWinRound(array winning_factions)
 	{
 		var player = GetPlayerByIndex(i);
 		var faction = this->GetFactionByPlayer(player);
-		
+
 		Arena_PlayerManager->GetInstance()->MarkForElimination(player, !IsValueInArray(winning_factions, faction));
 	}
 	_inherited(winning_factions);

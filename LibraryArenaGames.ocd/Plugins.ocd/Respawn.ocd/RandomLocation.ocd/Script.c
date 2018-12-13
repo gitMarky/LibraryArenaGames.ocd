@@ -1,6 +1,6 @@
 /**
 	Plugin for scenario script.
-	
+
 	Players start at random locations.
 
 	@author Marky
@@ -18,7 +18,7 @@ func GetRelaunchLocation(int player)
 {
 	// sort the possible locations
 	var possible_locations = [];
-	
+
 	var team_nr;
 	if (GetTeamCount() > 1)
 	{
@@ -49,7 +49,7 @@ func GetRelaunchLocation(int player)
 
 /**
 	Defines relaunch locations where the players can launch.
-	
+
 	@return array An array of proplists. Each proplist has the following
 	              attributes:<br>
 	              {@c x}: The x position.<br>

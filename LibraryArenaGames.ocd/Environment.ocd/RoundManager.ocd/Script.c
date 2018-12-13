@@ -28,13 +28,13 @@
  	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
  	<tr><td>ROUND_Number_Default</td> <td>-1</td> <td>Number of rounds that the game will run. The default value is an infinite number of rounds. Overload for a finite number of rounds.</td></tr>
  </table>
- 
- 
+
+
  @title Rounds
  @id index
  @author Marky
   */
- 
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -56,7 +56,7 @@ local Description = "$Description$";
 global func RoundManager()
 {
 	var manager = FindObject(Find_ID(Environment_RoundManager));
-	
+
 	return manager;
 }
 
@@ -92,15 +92,15 @@ func Initialize()
 {
 	round_counter = 0; // on purpose
 	round_has_started = false;
-	
+
 	cycle_chooser = false;
 	chooser_id = nil;
 	chooser_player = 0;
 	max_rounds = ROUND_Number_Default;
-	
+
 	round_end_blocker = CreateArray();
 	round_start_blocker = CreateArray();
-	
+
 	ScheduleCall(this, this.NextRound, 5, 0);
 }
 
@@ -147,7 +147,7 @@ public func RemoveRoundStartBlocker(object blocker)
 	CheckBlocker(blocker);
 
 	RemoveArrayValue(round_start_blocker, blocker, false);
-	
+
 	PrepareRoundStart();
 }
 
@@ -181,7 +181,7 @@ public func RemoveRoundEndBlocker(object blocker)
 	CheckBlocker(blocker);
 
 	RemoveArrayValue(round_end_blocker, blocker, false);
-	
+
 	PrepareRoundEnd();
 }
 
@@ -210,7 +210,7 @@ func OnRoundReset(int round_number)
 			chooser_player = (round_counter - 1) % GetPlayerCount(C4PT_User);
 		}
 	}
-	
+
 	ScheduleCall(this, this.PrepareRoundStart, 5, 0);
 }
 
@@ -238,7 +238,7 @@ func NextRound()
 {
 	// increase round number
 	round_counter++;
-	
+
 	GameCallEx(ROUND_Callback_OnRoundReset, round_counter);
 }
 
@@ -287,7 +287,7 @@ func DoRoundStart()
 	{
 		round_has_started = true;
 		GameCallEx(ROUND_Callback_OnRoundStart, round_counter);
-		
+
 		ScheduleCall(this, this.PrepareRoundEnd, 5, 0);
 	}
 }

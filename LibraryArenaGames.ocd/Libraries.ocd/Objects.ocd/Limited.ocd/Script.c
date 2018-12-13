@@ -5,7 +5,7 @@
 	- Global (regards all objects)
 	- Player (regards objects per player)
 	- Mixed (both apply)
-	
+
 	Creation modes:
 	- Rotate (new objects may be created, old objects are removed if the limit is hit)
 	- Prevent (new objects may not be created if there are enough old objects)
@@ -19,7 +19,7 @@
 func Construction(object creator)
 {
 	_inherited(creator, ...);
-	
+
 	EvaluateObjectLimit(GetOwner());
 }
 
@@ -40,13 +40,13 @@ func AllowNewObjects(int player)
 		{
 			return ObjectCount(Find_ID(type), Find_Owner(player)) < this.ObjectLimitPlayer;
 		}
-		
+
 		// Global limits?
 		if (this.ObjectLimitGlobal > -1)
 		{
 			return ObjectCount(Find_ID(type)) < this.ObjectLimitGlobal;
 		}
-		
+
 		// Defaul to: allow new objects
 		return true;
 	}
@@ -55,7 +55,7 @@ func AllowNewObjects(int player)
 func EvaluateObjectLimit(int player)
 {
 	var replace = this.ObjectLimitReplace;
-	
+
 	// Player limits are enforced, if the player is not "-1"
 	if (this.ObjectLimitPlayer > -1 && player > -1)
 	{
@@ -63,7 +63,7 @@ func EvaluateObjectLimit(int player)
 		ApplyObjectLimit(this.ObjectLimitPlayer, objects, replace);
 
 	}
-		
+
 	// Global limits?
 	if (this.ObjectLimitGlobal > -1)
 	{

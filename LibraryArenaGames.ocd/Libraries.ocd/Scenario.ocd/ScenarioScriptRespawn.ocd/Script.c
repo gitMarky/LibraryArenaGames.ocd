@@ -86,7 +86,7 @@ public func ReleasePlayer(int player, bool instant)
 public func ReleaseCrew(object crew, bool instant)
 {
 	var container = crew->Contained();
-	
+
 	if ((container != nil) && (container->GetID() == Arena_RelaunchContainer))
 	{
 		if (instant)
@@ -148,13 +148,13 @@ func ContainPlayer(proplist relaunch_location, object crew)
 {
     // From existing one?
 	var relaunch_container = crew->Contained();
-	
+
 	// Delete foreign invalid containers...
 	if (relaunch_container != nil && relaunch_container->GetID() != Arena_RelaunchContainer)
 	{
 		relaunch_container->RemoveObject(true);
 	}
-	
+
 	// Get the position
 	var x, y;
 	if (relaunch_location)

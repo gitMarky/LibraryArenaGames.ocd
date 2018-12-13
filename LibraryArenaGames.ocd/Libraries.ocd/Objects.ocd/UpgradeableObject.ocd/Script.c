@@ -24,7 +24,7 @@ func Initialize()
 	Use this to check whether this object has an upgrade or not.
 
 	@par upgrade the id of the upgrade.
-	
+
 	@return {@code true}, if this object has this upgrade.
  */
 public func HasUpgrade(id upgrade)
@@ -99,7 +99,7 @@ public func OnUpgrade(id upgrade){}
 /**
 	Callback from {@link Library_UpgradeableObject#Downgrade}.
 	Does nothing by default.
-	
+
 	@par upgrade the id of the upgrade.
  */
 public func OnDowngrade(id upgrade){}

@@ -1,6 +1,6 @@
 /**
 	Plugin for respawn scenario script.
-	
+
 	The crew gets starting equipment.
 
 	@author Marky
@@ -52,7 +52,7 @@ func RemoveEquipment(object crew)
 	Defines the starting equipment after spawning.
 	By default this function does nothing, so
 	overload it to add starting equipment.
-	
+
 	@par crew The crew member that will get starting equpment.
  */
 public func StartingEquipment(object crew)

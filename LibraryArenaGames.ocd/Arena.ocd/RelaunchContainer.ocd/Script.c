@@ -1,15 +1,15 @@
 /**
 	Relaunch container.
- 
+
  	This container holds the crew after relaunches.
- 
+
 	{@section Constants} The object offers new constants:
 	<table>
  		<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
  		<tr><td>RELAUNCH_Default_Time</td>  <td>360</td> <td>Time in frames, until the relaunch container ejects the player.</td></tr>
  		<tr><td>RELAUNCH_Default_Hold</td>  <td>true</td>  <td>If true, then the player cannot exit the container himself.</td></tr>
 	</table>
- 
+
  	@author Marky
 	@credits Maikel
 */
@@ -51,7 +51,7 @@ public func SaveScenarioObject() { return false; }
 
 /**
 	Returns the time, in seconds, that the crew is held inside the container.
-	
+
 	@author Maikel
  */
 public func GetRelaunchTime() { return time / RELAUNCH_Factor_Second; }
@@ -59,13 +59,13 @@ public func GetRelaunchTime() { return time / RELAUNCH_Factor_Second; }
 
 /**
 	Sets the time, in seconds, the crew is held in the container.
- 
+
 	@par to_time The time to hold the crew, in seconds.
 	@par to_hold If set to true, then the crew will be contained in
                  the container until the time has fully run out.
                  Otherwise the player can exit the container earlier.
     @par interval Sets the time interval for the countdown.
-              
+
 	@author Maikel
  */
 public func SetRelaunchTime(int to_time, bool to_hold, int interval)
@@ -78,7 +78,7 @@ public func SetRelaunchTime(int to_time, bool to_hold, int interval)
 
 /**
 	Starts the relaunch process for a crew.
-	
+
 	@par crew This crew will be relaunched.
 	@return bool Returns whether the relaunch was started successfully.
 	             Reasons for unsuccessful relaunch are: The container
@@ -107,14 +107,14 @@ public func InstantRelaunch()
 	{
 		FatalError("There was no object that can be relaunched. The function PrepareRelaunch() or StartRelaunch() should be called first.");
 	}
-	
+
 	RelaunchCrew();
 }
 
 
 /**
 	Gets the crew member that will be relaunched.
-	
+
 	@return the crew member, or nil if there is none.
  */
 public func GetRelaunchCrew()
@@ -125,7 +125,7 @@ public func GetRelaunchCrew()
 
 /**
 	Find out whether a relaunch is currently blocked.
-	
+
 	@return bool Returns {@code true} if the relaunch is blocked.
 	             By default, this is if the crew has a menu,
 	             or if a callback "RejectRelaunch" in the crew
@@ -143,7 +143,7 @@ public func IsRelaunchBlocked()
 /**
 	Callback when the crew is contained.
 	This happens after the crew has entered the container.
-	
+
 	@par crew This object is being initialized.
  */
 public func OnInitializeCrew(object crew)
@@ -164,7 +164,7 @@ public func OnRelaunchCrew(object crew)
 
 /**
 	Callback from the relaunch timer.
-	
+
 	By default this displays the remaining time as a message above the container.
 
 	@par frames This many frames are remaining.
@@ -196,7 +196,7 @@ local RelaunchCountdown = new Effect
 
 		// Message output or user-defined effects
 		this.Target->OnTimeRemaining(this.Target.time - time);
-		
+
 		// Time has come and not blocked?
 		if (time >= this.Target.time && !blocked)
 		{
@@ -236,13 +236,13 @@ func RelaunchCrew()
 		SetCursor(relaunch_crew->GetOwner(), relaunch_crew);
 		SetPlrView(relaunch_crew->GetOwner(), relaunch_crew);
 	}
-	
+
 	// Eject crew
 	EjectCrew(relaunch_crew);
 
 	// Remove relaunch time message
 	PlayerMessage(relaunch_crew->GetOwner(), "");
-	
+
 	// Callback
 	OnRelaunchCrew(relaunch_crew);
 	RemoveObject();

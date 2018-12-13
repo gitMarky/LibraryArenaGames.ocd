@@ -25,7 +25,7 @@ global func Disintegrate(int lifetime, int dt, int dy, bool additive)
 
 	if (Contained()) return;
 	if (IsDisintegrating()) return;
-	
+
 	if(!GetRDir()) SetRDir(RandomX(-7, 7));
 
 	AddEffect(EFFECT_Disintegration_Name, this, 1, 1, nil, nil, lifetime, dt, dy, additive);
@@ -46,7 +46,7 @@ global func FxArenaDisintStart (object target, proplist effect, int temp, int li
 {
 	if (!lifetime) lifetime = 50;
 	if (!dt) dt = RGBA_MAX;
-	
+
 	target.Collectible = false;
 
 	effect.lifetime = lifetime;
@@ -79,7 +79,7 @@ global func FxArenaDisintTimer(object target, proplist effect, int time)
 		var owner_r = (lifetime - time) * effect.r;
 		var owner_g = (lifetime - time) * effect.g;
 		var owner_b = (lifetime - time) * effect.b;
-		
+
 		var r = time * GetRGBaValue(FxArenaDisintColorObject(), RGBA_RED);
 		var g = time * GetRGBaValue(FxArenaDisintColorObject(), RGBA_GREEN);
 		var b = time * GetRGBaValue(FxArenaDisintColorObject(), RGBA_BLUE);

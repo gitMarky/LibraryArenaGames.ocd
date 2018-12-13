@@ -1,7 +1,7 @@
 /**
 	Library for a goal that is configurable in the {@link Environment_Configuration#MenuConfigureGoal}
 	menu.
-	
+
 	@author Marky
 	@credits Hazard Team
  */
@@ -62,9 +62,9 @@ public func DoFactionScore(int faction, int change, bool force_negative)
 	{
 		score_list_points[faction] += Max(0, change);
 	}
-	
+
 	score_time_points[faction] = -FrameCounter(); // Save as negative value, for picking the earliest value as maximum.
-	
+
 	this->OnFactionScoreChange(faction);
 }
 
@@ -79,7 +79,7 @@ public func DoFactionScore(int faction, int change, bool force_negative)
 public func DoRoundScore(int faction, int change)
 {
 	AssertArrayBounds(score_list_rounds, faction);
-	
+
 	score_list_rounds[faction] += Max(0, change);
 }
 
@@ -240,7 +240,7 @@ public func SetLeadingFaction(array faction)
 
 /**
 	Gets the leading faction, for the current round.
-	
+
 	@return array Returns an array of the best factions.
 	              Usually this is length 1. 
  */
@@ -292,7 +292,7 @@ func Initialize()
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var current = GetPlayerByIndex(i);
-		
+
 		if (current > player)
 		{
 			player = current;
@@ -324,7 +324,7 @@ func Destruction()
 func InitializePlayer(int player)
 {
 	_inherited(player, ...);
-	
+
 	EnsureArraySize(GetFactionByPlayer(player));
 }
 
@@ -337,7 +337,7 @@ func IsFulfilled() { return is_fulfilled; }
 func Activate(int by_player)
 {
 	var message = GetDescription(by_player);
-	
+
 	MessageWindow(message, by_player);
 }
 
@@ -407,16 +407,16 @@ func GetRelativeScore(int faction)
 			best_score = score;
 		}
 	}
-	
+
 	var faction_score = GetFactionScore(faction);
-	
+
 	// special case if there is only one player in the game
 	if(best_faction == not_initialized)
 	{
 		best_faction = faction;
 		best_score = faction_score;
 	}
-	
+
 	return {
 		best_faction = best_faction,
 		best_score = best_score,
@@ -484,13 +484,13 @@ func GetFactionName(int faction)
 
 /**
 	Callback when the score of a faction changes.
-	
+
 	@par faction The faction, by index.
  */
 func OnFactionScoreChange(int faction)
 {
 	SetLeadingFaction(DetermineLeadingFaction());
-	
+
 	if (score_list_points[faction] >= win_score)
 	{
 		DoWinRound(GetLeadingFaction());

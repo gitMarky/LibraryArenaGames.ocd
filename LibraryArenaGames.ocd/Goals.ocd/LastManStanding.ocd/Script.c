@@ -12,7 +12,7 @@ func DoSetup(int round_number)
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var player = GetPlayerByIndex(i);
-		
+
 		SetScore(player, GetWinScore() - 1);
 	}
 }

@@ -1,6 +1,6 @@
 /**
 	Plugin for goal script.
-	
+
 	The goal lasts until a specific timeout only.
 	Can interface with a clock object.
 
@@ -20,7 +20,7 @@ func Initialize()
 	{
 		StartCountdown();
 	}
-	
+
 	return _inherited(...);
 }
 
@@ -28,10 +28,10 @@ func Initialize()
 
 /**
 	Sets the time limit.
-	
+
 	@par minutes This many minutes.
 	@par seconds This many seconds.
-	
+
 	@return The goal itself, for further function calls.
  */
 public func SetTimeLimit(int minutes, int seconds)
@@ -42,7 +42,7 @@ public func SetTimeLimit(int minutes, int seconds)
 
 /**
 	Gets the time limit
-	
+
 	@return int The time limit, in seconds.
  */
 public func GetTimeLimit()
@@ -53,7 +53,7 @@ public func GetTimeLimit()
 /**
 	Sets a clock that can display the countdown.
 	Otherwise, the countdown runs internally only.
-	
+
 	@par clock The clock. This can be an obect or a proplist.
 	           It must provide a function "SetTime", where
 	           the first parameter is the remaining time
@@ -125,7 +125,7 @@ local TimeLimitCountdown = new Effect
 		{
 			return;
 		}
-		
+
 		this.time_remaining = this.Target->GetTimeLimit();
 		this->UpdateClock();
 		return FX_OK;
@@ -141,7 +141,7 @@ local TimeLimitCountdown = new Effect
 
 		this.time_remaining = Max(0, this.time_remaining - 1);
 		this->UpdateClock();
-		
+
 		if (this.time_remaining > 0)
 		{
 			return FX_OK;
@@ -152,7 +152,7 @@ local TimeLimitCountdown = new Effect
 			return FX_Execute_Kill;
 		}
 	},
-	
+
 	UpdateClock = func ()
 	{
 		if (this.Target.goal_time_clock)

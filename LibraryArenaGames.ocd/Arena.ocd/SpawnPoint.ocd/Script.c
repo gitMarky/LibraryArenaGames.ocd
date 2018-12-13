@@ -1,6 +1,6 @@
 /**
 	Object that spawns items.
-	
+
 	Has two functions: It can spawn items for each player in the game,
 	or it can spawn decoration/items in fixed intervals, not depending on players.
 
@@ -39,7 +39,7 @@ local spawn_id_parameter;	// id / string: the parameter that was used for config
 local respawn_if_removed;	// bool: per default the respawn countdown begins if the item is collected
 							//       if this is set to true, then it begins if the item does not exist anymore
 local spawn_description;	// string: describes the spawnpoint type for the configuration menu.
-                            
+
 local draw_transformation;  // proplist: deco objects have this transformation
 local is_active;			// bool: is it active? yes or no
 
@@ -76,7 +76,7 @@ global func CreateSpawnPoint(int x, int y)
 	{
 		FatalError("You have to specify x and y values in global context");
 	}
-	
+
 	var point = CreateObject(SpawnPoint, x, y, NO_OWNER);
 	return point;
 }
@@ -84,7 +84,7 @@ global func CreateSpawnPoint(int x, int y)
 /**
 	Uses the settings of an existing spawn point and creates a new spawn point with these settings at the given coordinates.
 	The coordinates are relative to object coordinates in local context.
-	
+
 	@par spawn_point This has to be a spawn point object.
 	@par x The x coordinate.
 	@par y The y coordinate.
@@ -106,12 +106,12 @@ global func CopySpawnPoint(object spawn_point, int x, int y, bool mirrored)
 	{
 		FatalError("spawn_point has to be return true in IsSpawnPoint()");
 	}
-	
+
 	if (mirrored)
 	{
 		x = LandscapeWidth() - x;
 	}
-	
+
 	var point = CreateObject(spawn_point->GetID(), x, y, NO_OWNER);
 	point->CopyDataFromTemplate(spawn_point);
 	return point;
@@ -127,19 +127,19 @@ func Construction(object by_object)
 	spawn_id = nil;
 	spawn_id_parameter = nil;
 	respawn_if_removed = false;
-	
+
 	is_active = false;
 	draw_transformation = nil;
-	
+
 	spawn_object = CreateArray();
 	spawn_timer = CreateArray();
 	spawn_visibility = CreateArray();
 	spawn_globally = false;
-	
+
 	spawn_team = nil;
 
 	spawn_collectible = false;
-	
+
 	spawn_callback = {
 		command = nil,
 		parameters = [],
@@ -165,7 +165,7 @@ public func CopyDataFromTemplate(object template)
 	{
 		FatalError("Copying works only with objects of the same ID");
 	}
-	
+
 	timer_interval = template.timer_interval;
 	spawn_id = template.spawn_id;
 	spawn_id_parameter = template.spawn_id_parameter;
@@ -179,7 +179,7 @@ public func CopyDataFromTemplate(object template)
 
 	spawn_team = template.spawn_team;
 	spawn_collectible = template.spawn_collectible;
-	
+
 	spawn_callback = { Prototype = template.spawn_callback };
 }
 
@@ -189,16 +189,16 @@ public func CopyDataFromTemplate(object template)
 	 - enables the spawn point@br
 	 - does not react to collection@br
 	 - object spawns globally@br
-	 
+
 	@par definition See {@link SpawnPoint#SetID}.
 	@par transformation See {@link SpawnPoint#SetTransformation}.
-	
+
 	@return object Returns the spawn point object, so that further function calls can be issued.
   */
 public func SpawnDeco(definition, proplist transformation)
 {
 	ProhibitedWhileSpawning();
-	
+
 	SetID(definition);
 	SetTransformation(transformation);
 	SetActive(true);
@@ -212,17 +212,17 @@ public func SpawnDeco(definition, proplist transformation)
 	A default function that configures the spawn point for spawning collectible items.@br
 	 - enables the spawn point@br
 	 - does react to collection@br
-	 
+
 	@par definition See {@link SpawnPoint#SetID}.
 	@par transformation See {@link SpawnPoint#SetTransformation}.
 	@par spawn_global See {@link SpawnPoint#SetGlobal}.
-	
+
 	@return object Returns the spawn point object, so that further function calls can be issued.
   */
 public func SpawnItem(definition, proplist transformation, bool spawn_global)
 {
 	ProhibitedWhileSpawning();
-	
+
 	SetID(definition);
 	SetTransformation(transformation);
 	SetActive(true);
@@ -234,7 +234,7 @@ public func SpawnItem(definition, proplist transformation, bool spawn_global)
 
 /**
 	Enables or disables the spawn point.
-	
+
 	@par active {@c true} enables the spawn point,@br
              {@c false} disables the spawn point.
 
@@ -251,7 +251,7 @@ public func SetActive(bool active)
 	Configures the spawn point so that it reacts to collection.
 	This means, that Clonks running past the spawn point can collect
 	the item, if their inventory permits it.
-	
+
 	@par collectible {@c true} enables collection,@br
                   {@c false} disables collection.
 
@@ -268,7 +268,7 @@ public func SetCollectible(bool collectible)
 
 /**
 	Configures the object that is spawned by the spawn point.
-	
+
 	@par definition An object of this type is spawned. This can be an id or a string. 
                  Passing a string has no functionality at the moment.
 
@@ -277,7 +277,7 @@ public func SetCollectible(bool collectible)
 public func SetID(definition)
 {
 	ProhibitedWhileSpawning();
-	
+
 	spawn_id_parameter = definition;
 
 	if (GetType(definition) == C4V_Def)
@@ -298,7 +298,7 @@ public func SetID(definition)
 
 /**
 	Configures, whether all players share the spawned object or if every player has his own object.
-	
+
 	@par spawn_global {@c true} The spawn point spawns one object, if one player collects it then all other players have
                    to wait for it to respawn@br
                    {@c false} The spawn point spawns one object for every player individually. This is the default option of
@@ -309,7 +309,7 @@ public func SetID(definition)
 public func SetGlobal(bool spawn_global)
 {
 	ProhibitedWhileSpawning();
-	
+
 	spawn_globally = spawn_global;
 
 	return this;
@@ -318,7 +318,7 @@ public func SetGlobal(bool spawn_global)
 
 /**
 	Sets the time until an object respawns, in frames.
-	
+
 	@par timer The new timer value. Use {@c SPAWNPOINT_Timer_Infinite} if you want the object to spawn at round start
             only, or a custom timer, or {@c SPAWNPOINT_Timer_Default}.
 
@@ -330,7 +330,7 @@ public func SetRespawnTimer(int timer)
 	{
 		FatalError(Format("Use values >= %d", SPAWNPOINT_Timer_Infinite));
 	}
-	
+
 	timer_interval = timer;
 	return this;
 }
@@ -357,10 +357,10 @@ public func SetTransformation(proplist transformation)
 /**
 	Sets a description string for the spawn point. This will be displayed in the game configuration
 	menu when you reconfigure the spawnpoint.
-	
+
 	@par description This is the description. It is best to use a localized string.
 	@return object Returns the spawn point object, so that further function calls can be issued.
-	
+
 	@related {@link Environment_Configuration#index}.
   */
 public func SetDescription(string description)
@@ -411,7 +411,7 @@ public func SetCallbackOnSpawn(command, par0, par1, par2, par3, par4, par5, par6
 	ProhibitedWhileSpawning();
 
 	spawn_callback.command = command;
-	
+
 	spawn_callback.parameters[0] = par0;
 	spawn_callback.parameters[1] = par1;
 	spawn_callback.parameters[2] = par2;
@@ -427,7 +427,7 @@ public func SetCallbackOnSpawn(command, par0, par1, par2, par3, par4, par5, par6
 
 /**
 	Gets a description of the spawn point type, if it is configurable in the game configuration.
-	
+
 	@related {@link SpawnPoint#SetDescription}
 
 	@return string The description.
@@ -440,7 +440,7 @@ public func GetDescription()
 
 /**
 	Gets the type of object that is spawned by the spawn point.
-	
+
 	@return The parameter that was used in {@link SpawnPoint#SetID} to configure the spawned object.
   */
 public func GetIDParameter()
@@ -451,7 +451,7 @@ public func GetIDParameter()
 
 /**
 	Gets the type of object that is actually spawned by the spawn point.
-	
+
 	@return The ID that was determined from the spawn ID parameter.
   */
 public func GetIDSpawned()
@@ -462,7 +462,7 @@ public func GetIDSpawned()
 
 /**
 	Find out whether a clonk can collect an item from this spawn point
-	
+
 	@return true, if an item is available for the clonk to collect.
   */
 public func HasCollectibleItem(object clonk)
@@ -476,7 +476,7 @@ public func HasCollectibleItem(object clonk)
 
 /**
 	Spawn point starts spawning, if it is enabled.
-	
+
 	@note This is an internal function, if you want to switch a spawn point on or off, use {@link SpawnPoint#SetActive}.
   */
 func StartSpawning()
@@ -495,7 +495,7 @@ func StartSpawning()
 
 /**
 	Spawn point stops spawning, for round end and so forth. 
-	
+
 	@note This is an internal function, if you want to switch a spawn point on or off, use {@link SpawnPoint#SetActive}.
   */
 func StopSpawning()
@@ -538,7 +538,7 @@ func FxIntSpawnTimer(object target, proplist effect_nr, int timer)
 	{
 		error_message = Format("Spawn point is used without an id that should be spawned. It was configured with '%v' and should spawn '%i'", spawn_id_parameter, spawn_id);
 	}
-	
+
 	if (error_message != nil)
 	{
 		FatalError(error_message);
@@ -546,11 +546,11 @@ func FxIntSpawnTimer(object target, proplist effect_nr, int timer)
 	}
 
 	// regular behaviour
-	
+
 	if (!is_active) return FX_OK;
-	
+
 	this->~EffectTimer(timer);
-	
+
 	if (spawn_globally)
 	{
 		DecreaseTimer(0);
@@ -562,7 +562,7 @@ func FxIntSpawnTimer(object target, proplist effect_nr, int timer)
 			DecreaseTimer(i);
 		}
 	}
-	
+
 	return FX_OK;
 }
 
@@ -584,7 +584,7 @@ func DecreaseTimer(int index)
 		{
 			DoSpawnObject(index);
 		}
-		
+
 		if (timer_interval != SPAWNPOINT_Timer_Infinite)
 		{
 			spawn_timer[index] -= SpawnPointEffectInterval();
@@ -596,10 +596,10 @@ func DecreaseTimer(int index)
 
 /**
 	Spawns the configured object.
-	
+
 	@note This calls {@c EffectSpawn(int index)} in the spawn point. The original implementation has no effect,
           but you can implement this function for custom effects.
-          
+
 	@par index The objects are saved in an array, this parameter indicates the position in the array. 
   */
 func DoSpawnObject(int index)
@@ -607,7 +607,7 @@ func DoSpawnObject(int index)
 	ResetTimer(index);
 
 	var vis, owner;
-	
+
 	if (spawn_globally)
 	{
 		vis = VIS_All;
@@ -624,13 +624,13 @@ func DoSpawnObject(int index)
 		spawn_object[index] = CreateObject(spawn_id, 0, 0, owner);
 		spawn_visibility[index] = spawn_object[index].Visibility;
 		spawn_object[index].Visibility = vis;
-		
+
 		if (spawn_collectible)
 		{
 			spawn_object[index]->Enter(this);
 			SetGraphics(nil, nil, GetOverlay(index), GFXOV_MODE_Object, nil, nil, spawn_object[index]);
 		}
-		
+
 		if (draw_transformation != nil)
 		{
 			if (draw_transformation.mesh != nil)
@@ -648,7 +648,7 @@ func DoSpawnObject(int index)
 														 draw_transformation.overlay_id);
 			}
 		}
-		
+
 		if (spawn_callback && spawn_callback.command)
 		{
 			spawn_object[index]->Call(spawn_callback.command,
@@ -662,7 +662,7 @@ func DoSpawnObject(int index)
 			                          spawn_callback.parameters[7],
 			                          spawn_callback.parameters[8]);
 		}
-		
+
 		this->~EffectSpawn(index);
 	}
 }
@@ -670,7 +670,7 @@ func DoSpawnObject(int index)
 
 /**
 	Deletes a spawned object.
-	
+
 	@par index The objects are saved in an array, this parameter indicates the position in the array. 
   */
 func RemoveSpawnedObject(int index)
@@ -720,13 +720,13 @@ func TryCollectObject(object clonk)
 	{
 		return false;
 	}
-	
+
 	// Prevent collection for contained clonks
 	if (clonk->Contained())
 	{
 		return false;
 	}
-	
+
 	var item_index = GetCollectibleItemIndex(clonk);
 	if (item_index > -1)
 	{
@@ -758,7 +758,7 @@ func DoCollectObject(int index, object clonk)
 	}
 
 	item.Visibility = spawn_visibility[index] ?? VIS_All; // Make item visible!
-	
+
 	if (!item->~RejectCollectionFromSpawnPoint(this, clonk))
 	{
 		clonk->Collect(item);
@@ -773,7 +773,7 @@ func DoCollectObject(int index, object clonk)
 	else
 	{
 		this->~EffectCollect(item, clonk);
-		
+
 		if (!respawn_if_removed)
 		{
 			spawn_object[index] = nil;

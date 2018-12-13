@@ -3,13 +3,13 @@
 
 	@author Marky
  */
- 
+
 
 /**
 	Determines the array indices with the highest value.
-	
+
 	@par values The array. {@code nil} values will be skipped.
-	
+
 	@return array An array with the indices. Always returns an array. 
 	              In case the values array was empty, this array will
 	              also be empty.
@@ -28,7 +28,7 @@ global func GetMaxValueIndices(array values)
 			{
 				continue;
 			}
-			
+
 			if (best_value == nil || value > best_value)
 			{
 				best_value = value;
@@ -46,11 +46,11 @@ global func GetMaxValueIndices(array values)
 
 /**
 	Picks all values at given indices from an array.
-	
+
 	@par values The values array.
 	@par indices These indices will have the
 	             values, all other values will be {@code nil}.
-	             
+
 	@return array A new array.
  */
 global func PickArrayValues(array values, array indices)

@@ -16,6 +16,6 @@ global func GetPlayerIndex(int player, int player_type)
 			return index;
 		}
 	}
-	
+
 	return -1;
 }

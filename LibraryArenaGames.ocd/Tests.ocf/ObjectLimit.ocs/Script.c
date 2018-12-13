@@ -6,7 +6,7 @@ func InitializePlayer(int player)
 	SetFoW(false, player);
 	GetCrew(player)->SetPosition(120, 190);
 	GetCrew(player)->MakeInvincible();
-	
+
 	if (GetPlayerCount() < 2)
 	{
 		CreateScriptPlayer("Second player", RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
@@ -193,7 +193,7 @@ global func Test5_Execute()
 
 	// Create a third object for first player
 	var instance5_player0_object3 = CreateObject(Test_Limit_Global3_Replace, 0, 0, 0);
-	
+
 	doTest("Step 3: Instance 1, no owner, object 1 removed. Is %v, should be %v", nil == instance1_noowner_object1, true);
 	doTest("Step 3: Instance 2, player 0, object 1 removed. Is %v, should be %v", nil == instance2_player0_object1, true);
 	doTest("Step 3: Instance 3, player 0, object 2 exists. Is %v, should be %v", nil != instance3_player0_object2, true);

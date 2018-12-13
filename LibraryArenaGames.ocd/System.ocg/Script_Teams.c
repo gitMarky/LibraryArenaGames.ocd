@@ -4,7 +4,7 @@
 
 	@par team The team index.
 	@return The number of players that are in the team.
-	
+
 	@author Unknown
  */
 global func GetTeamPlayerCount(int team)
@@ -44,7 +44,7 @@ global func GetTeamPlayer(int team, int player_index)
 	teams there will be one team for each player
 	initially, then once the players are assigned
 	you have a few teams and then the empty teams...
-	
+
 	@return array An array with the numbers of the
 	              non-empty teams.
  */

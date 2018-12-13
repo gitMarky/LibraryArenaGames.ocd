@@ -2,7 +2,7 @@
 	Library for a goal that is winnable by teams.
 
 	A faction in {@link Library_Goal_Configurable#index} corresponds to a team.
-	
+
 	@author Marky
  */
 
@@ -45,7 +45,7 @@ public func GetShortDescription(int player)
 			score_message = Format("%s : %s", score_message, GetFactionScoreMessage(other_team));
 		}
 	}
-	
+
 	return score_message;
 }
 

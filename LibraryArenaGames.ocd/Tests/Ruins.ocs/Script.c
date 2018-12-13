@@ -1,7 +1,7 @@
 /*-- 
 	Ruins
 	Author: Mimmo_O
-	
+
 	An arena like last man standing round for up to 12 players.
 --*/
 
@@ -11,11 +11,11 @@ func Initialize()
 {
 	CreateObject(Rule_KillLogs);
 	CreateObject(Rule_Gravestones);
-	
+
 	// Mood.
 	SetSkyAdjust(RGBa(255, 255, 255, 127), RGB(255, 200, 150));
 	SetGamma(RGB(40, 35, 30), RGB(140, 135, 130), RGB(255, 250, 245));
-	
+
 	// Chests with weapons.
 	var template_flint = CreateSpawnPoint(0, 0)->SetRespawnTimer(36*5)->SpawnItem(Firestone);
 
@@ -23,9 +23,9 @@ func Initialize()
 	CopySpawnPoint(template_flint, 500,  60)->SpawnItem("b")->SetDescription("$SpawnTopRight$");
 	CopySpawnPoint(template_flint, 124, 124)->SpawnItem("c")->SetDescription("$SpawnColumn$");
 	CopySpawnPoint(template_flint, 340, 436)->SpawnItem("d")->SetDescription("$SpawnNearPit$");
-	
+
 	template_flint->RemoveObject();
-	
+
 	var template_grass = CreateSpawnPoint(0, 0)->SetRespawnTimer(SPAWNPOINT_Timer_Infinite)->SpawnDeco(Grass);
 
 	CopySpawnPoint(template_grass, 365, 346);
@@ -44,13 +44,13 @@ func Initialize()
 	CopySpawnPoint(template_grass, 385, 103);
 	CopySpawnPoint(template_grass, 415,  81);
 	CopySpawnPoint(template_grass, 465,  65);
-	
+
 	template_grass->RemoveObject();
 
-	
+
 	CreateObject(Environment_RoundManager);
 	CreateObject(Environment_Configuration);
-	
+
 	AddEffect("DryTime",nil,100,2);
 	return;
 }
@@ -82,7 +82,7 @@ global func FxRainTimer(object pTarget, effect, int timer)
 	AddEffect("DryTime",nil,100,2);
 	return -1;	
 	}
-	
+
 	return 1;
 }
 global func FxDryTimeTimer(object pTarget, effect, int timer)
@@ -92,7 +92,7 @@ global func FxDryTimeTimer(object pTarget, effect, int timer)
 		return 1;
 	}
 	ExtractLiquidAmount(310+Random(50),430+Random(10),6+Random(4));
-	
+
 	if(!GBackLiquid(335,430))
 	{
 		return -1;

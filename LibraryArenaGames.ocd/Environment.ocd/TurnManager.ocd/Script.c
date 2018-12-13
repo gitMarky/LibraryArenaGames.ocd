@@ -27,13 +27,13 @@
  	<tr><th>Name</th>                     <th>Value</th> <th>Description</th></tr>
  	<tr><td>TURN_Number_Default</td> <td>-1</td> <td>Number of turns that the game will run. The default value is an infinite number of turns. Overload for a finite number of turns.</td></tr>
  </table>
- 
- 
+
+
  @title Turns
  @id index
  @author Marky
   */
- 
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -54,7 +54,7 @@ local Description = "$Description$";
 global func TurnManager()
 {
 	var manager = FindObject(Find_ID(Environment_TurnManager));
-	
+
 	return manager;
 }
 
@@ -86,12 +86,12 @@ func Initialize()
 {
 	turn_counter = 0; // on purpose
 	turn_has_started = false;
-	
+
 	max_turns = TURN_Number_Default;
-	
+
 	turn_end_blocker = CreateArray();
 	turn_start_blocker = CreateArray();
-	
+
 	ScheduleCall(this, this.NextTurn, 5, 0);
 }
 
@@ -138,7 +138,7 @@ public func RemoveTurnStartBlocker(object blocker)
 	CheckBlocker(blocker);
 
 	RemoveArrayValue(turn_start_blocker, blocker, false);
-	
+
 	PrepareTurnStart();
 }
 
@@ -172,7 +172,7 @@ public func RemoveTurnEndBlocker(object blocker)
 	CheckBlocker(blocker);
 
 	RemoveArrayValue(turn_end_blocker, blocker, false);
-	
+
 	PrepareTurnEnd();
 }
 
@@ -269,7 +269,7 @@ func DoTurnStart()
 	{
 		turn_has_started = true;
 		GameCallEx(TURN_Callback_OnTurnStart, turn_counter);
-		
+
 		ScheduleCall(this, this.PrepareTurnEnd, 5, 0);
 	}
 }

@@ -31,7 +31,7 @@ func OnRoundReset(int counter)
 {
 	DebugLog("[%d] RoundHelper preparing for round %d", FrameCounter(), counter);
 	RoundManager()->RegisterRoundStartBlocker(this);
-	
+
 	ScheduleCall(this, "TriggerRoundStart", 60, 0);
 }
 

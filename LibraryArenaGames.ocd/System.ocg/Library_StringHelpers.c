@@ -1,6 +1,6 @@
 /**
 	Colors the string with the given color.
-	
+
 	@par text The string
 	@par color The color, in dword format.
  */

@@ -1,8 +1,8 @@
 /**
 	Library for a goal that is winnable by individual players.
-	
+
 	A faction in {@link Library_Goal_Configurable#index} corresponds to a player.
-	
+
 	@author Marky
  */
 

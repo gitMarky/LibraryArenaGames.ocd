@@ -29,7 +29,7 @@ func Initialize()
 	SetGraphics("Light", GetID(), JUMPPAD_LAYER_LIGHT, GFXOV_MODE_ExtraGraphics, nil, GFX_BLIT_Additive);
 	SetGraphics("Shine", GetID(), JUMPPAD_LAYER_GLOW, GFXOV_MODE_ExtraGraphics, nil, GFX_BLIT_Additive);
 	SetBaseGraphics("BaseLarge", GetID());
-	
+
  	AddTimer(this.CheckBounce, 1);
  	AddTimer(this.ParticleEffect, 8);
 
@@ -43,7 +43,7 @@ func SaveScenarioObject(proplist props)
 {
 	if (!_inherited(props, ...))
 		return false;
-	
+
 	if (GetR())
 	{
 		props->AddCall("SetPadR", this, "SetPadR", GetR());
@@ -58,7 +58,7 @@ func SaveScenarioObject(proplist props)
 	{
 		props->AddCall("SetStrength", this, "SetStrength", pad_strength);
 	}
-	
+
 	return true;
 }
 
@@ -175,13 +175,13 @@ func DrawBase()
 	var height = +fcos;
 	var xskew  = +fsin;
 	var yskew  = -fsin;
-	
+
 	var xoff = -5;
 	var yoff = +50;
-	
+
 	var x_adjust = fcos * xoff - fsin * yoff;
 	var y_adjust = fcos * yoff - fsin * xoff;
-	
+
 	// set matrix values
 	SetObjDrawTransform(width,  xskew, x_adjust / 10,
 	                    yskew, height, y_adjust / 10, JUMPPAD_LAYER_BASE);
@@ -206,7 +206,7 @@ func Particles_JumpPad(int angle, int particle_color, int particle_size)
 {
 	particle_size = particle_size ?? 7000;
 	particle_color = particle_color ?? 0xffffffff;
-	
+
 	return
 	{
 		Size = 3 * particle_size / 1000,

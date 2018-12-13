@@ -1,6 +1,6 @@
 /**
 	Faction manager
-	
+
 	Helps managing factions, such as players or teams.
 
 	@author Marky
@@ -9,7 +9,7 @@
 #include Library_Singleton
 
 /* --- Properties --- */
- 
+
 local Name = "$Name$";
 local Description = "$Description$";
 
@@ -23,7 +23,7 @@ local type;
 func Construction (object creator)
 {
 	_inherited(creator, ...);
-	
+
 	factions = [];
 }
 
@@ -47,9 +47,9 @@ func OnTeamSwitch (int player, int new_team, int old_team)
 
 /**
 	Gets the amount of factions that are currently active.
-	
+
 	@note requires that the type was set with {@link #SetType} initially.
-	
+
 	@return int the number of factions.
  */
 func GetFactionCount()
@@ -62,7 +62,7 @@ func GetFactionCount()
 	Gets a faction by its identifier.
 
 	@note requires that the type was set with {@link #SetType} initially.
-	
+
 	@return proplist the faction representation, as a proplist.
 	                 If the identifier is invalid, this will nonetheless 
 	                 return a proplist.
@@ -137,7 +137,7 @@ func AssertHasType()
 
 /**
 	Definition call: Sets the faction type.
-	
+
 	@par prototype Defines the faction type for this game, e.g. {@link Arena_Faction_Team}.
 	               This type will be returned as a proplist by
 	               <ul>
@@ -145,7 +145,7 @@ func AssertHasType()
 	               <li>{@link #GetFactionByIndex}</li>
 	               <li>{@link #GetFactionByPlayer}</li>
 	               </ul> 
-	
+
 	               You can pass any type here, as long as it is compatible with
 	               the faction interface (which is not officially defined, duh :/).
  */
