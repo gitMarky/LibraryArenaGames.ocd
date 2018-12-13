@@ -49,15 +49,6 @@ public func GetShortDescription(int player)
 	return score_message;
 }
 
-// Returns the number of players in a specific team.
-func GetPlayerInTeamCount(int team)
-{
-	var amount = 0;
-	for (var player = 0; player < GetPlayerCount(); player++)
-		if (GetPlayerTeam(GetPlayerByIndex(player)) == team)
-			amount++;
-	return amount;
-}
 
 /* --- Overloaded from configurable goal --- */
 
