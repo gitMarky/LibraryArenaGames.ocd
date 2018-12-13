@@ -7,19 +7,18 @@
  */
 
 #include Library_Goal_Configurable
-#include Library_Faction_Player
 
 
 /* --- Goal description texts --- */
 
 func GetDescription(int player)
 {
-	return GetGoalDescription(player);
+	return GetGoalDescription(GetFactionByPlayer(player));
 }
 
 func GetShortDescription(int player)
 {
-	var score = GetFactionScore(player);
+	var score = GetFactionScore(GetFactionByPlayer(player));
 	var target = GetWinScore();
 
 	return Format("%d / %d", score, target);
@@ -31,7 +30,7 @@ func DoWinRound(array factions)
 {
 	for (var faction in factions)
 	{
-		DoRoundScore(faction, 1);
+		DoRoundScore(GetFaction(faction), 1);
 	}
 	_inherited(factions);
 }

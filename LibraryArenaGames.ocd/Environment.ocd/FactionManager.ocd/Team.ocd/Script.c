@@ -4,6 +4,7 @@
 	@author Marky
  */
 
+#include Arena_Faction_Interface
 
 /* --- Global logic --- */
 
@@ -68,8 +69,6 @@ func GetIdentifierByPlayer(int player)
 
 /* --- Individual logic --- */
 
-local FactionID;
-
 /**
 	Gets the color of the faction.
 
@@ -80,11 +79,11 @@ func GetColor()
 {
 	if (GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(FactionID) == 1)
 	{
-		return GetPlayerColor(GetTeamPlayer(FactionID, 0));
+		return GetPlayerColor(GetTeamPlayer(GetID(), 0));
 	}
 	else
 	{
-		return GetTeamColor(FactionID);
+		return GetTeamColor(GetID());
 	}
 }
 
@@ -95,5 +94,5 @@ func GetColor()
  */
 func GetName()
 {
-	return GetTeamName(FactionID);
+	return GetTeamName(GetID());
 }

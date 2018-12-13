@@ -11,7 +11,6 @@
 
 * Updated version of all definitions to 8,0
 * Moved assertion to OC repository
-* Changed faction logic to plugins
 
 ! Goals: Renamed definitions
          Library_ConfigurableGoal => Library_Goal_Configurable
@@ -22,6 +21,9 @@
          GetScore => GetFactionScore, 
          SetScore => SetFactionScore
          The old functions still exist, but change the value for the player's faction.
+! Goals: Changed logic from single/multiplayer goal to "factions".
+         The scenario decided what kind of factions are used, the goals just add scores
+         for the factions by ID.
 ! Renamed RelaunchContainerEx to Arena_RelaunchContainer
 ! RelaunchContainerEx now respawns the crew at its position, instead of above it
 ! Split Library_ScenarioScript_PlayerRespawn into two additional plugins:

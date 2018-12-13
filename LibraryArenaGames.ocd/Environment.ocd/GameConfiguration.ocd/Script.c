@@ -836,7 +836,7 @@ func MenuConfigureTeams(id menu_symbol, object player, int selection)
 	for (var i = 0; i < GetTeamCount(); i++)
 	{
 		var team = GetTeamByIndex(i);
-		var team_name = GetTeamName(team);
+		var team_name = GetTaggedTeamName(team);
 
 		for (var p = 0; p < GetTeamPlayerCount(team); p++)
 		{

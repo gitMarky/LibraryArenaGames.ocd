@@ -44,26 +44,26 @@ public func DoScore(int player, int change, bool force_negative)
 /**
 	Changes the score of a faction for the current round.
 
-	@par faction The faction, by index.
+	@par faction The faction.
 	@par change The amount that the score should change.
 	@par force_negative By default, negative changes are ignored.
                         Set this parameter to {@c true} if you want to
                         decrease the score.
  */
-public func DoFactionScore(int faction, int change, bool force_negative)
+public func DoFactionScore(proplist faction, int change, bool force_negative)
 {
-	AssertArrayBounds(score_list_points, faction);
+	AssertArrayBounds(score_list_points, faction->GetID());
 
 	if (force_negative)
 	{
-		score_list_points[faction] += change;
+		score_list_points[faction->GetID()] += change;
 	}
 	else
 	{
-		score_list_points[faction] += Max(0, change);
+		score_list_points[faction->GetID()] += Max(0, change);
 	}
 
-	score_time_points[faction] = -FrameCounter(); // Save as negative value, for picking the earliest value as maximum.
+	score_time_points[faction->GetID()] = -FrameCounter(); // Save as negative value, for picking the earliest value as maximum.
 
 	this->OnFactionScoreChange(faction);
 }
@@ -72,30 +72,30 @@ public func DoFactionScore(int faction, int change, bool force_negative)
 /**
 	Increases the number of won rounds for a faction.
 
-	@par faction The faction, by index.
+	@par faction The faction.
 	@par change The amount that the score should increase by.
              	Negative numbers are ignored.
  */
-public func DoRoundScore(int faction, int change)
+public func DoRoundScore(proplist faction, int change)
 {
-	AssertArrayBounds(score_list_rounds, faction);
+	AssertArrayBounds(score_list_rounds, faction->GetID());
 
-	score_list_rounds[faction] += Max(0, change);
+	score_list_rounds[faction->GetID()] += Max(0, change);
 }
 
 
 /**
 	Gets the score of a faction, for the current round.
 
-	@par faction The faction, by index.
+	@par faction The faction.
 
 	@return int The score value.
  */
-public func GetFactionScore(int faction)
+public func GetFactionScore(proplist faction)
 {
-	AssertArrayBounds(score_list_points, faction);
+	AssertArrayBounds(score_list_points, faction->GetID());
 
-	return score_list_points[faction];
+	return score_list_points[faction->GetID()];
 }
 
 
@@ -107,11 +107,11 @@ public func GetFactionScore(int faction)
 
 	@return int The frame when the score changed
  */
-public func GetFactionScoreFrame(int faction)
+public func GetFactionScoreFrame(proplist faction)
 {
-	AssertArrayBounds(score_time_points, faction);
+	AssertArrayBounds(score_time_points, faction->GetID());
 
-	return score_time_points[faction];
+	return score_time_points[faction->GetID()];
 }
 
 
@@ -133,7 +133,7 @@ public func GetScore(int player)
 
 	@par faction The faction, by index.
  */
-public func SetFactionScore(int faction, int value)
+public func SetFactionScore(proplist faction, int value)
 {
 	DoFactionScore(faction, value - GetFactionScore(faction), true);
 }
@@ -156,11 +156,11 @@ public func SetScore(int player, int value)
 	@par faction The faction, by index.
 	@return int The number of rounds that the faction won.
  */
-public func GetRoundScore(int faction)
+public func GetRoundScore(proplist faction)
 {
-	AssertArrayBounds(score_list_rounds, faction);
+	AssertArrayBounds(score_list_rounds, faction->GetID());
 
-	return score_list_rounds[faction];
+	return score_list_rounds[faction->GetID()];
 }
 
 
@@ -224,7 +224,7 @@ public func DoWinRound(array factions)
 	Sets the leading faction, for the current round.
 	@par faction An array of faction indices, by index.
  */
-public func SetLeadingFaction(array faction)
+public func SetLeadingFactionID(array faction)
 {
 	if (faction == leading_faction)
 	{
@@ -244,7 +244,7 @@ public func SetLeadingFaction(array faction)
 	@return array Returns an array of the best factions.
 	              Usually this is length 1. 
  */
-public func GetLeadingFaction()
+public func GetLeadingFactionID()
 {
 	return leading_faction;
 }
@@ -299,7 +299,7 @@ func Initialize()
 		}
 	}
 
-	EnsureArraySize(GetFactionByPlayer(player));
+	EnsureArraySize(GetFactionByPlayer(player)->GetID());
 
 	return _inherited(...);
 }
@@ -325,7 +325,7 @@ func InitializePlayer(int player)
 {
 	_inherited(player, ...);
 
-	EnsureArraySize(GetFactionByPlayer(player));
+	EnsureArraySize(GetFactionByPlayer(player)->GetID());
 }
 
 
@@ -342,9 +342,9 @@ func Activate(int by_player)
 }
 
 
-func GetFactionScoreMessage(int faction)
+func GetFactionScoreMessage(proplist faction)
 {
-	var color = this->GetFactionColor(faction);
+	var color = faction->GetColor();
 	var score = GetFactionScore(faction);
 	if (color)
 		return Format("<c %x>%d</c>", color, score);
@@ -353,7 +353,7 @@ func GetFactionScoreMessage(int faction)
 }
 
 
-func GetGoalDescription(int faction)
+func GetGoalDescription(proplist faction)
 {
 	if(IsFulfilled()) 
 	{
@@ -371,11 +371,11 @@ func GetGoalDescription(int faction)
 		var score = GetRelativeScore(faction);
 		if (score.relative_score > 0)
 		{
-			return Format("$MsgAhead$",	 score.relative_score,  GetFactionName(score.best_faction));
+			return Format("$MsgAhead$",	 score.relative_score,  score.best_faction->GetName());
 		}
 		else if (score.relative_score < 0)
 		{
-			return Format("$MsgBehind$", -score.relative_score, GetFactionName(score.best_faction));
+			return Format("$MsgBehind$", -score.relative_score, score.best_faction->GetName());
 		}
 		else if (score.best_faction == faction)
 		{
@@ -383,7 +383,7 @@ func GetGoalDescription(int faction)
 		}
 		else
 		{
-			return Format("$MsgEqual$", GetFactionName(score.best_faction));
+			return Format("$MsgEqual$", score.best_faction->GetName());
 		}
 	}
 }
@@ -393,15 +393,14 @@ func GetGoalDescription(int faction)
 	Determines the relative score of a faction,
 	that is the faction score compared to the best score.
  */
-func GetRelativeScore(int faction)
+func GetRelativeScore(proplist faction)
 {
-	var not_initialized = -1;
-	var best_faction = not_initialized, best_score = not_initialized;
+	var best_faction = nil, best_score = nil;
 	for(var i = 0; i < GetFactionCount(); ++i)
 	{
 		var current_faction = GetFactionByIndex(i);
 		var score = GetFactionScore(current_faction);
-		if (current_faction != faction && ((score > best_score) || (best_faction == -1)))
+		if (current_faction->GetID() != faction->GetID() && ((score > best_score) || (best_faction == -1)))
 		{
 			best_faction = current_faction;
 			best_score = score;
@@ -411,7 +410,7 @@ func GetRelativeScore(int faction)
 	var faction_score = GetFactionScore(faction);
 
 	// special case if there is only one player in the game
-	if(best_faction == not_initialized)
+	if(best_faction == nil)
 	{
 		best_faction = faction;
 		best_score = faction_score;
@@ -453,31 +452,26 @@ public func DoCleanup(int round)
 }
 
 
-/* --- Should be overloaded --- */
+/* --- Faction stuff --- */
 
-public func GetFactionCount()
+func GetFactionCount()
 {
-	FatalError("Implement this in a derived object");
+	return Arena_FactionManager->GetInstance()->GetFactionCount();
 }
 
-public func GetFactionByIndex(int index)
+func GetFaction(int faction_id)
 {
-	FatalError("Implement this in a derived object");
+	return Arena_FactionManager->GetInstance()->GetFaction(faction_id);
 }
 
-public func GetFactionByPlayer(int player)
+func GetFactionByIndex(int index)
 {
-	FatalError("Implement this in a derived object");
+	return Arena_FactionManager->GetInstance()->GetFactionByIndex(index);
 }
 
-public func GetFactionColor(int faction)
+func GetFactionByPlayer(int player)
 {
-	FatalError("Implement this in a derived object");
-}
-
-func GetFactionName(int faction)
-{
-	return "$DefaultFactionName$";
+	return Arena_FactionManager->GetInstance()->GetFactionByPlayer(player);
 }
 
 /* --- Event callbacks --- */
@@ -485,15 +479,15 @@ func GetFactionName(int faction)
 /**
 	Callback when the score of a faction changes.
 
-	@par faction The faction, by index.
+	@par faction The faction.
  */
-func OnFactionScoreChange(int faction)
+func OnFactionScoreChange(proplist faction)
 {
-	SetLeadingFaction(DetermineLeadingFaction());
+	SetLeadingFactionID(DetermineLeadingFactionID());
 
-	if (score_list_points[faction] >= win_score)
+	if (score_list_points[faction->GetID()] >= win_score)
 	{
-		DoWinRound(GetLeadingFaction());
+		DoWinRound(GetLeadingFactionID());
 	}
 	_inherited(faction, ...);
 }
@@ -503,13 +497,13 @@ func OnFactionScoreChange(int faction)
 /* --- Internals --- */
 
 
-func DetermineLeadingFaction()
+func DetermineLeadingFactionID()
 {
-	var best = DetermineHighestScoringFaction();
+	var best = DetermineHighestScoringFactionID();
 
 	if (GetLength(best) > 1)
 	{
-		return DetermineEarliestScoringFaction(best);
+		return DetermineEarliestScoringFactionID(best);
 	}
 	else
 	{
@@ -517,13 +511,13 @@ func DetermineLeadingFaction()
 	}
 }
 
-func DetermineHighestScoringFaction()
+func DetermineHighestScoringFactionID()
 {
 	// Get the best factions
 	return GetMaxValueIndices(score_list_points);
 }
 
-func DetermineEarliestScoringFaction(array factions)
+func DetermineEarliestScoringFactionID(array factions)
 {
 	var times = PickArrayValues(score_time_points, factions);
 
@@ -531,12 +525,12 @@ func DetermineEarliestScoringFaction(array factions)
 }
 
 
-func GetFactionSize(int faction)
+func GetFactionSize(proplist faction)
 {
 	var size = 0;
 	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
-		if (faction == GetFactionByPlayer(GetPlayerByIndex(i)))
+		if (faction->GetID() == GetFactionByPlayer(GetPlayerByIndex(i))->GetID())
 		{
 			++size;
 		}
