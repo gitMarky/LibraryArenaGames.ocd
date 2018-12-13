@@ -3,6 +3,7 @@
 + Added change log file
 + Added callbacks for winning the round in goals
 + Added jump pad
++ Added faction manager
 + Added player manager 
 + Added object limits
 
